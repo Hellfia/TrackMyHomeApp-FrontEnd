@@ -15,18 +15,18 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 
 export default function DetailProjectScreen({ navigation, route }) {
-  // Exemple d'étapes stockées dans un state
+ 
   const [steps, setSteps] = useState([
     { id: "1", label: "Étude du terrain", status: "Terminé", image: null },
     { id: "2", label: "Fondations", status: "En cours", image: null },
     { id: "3", label: "Étape 3", status: "Pas commencé", image: null },
   ]);
 
-  // State pour la modal de modification
+  // les camps pour les détails
   const [modalVisible, setModalVisible] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(null);
 
-  // Champs de la modal
+  // les champs pour la modal d'étape
   const [status, setStatus] = useState("pasCommence");
   const [autreStatus, setAutreStatus] = useState("");
   const [dateDebut, setDateDebut] = useState("");
@@ -34,7 +34,7 @@ export default function DetailProjectScreen({ navigation, route }) {
   const [commentaires, setCommentaires] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Fonction pour sélectionner une image avec la nouvelle API d'Expo Image Picker
+  // module pour importer une photo mais ne marche pas  ou alors j'ai pas compris
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -51,13 +51,12 @@ export default function DetailProjectScreen({ navigation, route }) {
       aspect: [4, 3],
       quality: 1,
     });
-    // Dans la nouvelle API, le résultat renvoie { canceled: boolean, assets: [...] }
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
     }
   };
 
-  // Ouvre la modal et pré-remplit les champs en fonction de l'étape
+  //j'ouvre la modal et pré rempli l'état du chantier
   const openModal = (stepIndex) => {
     setCurrentStepIndex(stepIndex);
     const currentStep = steps[stepIndex];
@@ -69,7 +68,6 @@ export default function DetailProjectScreen({ navigation, route }) {
       setAutreStatus(currentStep.status);
     }
     setSelectedImage(currentStep.image || null);
-    // Vous pouvez également pré-remplir d'autres champs (dates, commentaires) ici.
     setModalVisible(true);
   };
 
@@ -88,9 +86,9 @@ export default function DetailProjectScreen({ navigation, route }) {
     else if (status === "autre") newStatus = autreStatus || "Autre";
 
     stepToModify.status = newStatus;
-    // Enregistrer l'image sélectionnée
+    // enregistre l'image
     stepToModify.image = selectedImage;
-    // (Optionnel) Enregistrer dateDebut, dateFin, commentaires, etc.
+    //  Enregistrer  la date de début, date de fin et le commentaire
     updatedSteps[currentStepIndex] = stepToModify;
     setSteps(updatedSteps);
     setModalVisible(false);
@@ -117,12 +115,12 @@ export default function DetailProjectScreen({ navigation, route }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {/* Nom du client / du projet */}
+        // nom du client + du projet
         <Text style={styles.ownerName}>Kevin</Text>
 
-        {/* Zone d'image */}
+        // carré d'image
         <View style={styles.imageContainer}>
-          {/* Affiche l'image du chantier si elle existe */}
+          // affiche les images
           {steps[currentStepIndex]?.image ? (
             <Image
               source={{ uri: steps[currentStepIndex].image }}
@@ -133,7 +131,7 @@ export default function DetailProjectScreen({ navigation, route }) {
           )}
         </View>
 
-        {/* Liste des étapes */}
+        // listes des étapes
         {steps.map((step, index) => (
           <View key={step.id} style={styles.stepRow}>
             <View style={styles.stepInfo}>
@@ -153,13 +151,13 @@ export default function DetailProjectScreen({ navigation, route }) {
           </View>
         ))}
 
-        {/* Bouton pour les documents administratifs */}
+        // bouton pour les docs administratifs
         <TouchableOpacity style={styles.docsButton}>
           <Text style={styles.docsButtonText}>Les documents administratif</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Modal de modification */}
+      // modale pour modif le status 
       <Modal
         animationType="slide"
         transparent={true}

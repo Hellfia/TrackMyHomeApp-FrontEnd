@@ -17,18 +17,17 @@ import MonCompteScreen from "./screens/MonCompteScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Navigation par onglets avec icône personnalisée
 function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
-          // Utilisation de FontAwesome5 pour l'onglet "Projet"
+          // pour mettre le casque car pas dans ionicons
           if (route.name === "Projet") {
             return <FontAwesome5 name="hard-hat" size={size} color={color} />;
           }
-          // Pour les autres onglets, on utilise Ionicons
+          // pour les autres onglets ionicons
           let iconName;
           switch (route.name) {
             case "DashBoard":
@@ -74,7 +73,7 @@ export default function App() {
             name="DetailProject"
             component={DetailProjectScreen}
             options={{
-              headerShown: false, // Supprime complètement le header
+              headerShown: false,
             }}
           />
         </Stack.Navigator>

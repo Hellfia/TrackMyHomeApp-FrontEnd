@@ -13,12 +13,12 @@ export default function ConnexionScreen({ navigation }) {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Logique d'authentification...
+    // copier d'un truc qu'on a fait pour le login
     navigation.replace("MainTabs");
   };
 
   const handleForgotPassword = () => {
-    // Logique pour le mot de passe oublié
+    // il faudra faire la logique pour le mot de passe oublié
   };
 
   return (
@@ -43,9 +43,11 @@ export default function ConnexionScreen({ navigation }) {
           value={password}
           onChangeText={setPassword}
         />
+        // le login
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Se connecter</Text>
         </TouchableOpacity>
+        // le mot de passe oublié
         <TouchableOpacity onPress={handleForgotPassword}>
           <Text style={styles.linkText}>Mot de passe oublié ?</Text>
         </TouchableOpacity>

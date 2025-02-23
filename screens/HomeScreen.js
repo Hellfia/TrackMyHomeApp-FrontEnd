@@ -16,6 +16,8 @@ export default function HomeScreen({ navigation }) {
     { id: "2", name: "Villa de Marie", progress: 80 },
     { id: "3", name: "Extension Pierre", progress: 25 },
   ];
+
+  // juste pour tester le coun du nombre de chantier
   const chantierCount = projectsData.length;
 
   const clientsData = [
@@ -28,7 +30,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
-        {/* Header */}
+        // le header
         <View style={styles.header}>
           <Text style={styles.headerTitle}>DashBoard</Text>
           <TouchableOpacity
@@ -42,18 +44,17 @@ export default function HomeScreen({ navigation }) {
             />
           </TouchableOpacity>
         </View>
-
-        {/* Logo */}
+        // le logo ( a changer car moche dans un rond enfait)
         <View style={styles.logoContainer}>
           <Image
             style={styles.logoPlaceholder}
             source={require("../assets/Logo.png")}
           />
         </View>
-
-        {/* Contenu principal scrollable */}
+        // scoll seulement le container secondaire et laisse le haut de la page
+        propre
         <ScrollView style={styles.content}>
-          {/* Section "Mes Chantiers" cliquable */}
+          // section pour le count du nombre de chantier
           <TouchableOpacity
             style={styles.section}
             onPress={() => navigation.navigate("Projet")}
@@ -63,8 +64,7 @@ export default function HomeScreen({ navigation }) {
               Vous avez {chantierCount} chantiers en cours
             </Text>
           </TouchableOpacity>
-
-          {/* Section "Mes Clients" */}
+          //section des clients
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Mes clients</Text>
             <View style={styles.clientsRow}>
@@ -84,16 +84,15 @@ export default function HomeScreen({ navigation }) {
               ))}
             </View>
           </View>
-
-          {/* Section "Mes messages" */}
+          // affiche les messages
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Mes messages (0)</Text>
             <Text style={styles.sectionSubtitle}>
               Vous n'avez pas de nouveaux messages
             </Text>
           </View>
-
-          {/* Section "Mon administratif" */}
+          // section a rendre cliquable pour routert vers la page administratif
+          si on l'a fait
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Mon administratif</Text>
             <Text style={styles.sectionSubtitle}>Mes documents</Text>

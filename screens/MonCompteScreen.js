@@ -4,11 +4,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MonCompteScreen({ navigation }) {
   const handleEditProfile = () => {
-    // Logique pour modifier le profil
+    // pour édite le profil
   };
 
   const handleLogout = () => {
-    // Logique de déconnexion (ex. navigation.replace('Connexion'))
+    //pour se déconnecter
   };
 
   const handleCredits = () => {
