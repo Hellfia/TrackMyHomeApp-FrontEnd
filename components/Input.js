@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
 
   inputText: {
-    color: "#FFF",
+    color: "#050315",
     fontSize: 16,
     fontWeight: "600",
   },
