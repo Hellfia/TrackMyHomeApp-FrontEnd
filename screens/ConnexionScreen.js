@@ -11,7 +11,7 @@ import logo from "../assets/icon.png";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function TrackMyHomeScreen() {
+export default function ConnextionScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -38,7 +38,10 @@ export default function TrackMyHomeScreen() {
         />
       </View>
 
-      <TouchableOpacity style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => navigation.navigate("Dashboard")}
+      >
         <LinearGradient
           colors={["#8A2BE2", "#4B0082"]}
           start={{ x: 0, y: 0 }}
