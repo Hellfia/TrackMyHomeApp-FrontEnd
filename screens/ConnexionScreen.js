@@ -18,7 +18,7 @@ export default function ConnexionScreen({ navigation }) {
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
         <View style={styles.logoContainer}>
-          <Image source={logo} style={{ width: 80, height: 80 }} />
+          <Image source={logo} style={{ width: 90, height: 90 }} />
         </View>
 
         <Text style={styles.title}>TrackMyHome</Text>
@@ -36,21 +36,21 @@ export default function ConnexionScreen({ navigation }) {
             <Input placeholder="Email" />
             <Input placeholder="Mot de passe" secureTextEntry />
           </View>
-        </KeyboardAvoidingView>
 
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={() => navigation.navigate("MainTabs")}
-        >
-          <LinearGradient
-            colors={["#8A2BE2", "#4B0082"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.button}
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => navigation.navigate("MainTabs")}
           >
-            <Text style={styles.buttonText}>Se connecter</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <LinearGradient
+              colors={["#8A2BE2", "#4B0082"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Se connecter</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
           Vous êtes un professionnel ?{" "}
