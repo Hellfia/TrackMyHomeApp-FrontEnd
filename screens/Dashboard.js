@@ -48,7 +48,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.logoContainer}>
           <Image
             style={styles.logoPlaceholder}
-            source={require("../assets/Logo.png")}
+            source={require("../assets/logo.png")}
           />
         </View>
         // scoll seulement le container secondaire et laisse le haut de la page

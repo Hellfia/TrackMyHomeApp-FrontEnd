@@ -8,11 +8,11 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 // Import des écrans
 import ConnexionScreen from "./screens/ConnexionScreen";
-import HomeScreen from "./screens/HomeScreen";
+import DashBoard from "./screens/Dashboard";
 import ProjectsScreen from "./screens/ProjectsScreen";
 import DetailProjectScreen from "./screens/DetailProjectScreen";
 import MessagesScreen from "./screens/MessagesScreen";
-import MonCompteScreen from "./screens/MonCompteScreen";
+import ProfilScreen from "./screens/ProfilScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,10 +46,10 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="DashBoard" component={HomeScreen} />
+      <Tab.Screen name="DashBoard" component={DashBoard} />
       <Tab.Screen name="Projet" component={ProjectsScreen} />
       <Tab.Screen name="Messages" component={MessagesScreen} />
-      <Tab.Screen name="MonCompte" component={MonCompteScreen} />
+      <Tab.Screen name="Profil" component={ProfilScreen} />
     </Tab.Navigator>
   );
 }

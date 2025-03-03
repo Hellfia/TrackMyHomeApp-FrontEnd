@@ -104,7 +104,7 @@ export default function ProjectsScreen({ navigation }) {
         <View style={styles.logoContainer}>
           <Image
             style={styles.logoPlaceholder}
-            source={require("../assets/Logo.png")}
+            source={require("../assets/logo.png")}
           />
         </View>
       </View>

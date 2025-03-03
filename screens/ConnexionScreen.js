@@ -1,106 +1,130 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import logo from "../assets/icon.png";
 
-export default function ConnexionScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+import { LinearGradient } from "expo-linear-gradient";
 
-  const handleLogin = () => {
-    // copier d'un truc qu'on a fait pour le login
-    navigation.replace("MainTabs");
-  };
-
-  const handleForgotPassword = () => {
-    // il faudra faire la logique pour le mot de passe oublié
-  };
-
+export default function TrackMyHomeScreen() {
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-      <Text style={styles.title}>Track My Home</Text>
+    <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image source={logo} style={{ width: 80, height: 80 }} />
+      </View>
+
+      <Text style={styles.title}>TrackMyHome</Text>
+
       <Text style={styles.subtitle}>
         Suivez la construction de votre maison
       </Text>
-      <View style={styles.form}>
+
+      <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Adresse e-mail"
+          placeholder="Email"
           placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
         />
         <TextInput
           style={styles.input}
           placeholder="Mot de passe"
           placeholderTextColor="#999"
           secureTextEntry
-          value={password}
-          onChangeText={setPassword}
         />
-        // le login
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Se connecter</Text>
-        </TouchableOpacity>
-        // le mot de passe oublié
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={styles.linkText}>Mot de passe oublié ?</Text>
-        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+
+      <TouchableOpacity style={styles.buttonContainer}>
+        <LinearGradient
+          colors={["#8A2BE2", "#4B0082"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Se connecter</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      <Text style={styles.profText}>
+        Vous êtes un professionnel ?{" "}
+        <Text style={styles.profLink}>Cliquez-ici</Text>
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#FFFFFF",
+    alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+  logoContainer: {
+    marginBottom: 20,
+    // Ajoutez éventuellement un style supplémentaire pour votre logo
   },
   title: {
     fontSize: 28,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: "bold",
+    color: "#000000",
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    marginTop: 8,
-    marginBottom: 30,
-    textAlign: "center",
-    color: "#666",
+    color: "#666666",
+    marginBottom: 40,
   },
-  form: {
-    marginHorizontal: 20,
+  inputContainer: {
+    width: "100%",
+    marginBottom: 20,
   },
   input: {
+    height: 50,
     borderWidth: 1,
-    borderColor: "#DDD",
+    borderColor: "#8A2BE2",
     borderRadius: 8,
-    padding: 12,
+    paddingHorizontal: 10,
+    marginBottom: 15,
     fontSize: 16,
-    marginBottom: 16,
+    // Pour ajouter une légère ombre (optionnel) :
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
+    // elevation: 2,
+  },
+  buttonContainer: {
+    width: "100%",
+    marginBottom: 20,
   },
   button: {
-    backgroundColor: "#6C63FF",
-    padding: 14,
     borderRadius: 8,
+    paddingVertical: 14,
     alignItems: "center",
-    marginVertical: 10,
+    // Même principe si vous voulez une ombre autour du bouton
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 4,
+    // elevation: 2,
   },
   buttonText: {
-    color: "#FFF",
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
-  linkText: {
-    color: "#6C63FF",
-    textAlign: "center",
-    marginTop: 10,
+  profText: {
+    fontSize: 14,
+    color: "#000000",
+  },
+  profLink: {
+    color: "#8A2BE2",
+    textDecorationLine: "underline",
   },
 });
