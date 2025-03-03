@@ -1,8 +1,4 @@
 import React from "react";
-<<<<<<< HEAD
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import logo from "../assets/logo.webp";
-=======
 import {
   View,
   Text,
@@ -13,25 +9,17 @@ import {
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import logo from "../assets/icon.png";
->>>>>>> 6f7c04c69f4ba5ae8da4e843957d67972ad23437
+import logo from "../assets/logo.webp";
 import Input from "../components/Input";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function ConnexionScreen({ navigation }) {
   return (
-<<<<<<< HEAD
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image source={logo} style={{ width: 90, height: 90 }} />
-      </View>
-=======
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image source={logo} style={{ width: 80, height: 80 }} />
         </View>
->>>>>>> 6f7c04c69f4ba5ae8da4e843957d67972ad23437
 
         <Text style={styles.title}>TrackMyHome</Text>
 
