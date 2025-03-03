@@ -11,7 +11,7 @@ const Input = ({ type, placeholder, value, onChange, name }) => {
         name={name}
         placeholder={placeholder}
         value={value}
-        onChange={onChange}
+        onChangeText={onChange}
       />
     </View>
   );
