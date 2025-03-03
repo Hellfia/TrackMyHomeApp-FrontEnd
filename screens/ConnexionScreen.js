@@ -1,57 +1,92 @@
 import React from "react";
+<<<<<<< HEAD
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import logo from "../assets/logo.webp";
+=======
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import logo from "../assets/icon.png";
+>>>>>>> 6f7c04c69f4ba5ae8da4e843957d67972ad23437
 import Input from "../components/Input";
-
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function ConnexionScreen({ navigation }) {
   return (
+<<<<<<< HEAD
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image source={logo} style={{ width: 90, height: 90 }} />
       </View>
+=======
+    <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
+      <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image source={logo} style={{ width: 80, height: 80 }} />
+        </View>
+>>>>>>> 6f7c04c69f4ba5ae8da4e843957d67972ad23437
 
-      <Text style={styles.title}>TrackMyHome</Text>
+        <Text style={styles.title}>TrackMyHome</Text>
 
-      <Text style={styles.subtitle}>
-        Suivez la construction de votre maison
-      </Text>
+        <Text style={styles.subtitle}>
+          Suivez la construction de votre maison
+        </Text>
 
-      <View style={styles.inputContainer}>
-        <Input placeholder="Email" />
-        <Input placeholder="Mot de passe" />
-      </View>
-
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={() => navigation.navigate("MainTabs")}
-      >
-        <LinearGradient
-          colors={["#8A2BE2", "#4B0082"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.button}
+        <KeyboardAvoidingView
+          style={styles.keyboardContainer}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={80}
         >
-          <Text style={styles.buttonText}>Se connecter</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <View style={styles.inputContainer}>
+            <Input placeholder="Email" />
+            <Input placeholder="Mot de passe" secureTextEntry />
+          </View>
+        </KeyboardAvoidingView>
 
-      <Text style={styles.profText}>
-        Vous êtes un professionnel ?{" "}
-        <Text style={styles.profLink}>Cliquez-ici</Text>
-      </Text>
-    </View>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => navigation.navigate("MainTabs")}
+        >
+          <LinearGradient
+            colors={["#8A2BE2", "#4B0082"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Se connecter</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <Text style={styles.profText}>
+          Vous êtes un professionnel ?{" "}
+          <Text style={styles.profLink}>Cliquez-ici</Text>
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeContainer: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+  },
+  container: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
+  },
+  // Nouveau style pour le KeyboardAvoidingView afin de ne pas dupliquer le style du container principal
+  keyboardContainer: {
+    width: "100%",
   },
   logoContainer: {
     marginBottom: 20,
@@ -69,22 +104,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
-    marginBottom: 20,
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#8A2BE2",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    fontSize: 16,
-    // Pour ajouter une légère ombre (optionnel) :
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
-    // elevation: 2,
+    // Ajustez ou supprimez la marge inférieure si besoin
+    marginBottom: 0,
   },
   buttonContainer: {
     width: "100%",
@@ -94,12 +115,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 14,
     alignItems: "center",
-    // Même principe si vous voulez une ombre autour du bouton
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 4,
-    // elevation: 2,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   buttonText: {
     color: "#FFFFFF",
