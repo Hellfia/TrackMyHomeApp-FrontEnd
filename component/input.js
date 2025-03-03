@@ -3,10 +3,10 @@ import "./Input.css"; // Importation du fichier CSS pour les styles
 import { TextInput, View } from "react-native";
 const Input = ({ type, placeholder, value, onChange, name }) => {
   return (
-    <View className="input-container">
+    <View style={styles.inputContainer}>
       <TextInput
         type={type}
-        className="input-field"
+        style={inputText}
         id={name}
         name={name}
         placeholder={placeholder}
@@ -16,5 +16,7 @@ const Input = ({ type, placeholder, value, onChange, name }) => {
     </View>
   );
 };
+//style du input
+const styles = StyleSheet.create({});
 
 export default Input;
