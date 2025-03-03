@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, View } from "react-native";
+import { TextInput, View, StyleSheet } from "react-native";
 
 const Input = ({
   placeholder,
@@ -26,7 +26,7 @@ const Input = ({
 
 const styles = StyleSheet.create({
   inputContainer: {
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: "#663ED9",
     borderRadius: 8,
     padding: 12,

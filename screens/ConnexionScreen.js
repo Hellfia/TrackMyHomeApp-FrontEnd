@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 import logo from "../assets/icon.png";
+import Input from "../components/Input";
 
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -25,17 +26,8 @@ export default function ConnexionScreen({ navigation }) {
       </Text>
 
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#999"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Mot de passe"
-          placeholderTextColor="#999"
-          secureTextEntry
-        />
+        <Input placeholder="Email" />
+        <Input placeholder="Mot de passe" />
       </View>
 
       <TouchableOpacity
@@ -70,7 +62,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 20,
-    // Ajoutez éventuellement un style supplémentaire pour votre logo
   },
   title: {
     fontSize: 28,
