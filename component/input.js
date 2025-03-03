@@ -25,8 +25,20 @@ const Input = ({
 };
 
 const styles = StyleSheet.create({
-  inputContainer: {},
-  inputText: {},
+  inputContainer: {
+    borderWidth: 3,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+
+  inputText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
 });
 
 export default Input;
