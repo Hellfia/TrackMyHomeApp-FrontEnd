@@ -1,22 +1,32 @@
 import React from "react";
-import "./Input.css"; // Importation du fichier CSS pour les styles
 import { TextInput, View } from "react-native";
-const Input = ({ type, placeholder, value, onChange, name }) => {
+
+const Input = ({
+  placeholder,
+  value,
+  onChangeText,
+  placeholderTextColor,
+  keyboardType,
+}) => {
   return (
     <View style={styles.inputContainer}>
       <TextInput
-        type={type}
-        style={inputText}
-        id={name}
-        name={name}
+        style={styles.inputText}
         placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
         value={value}
-        onChangeText={onChange}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
     </View>
   );
 };
-//style du input
-const styles = StyleSheet.create({});
+
+const styles = StyleSheet.create({
+  inputContainer: {},
+  inputText: {},
+});
 
 export default Input;
