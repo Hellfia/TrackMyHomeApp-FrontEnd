@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-export default function HomeScreen({ navigation }) {
+export default function DashboardScreen({ navigation }) {
   const projectsData = [
     { id: "1", name: "Maison de Paul", progress: 45 },
     { id: "2", name: "Villa de Marie", progress: 80 },

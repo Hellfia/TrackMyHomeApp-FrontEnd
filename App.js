@@ -8,7 +8,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 // Import des écrans
 import ConnexionScreen from "./screens/ConnexionScreen";
-import DashBoard from "./screens/Dashboard";
+import DashboardScreen from "./screens/DashboardScreen";
 import ProjectsScreen from "./screens/ProjectsScreen";
 import DetailProjectScreen from "./screens/DetailProjectScreen";
 import MessagesScreen from "./screens/MessagesScreen";
@@ -30,13 +30,13 @@ function MainTabs() {
           // pour les autres onglets ionicons
           let iconName;
           switch (route.name) {
-            case "DashBoard":
+            case "Dashboard":
               iconName = "grid-outline";
               break;
             case "Messages":
               iconName = "chatbubbles";
               break;
-            case "MonCompte":
+            case "Profil":
               iconName = "person";
               break;
             default:
@@ -46,7 +46,7 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="DashBoard" component={DashBoard} />
+      <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Projet" component={ProjectsScreen} />
       <Tab.Screen name="Messages" component={MessagesScreen} />
       <Tab.Screen name="Profil" component={ProfilScreen} />

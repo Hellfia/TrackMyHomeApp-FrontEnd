@@ -11,7 +11,7 @@ import logo from "../assets/icon.png";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function ConnextionScreen({ navigation }) {
+export default function ConnexionScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -40,7 +40,7 @@ export default function ConnextionScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.buttonContainer}
-        onPress={() => navigation.navigate("Dashboard")}
+        onPress={() => navigation.navigate("MainTabs")}
       >
         <LinearGradient
           colors={["#8A2BE2", "#4B0082"]}
