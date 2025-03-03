@@ -102,10 +102,10 @@ export default function ProjectsScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <View style={styles.logoContainer}>
-          <Image
+          {/*<Image
             style={styles.logoPlaceholder}
             source={require("../assets/logo.png")}
-          />
+          />*/}
         </View>
       </View>
 
