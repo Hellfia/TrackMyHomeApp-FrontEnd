@@ -1,13 +1,6 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-} from "react-native";
-import logo from "../assets/icon.png";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import logo from "../assets/logo.webp";
 import Input from "../components/Input";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,7 +9,7 @@ export default function ConnexionScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={logo} style={{ width: 80, height: 80 }} />
+        <Image source={logo} style={{ width: 90, height: 90 }} />
       </View>
 
       <Text style={styles.title}>TrackMyHome</Text>

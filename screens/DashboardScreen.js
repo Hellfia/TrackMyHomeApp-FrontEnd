@@ -1,11 +1,10 @@
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
-  Image,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -46,10 +45,10 @@ export default function DashboardScreen({ navigation }) {
         </View>
         // le logo ( a changer car moche dans un rond enfait)
         <View style={styles.logoContainer}>
-          <Image
+          {/* <Image
             style={styles.logoPlaceholder}
             source={require("../assets/logo.png")}
-          />
+          /> */}
         </View>
         // scoll seulement le container secondaire et laisse le haut de la page
         propre
