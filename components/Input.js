@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, View, StyleSheet } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
 const Input = ({
   placeholder,
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   inputText: {
     color: "#050315",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "400",
   },
 });
 

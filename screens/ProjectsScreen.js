@@ -1,19 +1,17 @@
+import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
 import {
+  Modal,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
   TextInput,
-  Image,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { SafeAreaView } from "react-native-safe-area-context";
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function ProjectsScreen({ navigation }) {
   const [location, setLocation] = useState(null);
@@ -70,18 +68,18 @@ export default function ProjectsScreen({ navigation }) {
   );
 
   const defaultRegion = {
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitude: 46.603354,
+    longitude: 1.888334,
+    latitudeDelta: 10,
+    longitudeDelta: 10,
   };
 
   const region = location
     ? {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 1,
+        longitudeDelta: 1,
       }
     : defaultRegion;
 
@@ -102,10 +100,10 @@ export default function ProjectsScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <View style={styles.logoContainer}>
-          {/*<Image
+          {/* <Image
             style={styles.logoPlaceholder}
             source={require("../assets/logo.png")}
-          />*/}
+          /> */}
         </View>
       </View>
 
