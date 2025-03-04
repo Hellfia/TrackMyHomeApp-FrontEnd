@@ -26,6 +26,7 @@ const Input = ({
 
 const styles = StyleSheet.create({
   inputContainer: {
+    width: "100%",
     borderWidth: 2,
     borderColor: "#663ED9",
     borderRadius: 8,

@@ -19,18 +19,9 @@ export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const dispatch = useDispatch();
-  const constructor = useSelector((state) => state.constructor.value);
 
   const handlePressConnexion = () => {
-    navigation.navigate("MainTabs");
-  };
-
-  const handlePressConnexionClient = () => {
-    navigation.navigate("ConnexionClient");
-  };
-
-  const handleConnexion = () => {
-    fetch("http://localhost:4000/constructor/signin", {
+    fetch("http://192.168.1.191:4000/constructors/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -44,10 +35,19 @@ export default function ConnexionScreen({ navigation }) {
           dispatch(login({ email: signInEmail, token: data.token }));
           setSignInEmail("");
           setSignInPassword("");
-          setIsModalVisible(false);
         }
       });
+    navigation.navigate("ProAccCreation");
   };
+
+  const handlePressConnexionClient = () => {
+    navigation.navigate("ConnexionClient");
+  };
+
+  const handleProAccCreation = () => {
+    navigation.navigate("ProAccCreation");
+  };
+
   return (
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
@@ -67,26 +67,28 @@ export default function ConnexionScreen({ navigation }) {
           <View style={styles.inputContainer}>
             <Input
               placeholder="Email"
-              onChangeText={(e) => setSignInEmail(e.target.value)}
+              onChangeText={(value) => setSignInEmail(value)}
               value={signInEmail}
             />
             <Input
               placeholder="Mot de passe"
-              secureTextEntry
-              onChangeText={(e) => setSignInPassword(e.target.value)}
+              onChangeText={(value) => setSignInPassword(value)}
               value={signInPassword}
             />
           </View>
-          <GradientButton
-            text="Se connecter"
-            onPress={(handlePressConnexion, handleConnexion)}
-          />
+          <GradientButton text="Se connecter" onPress={handlePressConnexion} />
         </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
           Vous êtes un client ?{" "}
           <Text style={styles.profLink} onPress={handlePressConnexionClient}>
             Cliquez-ici
+          </Text>
+        </Text>
+        <Text style={styles.profText}>
+          Vous n'avez pas de compte ?{" "}
+          <Text style={styles.profLink} onPress={handleProAccCreation}>
+            Créez-en un ici
           </Text>
         </Text>
       </View>
@@ -125,7 +127,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
-
     marginBottom: 0,
   },
   profText: {
