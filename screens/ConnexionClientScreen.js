@@ -1,22 +1,19 @@
 import React from "react";
 import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
   Image,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
-  Text,
-  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
-import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
+import { LinearGradient } from "expo-linear-gradient";
 
-export default function ConnexionScreen({ navigation }) {
-  const handlePress = () => {
-    navigation.navigate("MainTabs");
-  };
-
+export default function ConnexionClientScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
@@ -26,7 +23,9 @@ export default function ConnexionScreen({ navigation }) {
 
         <Text style={styles.title}>TrackMyHome</Text>
 
-        <Text style={styles.subtitle}>Espace Professionnel</Text>
+        <Text style={styles.subtitle}>
+          Suivez l'avancement de votre projet !
+        </Text>
 
         <KeyboardAvoidingView
           style={styles.keyboardContainer}
@@ -38,7 +37,7 @@ export default function ConnexionScreen({ navigation }) {
             <Input placeholder="Mot de passe" secureTextEntry />
           </View>
 
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() => navigation.navigate("MainTabs")}
           >
@@ -52,18 +51,18 @@ export default function ConnexionScreen({ navigation }) {
                 <Text style={styles.buttonText}>Se connecter</Text>
               </LinearGradient>
             </View>
-          </TouchableOpacity> */}
-          <GradientButton text="Se connecter" onPress={handlePress} />
+          </TouchableOpacity>
         </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
-          Vous êtes un client ?{" "}
+          Vous êtes un professionnel ?{" "}
           <Text
             style={styles.profLink}
-            OnPress={() => navigation.navigate("ConnexionClientScreen")}
+            OnPress={() => navigation.navigate("Connexion")}
           >
             Cliquez-ici
           </Text>
+          z
         </Text>
       </View>
     </SafeAreaView>
@@ -104,27 +103,27 @@ const styles = StyleSheet.create({
 
     marginBottom: 0,
   },
-  // buttonContainer: {
-  //   width: "100%",
-  //   marginBottom: 20,
-  // },
-  // shadowContainer: {
-  //   borderRadius: 8,
-  //   shadowColor: "#000",
-  //   shadowOffset: { width: 0, height: 2 },
-  //   shadowOpacity: 0.5,
-  //   shadowRadius: 4,
-  // },
-  // button: {
-  //   borderRadius: 8,
-  //   paddingVertical: 14,
-  //   alignItems: "center",
-  // },
-  // buttonText: {
-  //   color: "#FFFFFF",
-  //   fontSize: 16,
-  //   fontWeight: "bold",
-  // },
+  buttonContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  shadowContainer: {
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
+  button: {
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   profText: {
     fontSize: 14,
     color: "#000000",
