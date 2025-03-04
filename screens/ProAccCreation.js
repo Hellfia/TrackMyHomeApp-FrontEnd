@@ -29,10 +29,6 @@ export default function SignupProfessionalScreen({ navigation }) {
         <Text style={styles.title}>TrackMyHome</Text>
         <Text style={styles.subtitle}>Créer un compte professionnel</Text>
 
-        <Text style={styles.description}>
-          Créer votre compte avec adresse mail
-        </Text>
-
         <Input
           style={styles.input}
           placeholder="Nom de l'entreprise"
