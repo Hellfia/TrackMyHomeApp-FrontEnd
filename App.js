@@ -6,7 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import storage from "redux-persist/lib/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Updated import
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore, persistReducer } from "redux-persist";
 import { Provider } from "react-redux";
@@ -20,11 +20,12 @@ import DetailProjectScreen from "./screens/DetailProjectScreen";
 import MessagesScreen from "./screens/MessagesScreen";
 import ProfilScreen from "./screens/ProfilScreen";
 import ConnexionClientScreen from "./screens/ConnexionClientScreen";
+import ProAccCreation from "./screens/ProAccCreation";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const reducers = combineReducers({ constructor });
-const persistConfig = { key: "TrackMyHome", storage };
+const persistConfig = { key: "TrackMyHome", storage: AsyncStorage };
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
@@ -86,6 +87,11 @@ export default function App() {
               <Stack.Screen
                 name="ConnexionClient"
                 component={ConnexionClientScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="ProAccCreation"
+                component={ProAccCreation}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
