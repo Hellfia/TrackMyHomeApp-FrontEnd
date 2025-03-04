@@ -2,10 +2,10 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const PurpleButton = ({ icon, text, onPress }) => {
+const PurpleButton = ({ icon, text, onPress, backgroundColor = "#663ED9" }) => {
   return (
     <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-      <View style={styles.button}>
+      <View style={[styles.button, { backgroundColor }]}>
         {icon && (
           <FontAwesome5
             name={icon}
@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 8,
     paddingVertical: 14,
-    backgroundColor: "#663ED9",
   },
   icon: {
     marginRight: 12,
