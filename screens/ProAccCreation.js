@@ -12,14 +12,41 @@ import {
 import PurpleButton from "../components/PurpleButton";
 import Input from "../components/Input";
 import GradientButton from "../components/GradientButton";
+import { login } from "../reducers/constructeur";
+import { useDispatch } from "react-redux";
 
-export default function SignupProfessionalScreen({ navigation }) {
+export default function ProAccCreationScreen({ navigation }) {
   const [companyName, setCompanyName] = useState("");
   const [siret, setSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
-  const handleSignup = () => {};
+  const handleSignup = () => {
+    fetch("http://192.168.1.191:4000/constructors/signup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        companyName: companyName,
+        siret: siret,
+        email: email,
+        password: password,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Réponse de l'API :", data);
+        if (data.result === true) {
+          console.log("lol");
+          dispatch(login({ email: email, token: data.token }));
+          setEmail("");
+          setPassword("");
+          setSiret("");
+          navigation.replace("MainTabs");
+          console.log("fini");
+        }
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>

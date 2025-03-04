@@ -19,11 +19,7 @@ export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const dispatch = useDispatch();
-  const constructeur = useSelector((state) => state.constructeur.value);
-  const client = useSelector((state) => state.client.value);
 
-  console.log("client :", client);
-  console.log("constructeurr : ", constructeur);
   const handlePressConnexion = () => {
     fetch("http://192.168.1.191:4000/constructors/signin", {
       method: "POST",
