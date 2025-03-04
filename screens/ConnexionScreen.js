@@ -23,9 +23,7 @@ export default function ConnexionScreen({ navigation }) {
 
         <Text style={styles.title}>TrackMyHome</Text>
 
-        <Text style={styles.subtitle}>
-          Suivez la construction de votre maison
-        </Text>
+        <Text style={styles.subtitle}>Espace Professionnel</Text>
 
         <KeyboardAvoidingView
           style={styles.keyboardContainer}
@@ -41,20 +39,21 @@ export default function ConnexionScreen({ navigation }) {
             style={styles.buttonContainer}
             onPress={() => navigation.navigate("MainTabs")}
           >
-            <LinearGradient
-              colors={["#8A2BE2", "#4B0082"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>Se connecter</Text>
-            </LinearGradient>
+            <View style={styles.shadowContainer}>
+              <LinearGradient
+                colors={["#8A2BE2", "#4B0082"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Se connecter</Text>
+              </LinearGradient>
+            </View>
           </TouchableOpacity>
         </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
-          Vous êtes un professionnel ?{" "}
-          <Text style={styles.profLink}>Cliquez-ici</Text>
+          Vous êtes un client ? <Text style={styles.profLink}>Cliquez-ici</Text>
         </Text>
       </View>
     </SafeAreaView>
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-  // Nouveau style pour le KeyboardAvoidingView afin de ne pas dupliquer le style du container principal
+
   keyboardContainer: {
     width: "100%",
   },
@@ -92,22 +91,24 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
-    // Ajustez ou supprimez la marge inférieure si besoin
+
     marginBottom: 0,
   },
   buttonContainer: {
     width: "100%",
     marginBottom: 20,
   },
+  shadowContainer: {
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
   button: {
     borderRadius: 8,
     paddingVertical: 14,
     alignItems: "center",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   buttonText: {
     color: "#FFFFFF",
