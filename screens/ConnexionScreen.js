@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { login } from "../reducers/user";
+import { login } from "../reducers/constructor";
 import { useDispatch } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";

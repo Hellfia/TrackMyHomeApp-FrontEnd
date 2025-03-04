@@ -9,6 +9,8 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore, persistReducer } from "redux-persist";
+import { Provider } from "react-redux";
+import constructor from "./reducers/constructor";
 
 // Import des écrans
 import ConnexionScreen from "./screens/ConnexionScreen";
