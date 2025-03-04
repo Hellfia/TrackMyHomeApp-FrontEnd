@@ -14,11 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
-import PurpleButton from "../components/PurpleButton";
 
 export default function ConnexionScreen({ navigation }) {
-  const [signUpEmail, setSignUpEmail] = useState("");
-  const [signUpPassword, setSignUpPassword] = useState("");
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const dispatch = useDispatch();
@@ -29,10 +26,6 @@ export default function ConnexionScreen({ navigation }) {
   };
 
   const handlePressConnexionClient = () => {
-    console.log("test");
-  };
-
-  const handletest = () => {
     navigation.navigate("ConnexionClient");
   };
 
@@ -55,10 +48,6 @@ export default function ConnexionScreen({ navigation }) {
         }
       });
   };
-  };
-
-
-
   return (
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
@@ -76,11 +65,20 @@ export default function ConnexionScreen({ navigation }) {
           keyboardVerticalOffset={80}
         >
           <View style={styles.inputContainer}>
-            <Input placeholder="Email" />
-            <Input placeholder="Mot de passe" secureTextEntry />
+            <Input
+              placeholder="Email"
+              onChangeText={(e) => setSignInEmail(e.target.value)}
+            />
+            <Input
+              placeholder="Mot de passe"
+              secureTextEntry
+              onChangeText={(e) => setSignInPassword(e.target.value)}
+            />
           </View>
-          <GradientButton text="Se connecter" onPress={handlePressConnexion} />
-          <PurpleButton text="test" onPress={handletest} />
+          <GradientButton
+            text="Se connecter"
+            onPress={(handlePressConnexion, handleConnexion)}
+          />
         </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
