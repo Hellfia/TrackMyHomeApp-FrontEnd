@@ -50,8 +50,8 @@ export default function DashboardScreen({ navigation }) {
             source={require("../assets/logo.png")}
           />*/}
         </View>
-        {/* // scoll seulement le container secondaire et laisse le haut de la page
-        propre */}
+        {/* // scoll seulement le container secondaire et laisse le haut de la page */}
+        {/* propre */}
         <ScrollView style={styles.content}>
           {/* // section pour le count du nombre de chantier */}
           <TouchableOpacity

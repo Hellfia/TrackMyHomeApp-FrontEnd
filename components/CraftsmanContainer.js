@@ -2,25 +2,23 @@ import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import avatar from "../assets/avatar.png";
 
-const ClientContainer = ({
-  firstname,
-  lastname,
-  address,
-  zip,
-  city,
-  profilePicture,
+const CraftsmanContainer = ({
+  craftsmanName,
+  craftsmanAddress,
+  craftsmanZip,
+  craftsmanCity,
+  craftsmanLogo,
+  phoneNumber,
 }) => {
-  const profileImage = profilePicture ? { uri: profilePicture } : avatar;
+  const profileImage = craftsmanLogo ? { uri: craftsmanLogo } : avatar;
   return (
     <View style={styles.generalContainer}>
       <Image source={profileImage} style={styles.avatar} />
       <View style={styles.infosContainer}>
-        <Text style={styles.nameClient}>
-          {firstname} {lastname}
-        </Text>
-        <Text>{address}</Text>
+        <Text style={styles.nameCraftsman}>{craftsmanName}</Text>
+        <Text>{craftsmanAddress}</Text>
         <Text>
-          {zip} {city}
+          {craftsmanZip} {craftsmanCity} {phoneNumber}
         </Text>
       </View>
     </View>
@@ -47,9 +45,9 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 10,
   },
-  nameClient: {
+  nameCraftsman: {
     fontWeight: "500",
   },
 });
 
-export default ClientContainer;
+export default CraftsmanContainer;
