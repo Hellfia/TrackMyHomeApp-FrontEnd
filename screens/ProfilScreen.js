@@ -5,7 +5,7 @@ import Input from "../components/Input";
 import PurpleButton from "../components/PurpleButton";
 import icon from "../assets/icon.png";
 import { useDispatch } from "react-redux";
-import { logout } from "../reducers/constructor";
+import { logout } from "../reducers/constructeur";
 
 export default function MonCompteScreen({ navigation }) {
   const dispatch = useDispatch();
