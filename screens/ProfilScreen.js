@@ -1,10 +1,9 @@
 import React from "react";
-import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../components/Input";
 import PurpleButton from "../components/PurpleButton";
 import icon from "../assets/icon.png";
-import { FontAwesomeIcon5 } from "@expo/vector-icons";
 
 export default function MonCompteScreen({ navigation }) {
   const handleEditProfile = () => {
@@ -33,17 +32,13 @@ export default function MonCompteScreen({ navigation }) {
           <Input placeholder="Email :" />
           <Input placeholder="Mot de pass : *******" />
         </View>
-        <PurpleButton text="Mes Intervenants" />
-        <PurpleButton text="Modifer" />
-
-        <TouchableOpacity style={styles.buttonLogout} onPress={handleLogout}>
-          <Text style={styles.buttonText}>Se déconnecter</Text>
-          <FontAwesomeIcon5
-            size={22}
-            //style={styles.icon}
-            name="fa-light fa-arrow-right-from-bracket"
-          />
-        </TouchableOpacity>
+        <PurpleButton text="Mes Intervenants" icon="user" />
+        <PurpleButton text="Modifier" />
+        <PurpleButton
+          text="Se déconnecter"
+          backgroundColor="#fe5900"
+          icon="door-open"
+        />
       </View>
     </SafeAreaView>
   );
