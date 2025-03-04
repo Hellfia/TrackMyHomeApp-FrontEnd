@@ -21,6 +21,7 @@ import MessagesScreen from "./screens/MessagesScreen";
 import ProfilScreen from "./screens/ProfilScreen";
 import ConnexionClientScreen from "./screens/ConnexionClientScreen";
 import ProAccCreation from "./screens/ProAccCreation";
+import IntervenantsScreen from "./screens/IntervenantsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -105,6 +106,11 @@ export default function App() {
                 options={{
                   headerShown: false,
                 }}
+              />
+              <Stack.Screen
+                name="Intervenants"
+                component={IntervenantsScreen}
+                options={{ headerShown: false }}
               />
             </Stack.Navigator>
           </NavigationContainer>
