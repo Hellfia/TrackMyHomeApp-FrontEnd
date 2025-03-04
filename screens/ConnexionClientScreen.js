@@ -62,7 +62,6 @@ export default function ConnexionClientScreen({ navigation }) {
           >
             Cliquez-ici
           </Text>
-          z
         </Text>
       </View>
     </SafeAreaView>
