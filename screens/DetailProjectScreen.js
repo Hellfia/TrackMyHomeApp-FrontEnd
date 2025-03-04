@@ -15,7 +15,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 
 export default function DetailProjectScreen({ navigation, route }) {
- 
   const [steps, setSteps] = useState([
     { id: "1", label: "Étude du terrain", status: "Terminé", image: null },
     { id: "2", label: "Fondations", status: "En cours", image: null },
@@ -115,12 +114,12 @@ export default function DetailProjectScreen({ navigation, route }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        // nom du client + du projet
+        {/* // nom du client + du projet */}
         <Text style={styles.ownerName}>Kevin</Text>
 
-        // carré d'image
+        {/* // carré d'image */}
         <View style={styles.imageContainer}>
-          // affiche les images
+          {/* // affiche les images */}
           {steps[currentStepIndex]?.image ? (
             <Image
               source={{ uri: steps[currentStepIndex].image }}
@@ -131,7 +130,7 @@ export default function DetailProjectScreen({ navigation, route }) {
           )}
         </View>
 
-        // listes des étapes
+        {/* // listes des étapes */}
         {steps.map((step, index) => (
           <View key={step.id} style={styles.stepRow}>
             <View style={styles.stepInfo}>
@@ -151,13 +150,13 @@ export default function DetailProjectScreen({ navigation, route }) {
           </View>
         ))}
 
-        // bouton pour les docs administratifs
+        {/* // bouton pour les docs administratifs */}
         <TouchableOpacity style={styles.docsButton}>
           <Text style={styles.docsButtonText}>Les documents administratif</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      // modale pour modif le status 
+      {/* // modale pour modif le status  */}
       <Modal
         animationType="slide"
         transparent={true}
