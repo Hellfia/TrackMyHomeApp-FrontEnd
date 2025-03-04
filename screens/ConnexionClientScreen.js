@@ -1,17 +1,17 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
   Image,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
 import Input from "../components/Input";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function ConnexionClientScreen({ navigation }) {
   return (
@@ -58,7 +58,7 @@ export default function ConnexionClientScreen({ navigation }) {
           Vous êtes un professionnel ?{" "}
           <Text
             style={styles.profLink}
-            OnPress={() => navigation.navigate("Connexion")}
+            onPress={() => navigation.navigate("Connexion")}
           >
             Cliquez-ici
           </Text>
