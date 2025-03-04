@@ -2,14 +2,26 @@ import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import avatar from "../assets/avatar.png";
 
-const ClientContainer = ({}) => {
+const ClientContainer = ({
+  firstname,
+  lastname,
+  address,
+  zip,
+  city,
+  profilePicture,
+}) => {
+  const profileImage = profilePicture ? { uri: profilePicture } : avatar;
   return (
     <View style={styles.generalContainer}>
-      <Image source={avatar} style={styles.avatar} />
+      <Image source={profileImage} style={styles.avatar} />
       <View style={styles.infosContainer}>
-        <Text style={styles.nameClient}>Nom Prenom</Text>
-        <Text style={styles.adressClient}>Adresse</Text>
-        <Text style={styles.zipCleint}>75000</Text>
+        <Text style={styles.nameClient}>
+          {firstname} {lastname}
+        </Text>
+        <Text>{address}</Text>
+        <Text>
+          {zip} {city}
+        </Text>
       </View>
     </View>
   );
