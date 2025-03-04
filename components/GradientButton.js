@@ -4,15 +4,15 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const GradientButton = ({ text, onPress }) => {
   return (
-    <TouchableOpacity style={[styles.buttonContainer]} onPress={onPress}>
-      <View style={[styles.shadowContainer]}>
+    <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
+      <View style={styles.shadowContainer}>
         <LinearGradient
           colors={["#8A2BE2", "#4B0082"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.button}
         >
-          <Text style={[styles.buttonText]}>{text}</Text>
+          <Text style={styles.buttonText}>{text}</Text>
         </LinearGradient>
       </View>
     </TouchableOpacity>
