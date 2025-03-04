@@ -8,8 +8,8 @@ import {
   View,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { login, logout } from "../reducers/user";
-import { useDispatch, useSelector } from "react-redux";
+import { login } from "../reducers/user";
+import { useDispatch } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
@@ -19,7 +19,6 @@ export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const dispatch = useDispatch();
-  const constructor = useSelector((state) => state.constructor.value);
 
   const handlePressConnexion = () => {
     navigation.navigate("MainTabs");
@@ -68,11 +67,13 @@ export default function ConnexionScreen({ navigation }) {
             <Input
               placeholder="Email"
               onChangeText={(e) => setSignInEmail(e.target.value)}
+              value={signInEmail}
             />
             <Input
               placeholder="Mot de passe"
               secureTextEntry
               onChangeText={(e) => setSignInPassword(e.target.value)}
+              value={signInPassword}
             />
           </View>
           <GradientButton
