@@ -7,8 +7,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { useState } from "react";
-import { login } from "../reducers/constructor";
+import { useState, useEffect } from "react";
+import { login } from "../reducers/constructeur";
 import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
@@ -19,7 +19,11 @@ export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const dispatch = useDispatch();
+  const constructeur = useSelector((state) => state.constructeur.value);
+  const client = useSelector((state) => state.client.value);
 
+  console.log("client :", client);
+  console.log("constructeurr : ", constructeur);
   const handlePressConnexion = () => {
     fetch("http://192.168.1.191:4000/constructors/signin", {
       method: "POST",
@@ -31,13 +35,19 @@ export default function ConnexionScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.result) {
+        console.log("Réponse de l'API :", data);
+        if (data.result === true) {
+          console.log("lol");
           dispatch(login({ email: signInEmail, token: data.token }));
+
           setSignInEmail("");
           setSignInPassword("");
+
+          navigation.navigate("MainTabs");
+        } else {
+          alert("Identifiants incorrects, veuillez réessayer.");
         }
       });
-    navigation.navigate("ProAccCreation");
   };
 
   const handlePressConnexionClient = () => {
