@@ -10,7 +10,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage"; // Updated
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore, persistReducer } from "redux-persist";
 import { Provider } from "react-redux";
-import constructor from "./reducers/constructor";
+import client from "./reducers/client";
+import constructeur from "./reducers/constructeur";
 
 // Import des écrans
 import ConnexionScreen from "./screens/ConnexionScreen";
@@ -24,8 +25,9 @@ import ProAccCreation from "./screens/ProAccCreation";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-const reducers = combineReducers({ constructor });
-const persistConfig = { key: "TrackMyHome", storage: AsyncStorage };
+
+const reducers = combineReducers({ client, constructeur });
+const persistConfig = { key: "TrackMyHome2", storage: AsyncStorage };
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
