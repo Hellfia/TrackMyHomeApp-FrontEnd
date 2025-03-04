@@ -13,8 +13,12 @@ import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
 
 export default function ConnexionScreen({ navigation }) {
-  const handlePress = () => {
+  const handlePressConnexion = () => {
     navigation.navigate("MainTabs");
+  };
+
+  const handlePressConnexionClient = () => {
+    navigation.navigate("ConnexionClient");
   };
 
   return (
@@ -53,15 +57,12 @@ export default function ConnexionScreen({ navigation }) {
               </LinearGradient>
             </View>
           </TouchableOpacity> */}
-          <GradientButton text="Se connecter" onPress={handlePress} />
+          <GradientButton text="Se connecter" onPress={handlePressConnexion} />
         </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
           Vous êtes un client ?{" "}
-          <Text
-            style={styles.profLink}
-            OnPress={() => navigation.navigate("ConnexionClientScreen")}
-          >
+          <Text style={styles.profLink} onPress={handlePressConnexionClient}>
             Cliquez-ici
           </Text>
         </Text>
