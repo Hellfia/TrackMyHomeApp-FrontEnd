@@ -37,22 +37,6 @@ export default function ConnexionScreen({ navigation }) {
             <Input placeholder="Email" />
             <Input placeholder="Mot de passe" secureTextEntry />
           </View>
-
-          {/* <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => navigation.navigate("MainTabs")}
-          >
-            <View style={styles.shadowContainer}>
-              <LinearGradient
-                colors={["#8A2BE2", "#4B0082"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>Se connecter</Text>
-              </LinearGradient>
-            </View>
-          </TouchableOpacity> */}
           <GradientButton text="Se connecter" onPress={handlePress} />
         </KeyboardAvoidingView>
 
@@ -98,27 +82,6 @@ const styles = StyleSheet.create({
 
     marginBottom: 0,
   },
-  // buttonContainer: {
-  //   width: "100%",
-  //   marginBottom: 20,
-  // },
-  // shadowContainer: {
-  //   borderRadius: 8,
-  //   shadowColor: "#000",
-  //   shadowOffset: { width: 0, height: 2 },
-  //   shadowOpacity: 0.5,
-  //   shadowRadius: 4,
-  // },
-  // button: {
-  //   borderRadius: 8,
-  //   paddingVertical: 14,
-  //   alignItems: "center",
-  // },
-  // buttonText: {
-  //   color: "#FFFFFF",
-  //   fontSize: 16,
-  //   fontWeight: "bold",
-  // },
   profText: {
     fontSize: 14,
     color: "#000000",

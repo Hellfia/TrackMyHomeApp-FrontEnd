@@ -2,29 +2,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const GradientButton = ({
-  text,
-  onPress,
-  colors = ["#8A2BE2", "#4B0082"],
-  start = { x: 0, y: 0 },
-  end = { x: 1, y: 1 },
-  buttonStyles = {},
-  textStyles = {},
-  shadowStyles = {},
-}) => {
+const GradientButton = ({ text, onPress }) => {
   return (
-    <TouchableOpacity
-      style={[styles.buttonContainer, buttonStyles]}
-      onPress={onPress}
-    >
-      <View style={[styles.shadowContainer, shadowStyles]}>
+    <TouchableOpacity style={[styles.buttonContainer]} onPress={onPress}>
+      <View style={[styles.shadowContainer]}>
         <LinearGradient
-          colors={colors}
-          start={start}
-          end={end}
+          colors={["#8A2BE2", "#4B0082"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={styles.button}
         >
-          <Text style={[styles.buttonText, textStyles]}>{text}</Text>
+          <Text style={[styles.buttonText]}>{text}</Text>
         </LinearGradient>
       </View>
     </TouchableOpacity>
