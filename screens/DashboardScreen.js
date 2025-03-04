@@ -29,7 +29,7 @@ export default function DashboardScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
-        // le header
+        {/* // le header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>DashBoard</Text>
           <TouchableOpacity
@@ -43,17 +43,17 @@ export default function DashboardScreen({ navigation }) {
             />
           </TouchableOpacity>
         </View>
-        // le logo ( a changer car moche dans un rond enfait)
+        {/* // le logo ( a changer car moche dans un rond enfait) */}
         <View style={styles.logoContainer}>
           {/*<Image
             style={styles.logoPlaceholder}
             source={require("../assets/logo.png")}
           />*/}
         </View>
-        // scoll seulement le container secondaire et laisse le haut de la page
-        propre
+        {/* // scoll seulement le container secondaire et laisse le haut de la page */}
+        {/* propre */}
         <ScrollView style={styles.content}>
-          // section pour le count du nombre de chantier
+          {/* // section pour le count du nombre de chantier */}
           <TouchableOpacity
             style={styles.section}
             onPress={() => navigation.navigate("Projet")}
@@ -63,7 +63,7 @@ export default function DashboardScreen({ navigation }) {
               Vous avez {chantierCount} chantiers en cours
             </Text>
           </TouchableOpacity>
-          //section des clients
+          {/* //section des clients */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Mes clients</Text>
             <View style={styles.clientsRow}>
@@ -83,15 +83,15 @@ export default function DashboardScreen({ navigation }) {
               ))}
             </View>
           </View>
-          // affiche les messages
+          {/* // affiche les messages */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Mes messages (0)</Text>
             <Text style={styles.sectionSubtitle}>
               Vous n'avez pas de nouveaux messages
             </Text>
           </View>
-          // section a rendre cliquable pour routert vers la page administratif
-          si on l'a fait
+          {/* // section a rendre cliquable pour routert vers la page administratif
+          si on l'a fait */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Mon administratif</Text>
             <Text style={styles.sectionSubtitle}>Mes documents</Text>

@@ -6,7 +6,7 @@ export default function MesIntervenants({ navigation }) {
     <SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.title}>Mes Intervenants</Text>
-        <PlusButton icon="plus" />
+        <PlusButton icon="plus" style={styles.floatingButton} />
       </View>
     </SafeAreaView>
   );
