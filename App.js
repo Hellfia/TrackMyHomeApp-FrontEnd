@@ -13,6 +13,7 @@ import ProjectsScreen from "./screens/ProjectsScreen";
 import DetailProjectScreen from "./screens/DetailProjectScreen";
 import MessagesScreen from "./screens/MessagesScreen";
 import ProfilScreen from "./screens/ProfilScreen";
+import ConnexionClientScreen from "./screens/ConnexionClientScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,6 +63,11 @@ export default function App() {
           <Stack.Screen
             name="Connexion"
             component={ConnexionScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ConnexionClient"
+            component={ConnexionClientScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

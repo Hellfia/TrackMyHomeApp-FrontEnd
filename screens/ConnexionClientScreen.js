@@ -13,7 +13,7 @@ import logo from "../assets/logo.webp";
 import Input from "../components/Input";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function ConnexionScreen({ navigation }) {
+export default function ConnexionClientScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
@@ -23,7 +23,9 @@ export default function ConnexionScreen({ navigation }) {
 
         <Text style={styles.title}>TrackMyHome</Text>
 
-        <Text style={styles.subtitle}>Espace Professionnel</Text>
+        <Text style={styles.subtitle}>
+          Suivez l'avancement de votre projet !
+        </Text>
 
         <KeyboardAvoidingView
           style={styles.keyboardContainer}
@@ -53,13 +55,14 @@ export default function ConnexionScreen({ navigation }) {
         </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
-          Vous êtes un client ?{" "}
+          Vous êtes un professionnel ?{" "}
           <Text
             style={styles.profLink}
-            OnPress={() => navigation.navigate("ConnexionClientScreen")}
+            OnPress={() => navigation.navigate("Connexion")}
           >
             Cliquez-ici
           </Text>
+          z
         </Text>
       </View>
     </SafeAreaView>
