@@ -11,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
-import PurpleButton from "../components/PurpleButton";
 
 export default function ConnexionScreen({ navigation }) {
   const handlePressConnexion = () => {
@@ -20,10 +19,6 @@ export default function ConnexionScreen({ navigation }) {
 
   const handlePressConnexionClient = () => {
     console.log("test");
-  };
-
-  const handletest = () => {
-    navigation.navigate("ConnexionClient");
   };
 
   return (
@@ -47,7 +42,6 @@ export default function ConnexionScreen({ navigation }) {
             <Input placeholder="Mot de passe" secureTextEntry />
           </View>
           <GradientButton text="Se connecter" onPress={handlePressConnexion} />
-          <PurpleButton text="test" onPress={handletest} />
         </KeyboardAvoidingView>
 
         <Text style={styles.profText}>
