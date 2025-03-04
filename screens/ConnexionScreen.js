@@ -7,6 +7,9 @@ import {
   Text,
   View,
 } from "react-native";
+import { useEffect, useState } from "react";
+import { login, logout } from "../reducers/user";
+import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
@@ -14,6 +17,13 @@ import Input from "../components/Input";
 import PurpleButton from "../components/PurpleButton";
 
 export default function ConnexionScreen({ navigation }) {
+  const [signUpEmail, setSignUpEmail] = useState("");
+  const [signUpPassword, setSignUpPassword] = useState("");
+  const [signInEmail, setSignInEmail] = useState("");
+  const [signInPassword, setSignInPassword] = useState("");
+  const dispatch = useDispatch();
+  const constructor = useSelector((state) => state.constructor.value);
+
   const handlePressConnexion = () => {
     navigation.navigate("MainTabs");
   };
@@ -25,6 +35,29 @@ export default function ConnexionScreen({ navigation }) {
   const handletest = () => {
     navigation.navigate("ConnexionClient");
   };
+
+  const handleConnexion = () => {
+    fetch("http://localhost:4000/constructor/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: signInEmail,
+        password: signInPassword,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          dispatch(login({ email: signInEmail, token: data.token }));
+          setSignInEmail("");
+          setSignInPassword("");
+          setIsModalVisible(false);
+        }
+      });
+  };
+  };
+
+
 
   return (
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
