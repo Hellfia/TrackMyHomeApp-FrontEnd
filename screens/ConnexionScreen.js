@@ -7,9 +7,9 @@ import {
   Text,
   View,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { login } from "../reducers/constructor";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
@@ -19,6 +19,7 @@ export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const dispatch = useDispatch();
+  const constructor = useSelector((state) => state.constructor.value);
 
   const handlePressConnexion = () => {
     navigation.navigate("MainTabs");
