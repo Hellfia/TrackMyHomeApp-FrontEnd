@@ -5,6 +5,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Updated import
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore, persistReducer } from "redux-persist";
+import { Provider } from "react-redux";
+import constructor from "./reducers/constructor";
 
 // Import des écrans
 import ConnexionScreen from "./screens/ConnexionScreen";
@@ -14,9 +20,20 @@ import DetailProjectScreen from "./screens/DetailProjectScreen";
 import MessagesScreen from "./screens/MessagesScreen";
 import ProfilScreen from "./screens/ProfilScreen";
 import ConnexionClientScreen from "./screens/ConnexionClientScreen";
+import ProAccCreation from "./screens/ProAccCreation";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const reducers = combineReducers({ constructor });
+const persistConfig = { key: "TrackMyHome", storage: AsyncStorage };
+
+const store = configureStore({
+  reducer: persistReducer(persistConfig, reducers),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
+});
+
+const persistor = persistStore(store);
 
 function MainTabs() {
   return (
@@ -57,33 +74,42 @@ function MainTabs() {
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Connexion">
-          <Stack.Screen
-            name="Connexion"
-            component={ConnexionScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ConnexionClient"
-            component={ConnexionClientScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="MainTabs"
-            component={MainTabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="DetailProject"
-            component={DetailProjectScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Connexion">
+              <Stack.Screen
+                name="Connexion"
+                component={ConnexionScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="ConnexionClient"
+                component={ConnexionClientScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="ProAccCreation"
+                component={ProAccCreation}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="MainTabs"
+                component={MainTabs}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="DetailProject"
+                component={DetailProjectScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </PersistGate>
+    </Provider>
   );
 }

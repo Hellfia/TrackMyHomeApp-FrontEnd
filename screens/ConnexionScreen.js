@@ -7,18 +7,45 @@ import {
   Text,
   View,
 } from "react-native";
+import { useState } from "react";
+import { login } from "../reducers/constructor";
+import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
 
 export default function ConnexionScreen({ navigation }) {
+  const [signInEmail, setSignInEmail] = useState("");
+  const [signInPassword, setSignInPassword] = useState("");
+  const dispatch = useDispatch();
+
   const handlePressConnexion = () => {
-    navigation.navigate("MainTabs");
+    fetch("http://192.168.1.191:4000/constructors/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: signInEmail,
+        password: signInPassword,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          dispatch(login({ email: signInEmail, token: data.token }));
+          setSignInEmail("");
+          setSignInPassword("");
+        }
+      });
+    navigation.navigate("ProAccCreation");
   };
 
   const handlePressConnexionClient = () => {
-    console.log("test");
+    navigation.navigate("ConnexionClient");
+  };
+
+  const handleProAccCreation = () => {
+    navigation.navigate("ProAccCreation");
   };
 
   return (
@@ -38,8 +65,16 @@ export default function ConnexionScreen({ navigation }) {
           keyboardVerticalOffset={80}
         >
           <View style={styles.inputContainer}>
-            <Input placeholder="Email" />
-            <Input placeholder="Mot de passe" secureTextEntry />
+            <Input
+              placeholder="Email"
+              onChangeText={(value) => setSignInEmail(value)}
+              value={signInEmail}
+            />
+            <Input
+              placeholder="Mot de passe"
+              onChangeText={(value) => setSignInPassword(value)}
+              value={signInPassword}
+            />
           </View>
           <GradientButton text="Se connecter" onPress={handlePressConnexion} />
         </KeyboardAvoidingView>
@@ -48,6 +83,12 @@ export default function ConnexionScreen({ navigation }) {
           Vous êtes un client ?{" "}
           <Text style={styles.profLink} onPress={handlePressConnexionClient}>
             Cliquez-ici
+          </Text>
+        </Text>
+        <Text style={styles.profText}>
+          Vous n'avez pas de compte ?{" "}
+          <Text style={styles.profLink} onPress={handleProAccCreation}>
+            Créez-en un ici
           </Text>
         </Text>
       </View>
@@ -86,7 +127,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
-
     marginBottom: 0,
   },
   profText: {

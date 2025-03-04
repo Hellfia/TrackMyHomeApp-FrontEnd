@@ -58,7 +58,7 @@ export default function ConnexionClientScreen({ navigation }) {
           Vous êtes un professionnel ?{" "}
           <Text
             style={styles.profLink}
-            OnPress={() => navigation.navigate("Connexion")}
+            onPress={() => navigation.navigate("Connexion")}
           >
             Cliquez-ici
           </Text>
