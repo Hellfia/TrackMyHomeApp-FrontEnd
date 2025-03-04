@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const PlusButton = ({
   icon,
@@ -20,7 +20,6 @@ const PlusButton = ({
             style={styles.icon}
           />
         )}
-        <Text style={styles.buttonText}>{text}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -28,18 +27,32 @@ const PlusButton = ({
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    top: 700,
     position: "absolute",
+    bottom: 20,
     right: 20,
-    width: 70,
-    paddingLeft: 10,
-    marginLeft: 20,
-    paddingRight: 5,
+    zIndex: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
     alignItems: "center",
-    paddingTop: 15,
-    borderRadius: "50%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  icon: {
+    alignSelf: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    marginTop: 5,
+    fontSize: 12,
+    textAlign: "center",
   },
 });
 

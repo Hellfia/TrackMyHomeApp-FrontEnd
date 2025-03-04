@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+=======
 import {
   View,
   StyleSheet,
@@ -11,7 +15,6 @@ import { useSelector } from "react-redux";
 import CraftsmanContainer from "../components/CraftsmanContainer";
 import globalStyles from "../styles/globalStyles";
 import { useEffect, useState } from "react";
-
 export default function MesIntervenants({ navigation }) {
   const [craftsman, setCraftsman] = useState([]);
 
@@ -29,7 +32,6 @@ export default function MesIntervenants({ navigation }) {
     <SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.title}>Mes Intervenants</Text>
-        <PlusButton icon="plus" style={styles.floatingButton} />
       </View>
       <View style={styles.clientsContainer}>
         <Text style={[globalStyles.subTitle, styles.subTitleText]}>

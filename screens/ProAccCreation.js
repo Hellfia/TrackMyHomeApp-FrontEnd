@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import {
+  Image,
   SafeAreaView,
   ScrollView,
-  View,
-  Text,
   StyleSheet,
-  TextInput,
+  Text,
   TouchableOpacity,
-  Image,
+  View,
 } from "react-native";
-import PurpleButton from "../components/PurpleButton";
-import Input from "../components/Input";
-import GradientButton from "../components/GradientButton";
-import { login } from "../reducers/constructeur";
 import { useDispatch } from "react-redux";
+import GradientButton from "../components/GradientButton";
+import Input from "../components/Input";
+import { login } from "../reducers/constructeur";
 
 export default function ProAccCreationScreen({ navigation }) {
   const [companyName, setCompanyName] = useState("");

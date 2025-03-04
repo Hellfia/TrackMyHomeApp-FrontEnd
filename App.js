@@ -1,28 +1,29 @@
-import React from "react";
+import { FontAwesome5 } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Updated import
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Updated import
-import { PersistGate } from "redux-persist/integration/react";
-import { persistStore, persistReducer } from "redux-persist";
 import { Provider } from "react-redux";
+import { persistReducer, persistStore } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
 import client from "./reducers/client";
 import constructeur from "./reducers/constructeur";
 
 // Import des écrans
+import AddProjectScreen from "./screens/AddProjectScreen";
+import ConnexionClientScreen from "./screens/ConnexionClientScreen";
 import ConnexionScreen from "./screens/ConnexionScreen";
 import DashboardScreen from "./screens/DashboardScreen";
-import ProjectsScreen from "./screens/ProjectsScreen";
 import DetailProjectScreen from "./screens/DetailProjectScreen";
-import MessagesScreen from "./screens/MessagesScreen";
-import ProfilScreen from "./screens/ProfilScreen";
-import ConnexionClientScreen from "./screens/ConnexionClientScreen";
-import ProAccCreation from "./screens/ProAccCreation";
 import IntervenantsScreen from "./screens/IntervenantsScreen";
+import MessagesScreen from "./screens/MessagesScreen";
+import ProAccCreation from "./screens/ProAccCreation";
+import ProfilScreen from "./screens/ProfilScreen";
+import ProjectsScreen from "./screens/ProjectsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -112,6 +113,11 @@ export default function App() {
               <Stack.Screen
                 name="Intervenants"
                 component={IntervenantsScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="AddProject"
+                component={AddProjectScreen}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
