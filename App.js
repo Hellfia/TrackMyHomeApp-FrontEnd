@@ -22,6 +22,8 @@ import DetailProjectScreen from "./screens/DetailProjectScreen";
 import IntervenantsScreen from "./screens/IntervenantsScreen";
 import MessagesScreen from "./screens/MessagesScreen";
 import ProAccCreation from "./screens/ProAccCreation";
+import ProfilScreen from "./screens/ProfilScreen";
+import ProjectsScreen from "./screens/ProjectsScreen";
 
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
 const Stack = createNativeStackNavigator();
@@ -112,6 +114,11 @@ export default function App() {
               <Stack.Screen
                 name="Intervenants"
                 component={IntervenantsScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="AddProject"
+                component={AddProjectScreen}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
