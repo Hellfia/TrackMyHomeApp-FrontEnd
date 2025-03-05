@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   clientsContainer: {
     width: "100%",
     flex: 1,
-    paddingBottom: 5,
+    marginBottom: 10,
   },
   subTitleText: {
     textAlign: "left",
