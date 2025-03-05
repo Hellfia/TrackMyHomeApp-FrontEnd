@@ -5,6 +5,7 @@ const globalStyles = StyleSheet.create({
     color: "#362173",
     fontSize: 24,
     fontWeight: 600,
+    textAlign: "center",
   },
   subTitle: {
     fontSize: 18,

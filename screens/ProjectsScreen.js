@@ -28,7 +28,7 @@ export default function ProjectsScreen({ navigation }) {
 
   useEffect(() => {
     const constructorId = "67c5906967201a0f704367dc";
-    fetch(`http://192.168.1.146:4000/projects/clients/${constructorId}`)
+    fetch(`http://192.168.1.191:4000/projects/clients/${constructorId}`)
       .then((res) => res.json())
       .then((data) => {
         setClients(data.data);
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   clientsContainer: {
     width: "100%",
     flex: 1,
-    paddingBottom: 5,
+    marginBottom: 10,
   },
   subTitleText: {
     textAlign: "left",
