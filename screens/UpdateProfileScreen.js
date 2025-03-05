@@ -20,11 +20,11 @@ export default function UpdateProfileScreen() {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    if (user.constructorName) {
-      setConstructorName(user.constructorName);
-      setConstructorSiret(user.constructorSiret);
-      setEmail(user.email);
-      setPassword(user.password);
+    if (constructeur.constructorName) {
+      setConstructorName(constructeur.constructorName);
+      setConstructorSiret(constructeur.constructorSiret);
+      setEmail(constructeur.email);
+      setPassword(constructeur.password);
     }
   }, [user]);
 

@@ -22,7 +22,7 @@ import DetailProjectScreen from "./screens/DetailProjectScreen";
 import IntervenantsScreen from "./screens/IntervenantsScreen";
 import MessagesScreen from "./screens/MessagesScreen";
 import ProAccCreation from "./screens/ProAccCreation";
-import IntervenantsScreen from "./screens/IntervenantsScreen";
+
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
