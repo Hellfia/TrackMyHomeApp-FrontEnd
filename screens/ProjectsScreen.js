@@ -28,7 +28,9 @@ export default function ProjectsScreen({ navigation }) {
 
   useEffect(() => {
     const constructorId = "67c5906967201a0f704367dc";
-    fetch(`http://192.168.1.191:4000/projects/clients/${constructorId}`)
+    fetch(
+      `https://track-my-home-backend.vercel.app/projects/clients/${constructorId}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setClients(data.data);

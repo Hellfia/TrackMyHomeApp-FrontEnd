@@ -23,7 +23,7 @@ export default function AddProjectsScreen({ navigation }) {
   const constructorId = "67c5906967201a0f704367dc";
 
   const handlePress = () => {
-    fetch("http://192.168.1.146:4000/projects", {
+    fetch("https://track-my-home-backend.vercel.app/projects", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
