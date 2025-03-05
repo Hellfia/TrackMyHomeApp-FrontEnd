@@ -24,8 +24,8 @@ import MessagesScreen from "./screens/MessagesScreen";
 import ProAccCreation from "./screens/ProAccCreation";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectsScreen";
-
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
