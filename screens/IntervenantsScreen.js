@@ -18,7 +18,7 @@ export default function MesIntervenants({ navigation }) {
   console.log("craftsman", craftsman);
   useEffect(() => {
     const token = constructeur.token;
-    fetch(`http://192.168.1.191:4000/craftsmen/${token}`)
+    fetch(`http://192.168.0.222:4000/craftsmen/${token}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("dataFecthed", data);
