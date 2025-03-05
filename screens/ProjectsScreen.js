@@ -11,6 +11,7 @@ export default function ProjectsScreen({ navigation }) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [clients, setClients] = useState([]);
+  const [clientLocations, setClientLocations] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -28,12 +29,61 @@ export default function ProjectsScreen({ navigation }) {
 
   useEffect(() => {
     const constructorId = "67c5906967201a0f704367dc";
-    fetch(`http://192.168.1.191:4000/projects/clients/${constructorId}`)
+    fetch(`http://192.168.1.146:4000/projects/clients/${constructorId}`)
       .then((res) => res.json())
       .then((data) => {
         setClients(data.data);
+        fetchClientLocations(data.data);
       });
   }, []);
+
+  // fonction qui appel le backend pour récupéré la géolocalisation d'une adresse client
+  const fetchClientLocations = (clients) => {
+    const locationPromises = clients
+      .filter((clientItem) => clientItem.client !== null)
+      .map((clientItem) => {
+        const address = `${clientItem.client.constructionAdress}, ${clientItem.client.constructionZipCode}, ${clientItem.client.constructionCity}`;
+
+        return fetch("http://192.168.1.146:4000/projects/geocode", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ address }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.result) {
+              return {
+                id: clientItem._id,
+                name: `${clientItem.client.firstname} ${clientItem.client.lastname}`,
+                coordinates: data.location,
+              };
+            }
+            return null;
+          })
+          .catch((error) => {
+            console.error(
+              "Erreur lors de la récupération de l'adresse :",
+              error
+            );
+            return null;
+          });
+      });
+
+    // Attendre toutes les promesses
+    Promise.all(locationPromises)
+      .then((locations) => {
+        const validLocations = locations.filter((loc) => loc !== null);
+        setClientLocations(validLocations); // Met à jour l'état avec les localisations valides
+      })
+      .catch((error) =>
+        console.error(
+          "Erreur lors de la mise à jour des localisations :",
+          error
+        )
+      );
+  };
 
   const defaultRegion = {
     latitude: 46.603354,
@@ -46,8 +96,8 @@ export default function ProjectsScreen({ navigation }) {
     ? {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 1,
-        longitudeDelta: 1,
+        latitudeDelta: 0.8,
+        longitudeDelta: 0.8,
       }
     : defaultRegion;
 
@@ -69,9 +119,17 @@ export default function ProjectsScreen({ navigation }) {
                   latitude: location.coords.latitude,
                   longitude: location.coords.longitude,
                 }}
-                title="my position"
+                title="Ma position"
               />
             )}
+            {clientLocations.map((client) => (
+              <Marker
+                key={client.id}
+                coordinate={client.coordinates}
+                title={client.name}
+                pinColor="purple"
+              />
+            ))}
           </MapView>
         </View>
       )}
