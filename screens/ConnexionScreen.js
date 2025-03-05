@@ -19,7 +19,9 @@ export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const dispatch = useDispatch();
-  const ipAdress = process.env.IP_ADRESS;
+  
+  
+  
   const handlePressConnexion = () => {
     fetch("http://192.168.1.191:4000/constructors/signin", {
       method: "POST",

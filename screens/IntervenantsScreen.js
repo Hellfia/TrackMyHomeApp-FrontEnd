@@ -13,18 +13,21 @@ import globalStyles from "../styles/globalStyles";
 import { useEffect, useState } from "react";
 
 export default function MesIntervenants({ navigation }) {
+  const constructeur = useSelector((state) => state.constructeur.value);
   const [craftsman, setCraftsman] = useState([]);
-
+  console.log("craftsman", craftsman);
   useEffect(() => {
-    const constructorId = "67c72424a42cfad1eaae00bc";
-    fetch(`http://192.168.1.191:4000/projects/craftsmen/${constructorId}`)
+    const token = constructeur.token;
+    fetch(`http://192.168.1.191:4000/craftsmen/${token}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("dataFecthed", data);
+        // data est déjà un tableau d'artisans
         setCraftsman(data.data);
-      });
+      })
+      .catch((error) => console.error("Erreur lors du fetch:", error));
   }, []);
-
+  console.log(constructeur);
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -38,8 +41,8 @@ export default function MesIntervenants({ navigation }) {
                 craftsmanLogo={craftsmanItem.craftsmanLogo}
                 craftsmanAddress={craftsmanItem.craftsmanAddress}
                 craftsmanZip={craftsmanItem.craftsmanZip}
-                craf
-              ></CraftsmanContainer>
+                craftsmanCity={craftsmanItem.craftsmanCity}
+              />
             ))}
           </ScrollView>
         </View>
