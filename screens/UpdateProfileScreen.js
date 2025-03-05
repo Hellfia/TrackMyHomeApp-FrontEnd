@@ -10,12 +10,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { updateProfile } from "../reducers/constructeur";
 import Input from "../components/Input";
+import GradientButton from "../components/GradientButton";
 
 export default function UpdateProfileScreen() {
   const dispatch = useDispatch();
 
   const constructeur = useSelector((state) => state.constructeur.value);
-  console.log(constructeur);
+
   const [constructorName, setConstructorName] = useState("");
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
@@ -72,9 +73,10 @@ export default function UpdateProfileScreen() {
         autoCorrect={false}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleUpdateProfile}>
-        <Text style={styles.buttonText}>Mettre à jour</Text>
-      </TouchableOpacity>
+      <GradientButton
+        onPress={handleUpdateProfile}
+        text="Mettre à jour"
+      ></GradientButton>
     </View>
   );
 }
