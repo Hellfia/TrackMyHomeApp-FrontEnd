@@ -1,7 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: { token: null, email: null },
+  value: {
+    token: null,
+    email: null,
+    constructorName: null,
+    constructorSiret: null,
+    password: null,
+  },
 };
 
 export const constructeurSlice = createSlice({

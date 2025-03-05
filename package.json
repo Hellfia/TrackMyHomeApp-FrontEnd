@@ -16,6 +16,7 @@
     "@react-navigation/native-stack": "6",
     "@reduxjs/toolkit": "^2.6.0",
     "deprecated-react-native-prop-types": "^5.0.0",
+    "dotenv": "^16.4.7",
     "expo": "~52.0.36",
     "expo-image-picker": "~16.0.6",
     "expo-linear-gradient": "^14.0.2",
