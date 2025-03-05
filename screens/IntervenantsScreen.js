@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import CraftsmanContainer from "../components/CraftsmanContainer";
 import globalStyles from "../styles/globalStyles";
 import { useEffect, useState } from "react";
+
 export default function MesIntervenants({ navigation }) {
   const [craftsman, setCraftsman] = useState([]);
 
@@ -55,6 +56,7 @@ export default function MesIntervenants({ navigation }) {
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   title: {
     fontSize: 24,

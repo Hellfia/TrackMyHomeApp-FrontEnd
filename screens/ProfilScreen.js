@@ -5,13 +5,15 @@ import Input from "../components/Input";
 import PurpleButton from "../components/PurpleButton";
 import icon from "../assets/icon.png";
 import { useDispatch } from "react-redux";
-import { logout } from "../reducers/constructeur";
+import { logout, updateProfile } from "../reducers/constructeur";
 
 export default function MonCompteScreen({ navigation }) {
   const dispatch = useDispatch();
 
+  // pour édite le profil
   const handleEditProfile = () => {
-    // pour édite le profil
+    dispatch(updateProfile());
+    navigation.navigate("UpdateProfile");
   };
   //pour se déconnecter
   const handleLogout = () => {
@@ -41,7 +43,7 @@ export default function MonCompteScreen({ navigation }) {
           icon="user"
           onPress={handlePress}
         />
-        <PurpleButton text="Modifier" />
+        <PurpleButton text="Modifier" onPress={() => handleEditProfile()} />
         <PurpleButton
           onPress={() => handleLogout()}
           text="Se déconnecter"

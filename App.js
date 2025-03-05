@@ -22,9 +22,8 @@ import DetailProjectScreen from "./screens/DetailProjectScreen";
 import IntervenantsScreen from "./screens/IntervenantsScreen";
 import MessagesScreen from "./screens/MessagesScreen";
 import ProAccCreation from "./screens/ProAccCreation";
-import ProfilScreen from "./screens/ProfilScreen";
-import ProjectsScreen from "./screens/ProjectsScreen";
 
+import UpdateProfileScreen from "./screens/UpdateProfileScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -116,8 +115,8 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="AddProject"
-                component={AddProjectScreen}
+                name="UpdateProfile"
+                component={UpdateProfileScreen}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
