@@ -10,13 +10,15 @@ export default function UpdateProfileScreen() {
   const dispatch = useDispatch();
 
   const constructeur = useSelector((state) => state.constructeur.value);
-
+  // console.log(constructeur);
+  // const token = "RpXgY_HBiAWaWokmkmy1scU5-EdZwZeu";
   const [constructorName, setConstructorName] = useState("");
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleUpdateProfile = () => {
+    const token = constructeur.token;
     fetch(`http://192.168.0.222:4000/constructors/${token}`, {
       method: "PUT",
       header: { "content-type": "application/json" },
