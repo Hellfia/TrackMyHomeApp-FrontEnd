@@ -4,9 +4,10 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ClientContainer from "../components/ClientContainer";
+import PlusButton from "../components/PlusButton";
 import globalStyles from "../styles/globalStyles";
 
-export default function ProjectsScreen() {
+export default function ProjectsScreen({ navigation }) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [clients, setClients] = useState([]);
@@ -49,6 +50,10 @@ export default function ProjectsScreen() {
         longitudeDelta: 1,
       }
     : defaultRegion;
+
+  const handlePress = () => {
+    navigation.navigate("AddProject");
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
@@ -94,6 +99,8 @@ export default function ProjectsScreen() {
           )}
         </ScrollView>
       </View>
+
+      <PlusButton style={styles.plusButton} onPress={handlePress} icon="plus" />
     </SafeAreaView>
   );
 }
@@ -130,5 +137,11 @@ const styles = StyleSheet.create({
     textAlign: "left",
     paddingLeft: 25,
     marginBottom: 15,
+  },
+  plusButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    zIndex: 10,
   },
 });

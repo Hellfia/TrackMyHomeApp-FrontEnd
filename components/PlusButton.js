@@ -1,59 +1,6 @@
-// import { FontAwesome5 } from "@expo/vector-icons";
-// import React from "react";
-// import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-// const PlusButton = ({ icon, text, onPress, backgroundColor = "#FE5900" }) => {
-//   return (
-//     <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-//       <View style={[styles.button, { backgroundColor }]}>
-//         {icon && (
-//           <FontAwesome5
-//             name={icon}
-//             size="22"
-//             color="#FFFFFF"
-//             style={styles.icon}
-//           />
-//         )}
-//         <Text style={styles.buttonText}>{text}</Text>
-//       </View>
-//     </TouchableOpacity>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   buttonContainer: {
-//     width: "15%",
-//     marginBottom: 20,
-//     borderRadius: "50%",
-//     marginLeft: 30,
-//   },
-//   button: {
-//     flexDirection: "row",
-//     alignItems: "left",
-//     justifyContent: "center",
-//     borderRadius: 8,
-//     paddingVertical: 14,
-//   },
-//   icon: { alignItems: "center" },
-
-//   buttonText: {
-//     color: "#FFFFFF",
-//     fontSize: 16,
-//     fontWeight: "500",
-//   },
-//   floatingButton: {
-//     position: "absolute",
-//     bottom: 30,
-//     right: 16,
-//     zIndex: 999, // S'assurer que le bouton flotte au-dessus du contenu
-//   },
-// });
-
-// export default PlusButton;
-
 import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const PlusButton = ({
   icon,
@@ -73,7 +20,6 @@ const PlusButton = ({
             style={styles.icon}
           />
         )}
-        <Text style={styles.buttonText}>{text}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -81,15 +27,32 @@ const PlusButton = ({
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    width: 70,
-    paddingLeft: 10,
-    marginLeft: 20,
-    paddingRight: 5,
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    zIndex: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
     alignItems: "center",
-    paddingTop: 15,
-    borderRadius: "50%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  icon: {
+    alignSelf: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    marginTop: 5,
+    fontSize: 12,
+    textAlign: "center",
   },
 });
 
