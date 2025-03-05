@@ -12,7 +12,6 @@ export default function MonCompteScreen({ navigation }) {
 
   // pour édite le profil
   const handleEditProfile = () => {
-    dispatch(updateProfile());
     navigation.navigate("UpdateProfile");
   };
   //pour se déconnecter
