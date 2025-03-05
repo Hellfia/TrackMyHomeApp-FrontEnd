@@ -48,7 +48,10 @@ export default function MesIntervenants({ navigation }) {
         </View>
       </View>
       <View style={styles.plusButton}></View>
-      <PlusButton icon="plus"></PlusButton>
+      <PlusButton
+        icon="plus"
+        onPress={() => navigation.navigate("")}
+      ></PlusButton>
     </View>
   );
 }
