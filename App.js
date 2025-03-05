@@ -23,7 +23,7 @@ import ProfilScreen from "./screens/ProfilScreen";
 import ConnexionClientScreen from "./screens/ConnexionClientScreen";
 import ProAccCreation from "./screens/ProAccCreation";
 import IntervenantsScreen from "./screens/IntervenantsScreen";
-
+import UpdateProfileScreen from "./screens/UpdateProfileScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -112,6 +112,11 @@ export default function App() {
               <Stack.Screen
                 name="Intervenants"
                 component={IntervenantsScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="UpdateProfile"
+                component={UpdateProfileScreen}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>

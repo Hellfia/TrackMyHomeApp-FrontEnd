@@ -16,8 +16,14 @@ export const constructeurSlice = createSlice({
       state.value.token = null;
       state.value.email = null;
     },
+    updateProfile: (state, action) => {
+      state.value.constructorName = action.payload.constructorName;
+      state.value.constructorSiret = action.payload.constructorSiret;
+      state.value.email = action.payload.email;
+      state.value.password = action.payload.password;
+    },
   },
 });
 
-export const { login, logout } = constructeurSlice.actions;
+export const { login, logout, updateProfile } = constructeurSlice.actions;
 export default constructeurSlice.reducer;
