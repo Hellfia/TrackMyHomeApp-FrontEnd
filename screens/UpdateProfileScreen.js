@@ -7,34 +7,27 @@ import {
   StyleSheet,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+
 import { updateProfile } from "../reducers/constructeur";
+import Input from "../components/Input";
 
 export default function UpdateProfileScreen() {
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.constructeur.value);
-
+  const constructeur = useSelector((state) => state.constructeur.value);
+  console.log(constructeur);
   const [constructorName, setConstructorName] = useState("");
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (constructeur.constructorName) {
-      setConstructorName(constructeur.constructorName);
-      setConstructorSiret(constructeur.constructorSiret);
-      setEmail(constructeur.email);
-      setPassword(constructeur.password);
-    }
-  }, [user]);
-
   const handleUpdateProfile = () => {
     dispatch(
       updateProfile({
-        constructorName,
-        constructorSiret,
-        email,
-        password,
+        constructorName: constructorName,
+        constructorSiret: constructorSiret,
+        email: email,
+        password: password,
       })
     );
   };
@@ -43,33 +36,40 @@ export default function UpdateProfileScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Modifier Profil</Text>
 
-      <TextInput
-        style={styles.input}
+      <Input
+        style={styles.inputText}
         placeholder="Nom de l'entreprise"
         value={constructorName}
-        onChangeText={setConstructorName}
+        onChangeText={(value) => setConstructorName(value)}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Numéro de SIRET"
+      <Input
+        style={styles.inputText}
+        placeholder="Siret de l'entreprise"
         value={constructorSiret}
-        onChangeText={setConstructorSiret}
+        onChangeText={(value) => setConstructorSiret(value)}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
 
-      <TextInput
-        style={styles.input}
+      <Input
+        style={styles.inputText}
         placeholder="Email"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(value) => setEmail(value)}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Mot de passe"
-        secureTextEntry
+      <Input
+        style={styles.inputText}
+        placeholder="Password : *******"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(value) => setPassword(value)}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleUpdateProfile}>
