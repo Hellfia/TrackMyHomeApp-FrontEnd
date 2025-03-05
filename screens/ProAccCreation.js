@@ -14,19 +14,19 @@ import Input from "../components/Input";
 import { login } from "../reducers/constructeur";
 
 export default function ProAccCreationScreen({ navigation }) {
-  const [companyName, setCompanyName] = useState("");
-  const [siret, setSiret] = useState("");
+  const [constructorName, setConstructorName] = useState("");
+  const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
 
   const handleSignup = () => {
-    fetch("http://192.168.0.222:4000/constructors/signup", {
+    fetch("http://192.168.1.191:4000/constructors/signup", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        companyName: companyName,
-        siret: siret,
+        constructorName: constructorName,
+        constructorSiret: constructorSiret,
         email: email,
         password: password,
       }),
@@ -37,9 +37,10 @@ export default function ProAccCreationScreen({ navigation }) {
         if (data.result === true) {
           console.log("lol");
           dispatch(login({ email: email, token: data.token }));
+          setConstructorName("");
           setEmail("");
           setPassword("");
-          setSiret("");
+          setConstructorSiret("");
           navigation.replace("MainTabs");
           console.log("fini");
         }
@@ -57,14 +58,14 @@ export default function ProAccCreationScreen({ navigation }) {
         <Input
           style={styles.input}
           placeholder="Nom de l'entreprise"
-          value={companyName}
-          onChangeText={setCompanyName}
+          value={constructorName}
+          onChangeText={setConstructorName}
         />
         <Input
           style={styles.input}
           placeholder="Siret de l'entreprise"
-          value={siret}
-          onChangeText={setSiret}
+          value={constructorSiret}
+          onChangeText={setConstructorSiret}
         />
         <Input
           style={styles.input}

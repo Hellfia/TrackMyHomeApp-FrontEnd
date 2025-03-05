@@ -21,7 +21,7 @@ export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handlePressConnexion = () => {
-    fetch("http://192.168.0.222:4000/constructors/signin", {
+    fetch("https://track-my-home-backend.vercel.app/constructors/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
