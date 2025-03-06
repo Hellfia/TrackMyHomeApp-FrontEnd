@@ -46,7 +46,7 @@ export default function CreatCraftsmanScreen({ navigation }) {
 
     console.log("Payload envoyé :", payload);
 
-    fetch("http://192.168.1.146:4000/craftsmen", {
+    fetch("http://192.168.1.191:4000/craftsmen", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

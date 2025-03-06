@@ -22,7 +22,7 @@ export default function UpdateProfileScreen({ navigation }) {
   const token = constructeur.token;
 
   const handleUpdateProfile = () => {
-    fetch(`http://192.168.1.146:4000/constructors/${token}`, {
+    fetch(`http://192.168.1.191:4000/constructors/${token}`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

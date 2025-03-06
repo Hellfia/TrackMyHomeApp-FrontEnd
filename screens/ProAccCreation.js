@@ -13,7 +13,7 @@ import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
 import { login } from "../reducers/constructeur";
 
-export default function ProAccCreationScreen({ navigation }) {
+export default function ProAccCreation({ navigation }) {
   const [constructorName, setConstructorName] = useState("");
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
@@ -21,7 +21,7 @@ export default function ProAccCreationScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handleSignup = () => {
-    fetch("http://192.168.1.146:4000/constructors/signup", {
+    fetch("http://192.168.1.191:4000/constructors/signup", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

@@ -34,7 +34,7 @@ export default function ProfilScreen({ navigation }) {
   // fetch le token pour retrouver les informations du constructeur sur le screen profil
   useEffect(() => {
     const token = constructeur.token;
-    fetch(`http://192.168.1.146:4000/constructors/${token}`)
+    fetch(`http://192.168.1.191:4000/constructors/${token}`)
       .then((res) => res.json())
       .then((data) => {
         setInfoConstructor(data.constructor);
