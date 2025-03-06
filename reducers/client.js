@@ -11,6 +11,7 @@ export const clientSlice = createSlice({
     login: (state, action) => {
       state.value.token = action.payload.token;
       state.value.email = action.payload.email;
+      state.value.role = action.payload.role;
     },
     logout: (state) => {
       state.value.token = null;

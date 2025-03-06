@@ -29,7 +29,7 @@ export default function ProjectsScreen({ navigation }) {
   useEffect(() => {
     // Constructeur appelé en dur, pensez a appellé via le store apres login et supprimer cette ligne
     const constructorId = "67c6cbeeaa9e5a5181e6ebe1";
-    fetch(`http://192.168.1.146:4000/projects/clients/${constructorId}`)
+    fetch(`http://192.168.1.191:4000/projects/clients/${constructorId}`)
       .then((res) => res.json())
       .then((data) => {
         setClients(data.data);

@@ -27,6 +27,11 @@ import ProAccCreation from "./screens/ProAccCreation";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectsScreen";
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
+<<<<<<< HEAD
+=======
+import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
+import DocumentsScreen from "./screens/DocumentsScreen";
+>>>>>>> 629cb26dbbb599e5baa3d057266a8148e944281f
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -114,8 +119,13 @@ function RootNavigator() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+<<<<<<< HEAD
             name="ClientDetails"
             component={ClientDetails}
+=======
+            name="Documents"
+            component={DocumentsScreen}
+>>>>>>> 629cb26dbbb599e5baa3d057266a8148e944281f
             options={{ headerShown: false }}
           />
         </>

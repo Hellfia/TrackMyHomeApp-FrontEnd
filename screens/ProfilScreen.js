@@ -11,7 +11,7 @@ import PurpleButton from "../components/PurpleButton"; // import du component po
 import { logout } from "../reducers/constructeur"; // import du reducer logout
 import globalStyles from "../styles/globalStyles";
 
-export default function MonCompteScreen({ navigation }) {
+export default function ProfilScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const constructeur = useSelector((state) => state.constructeur.value); //
@@ -34,7 +34,11 @@ export default function MonCompteScreen({ navigation }) {
   // fetch le token pour retrouver les informations du constructeur sur le screen profil
   useEffect(() => {
     const token = constructeur.token;
+<<<<<<< HEAD
     fetch(`http://192.168.1.146:4000/constructors/${token}`)
+=======
+    fetch(`http://192.168.1.191:4000/constructors/${token}`)
+>>>>>>> 629cb26dbbb599e5baa3d057266a8148e944281f
       .then((res) => res.json())
       .then((data) => {
         setInfoConstructor(data.constructor);
