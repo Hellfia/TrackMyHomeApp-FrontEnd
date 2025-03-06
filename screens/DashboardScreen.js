@@ -93,8 +93,13 @@ export default function DashboardScreen({ navigation }) {
           {/* // section a rendre cliquable pour routert vers la page administratif
           si on l'a fait */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Mon administratif</Text>
+            <Text style={styles.sectionTitle}>Administratif</Text>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => navigation.navigate("Documents")}
+            />
             <Text style={styles.sectionSubtitle}>Mes documents</Text>
+            <View style={styles.clientsRow}></View>
           </View>
         </ScrollView>
       </View>
