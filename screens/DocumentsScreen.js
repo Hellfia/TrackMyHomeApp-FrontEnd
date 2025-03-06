@@ -6,10 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ReturnButton from "../components/ReturnButton";
-import InputFiles from "../components/InputFiles";
+import * as DocumentPicker from "expo-document-picker";
 
 export default function DocumentsScreen({ navigation }) {
   const [documents, setDocuments] = useState([
@@ -19,7 +20,28 @@ export default function DocumentsScreen({ navigation }) {
     { id: 4, title: "Déblocage des fonds 3" },
   ]);
 
-  const handleImportDocument = () => {};
+  const handleImportDocument = async () => {
+    console.log("handleImportDocument appelé");
+    DocumentPicker.getDocumentAsync({
+      type: "*/*", // Autorise tous les types de fichiers
+    })
+      .then((res) => {
+        if (res.type === "success") {
+          console.log("DocumentPicker résultat :", res);
+          const newDoc = {
+            id: Date.now(),
+            title: res.name,
+          };
+          setDocuments((prevDocs) => [...prevDocs, newDoc]);
+          Alert.alert("Fichier ajouté", `Nom du fichier: ${res.name}`);
+        } else {
+          console.log("Sélection annulée par l'utilisateur.");
+        }
+      })
+      .catch((err) => {
+        console.error("Erreur lors de la sélection du fichier:", err);
+      });
+  };
 
   const handleDeleteDocument = (id) => {
     setDocuments((prev) => prev.filter((doc) => doc.id !== id));
@@ -30,7 +52,6 @@ export default function DocumentsScreen({ navigation }) {
       <View style={styles.header}>
         <ReturnButton onPress={() => navigation.navigate("Dashboard")} />
         <Text style={styles.title}>Les documents</Text>
-        <InputFiles></InputFiles>
         <View style={{ width: 30 }} />
       </View>
 
@@ -77,9 +98,6 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
     backgroundColor: "#FFF",
-  },
-  backButton: {
-    marginRight: 8,
   },
   title: {
     flex: 1,
