@@ -21,17 +21,13 @@ import ConnexionScreen from "./screens/ConnexionScreen";
 import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
 import DashboardScreen from "./screens/DashboardScreen";
 import DetailProjectScreen from "./screens/DetailProjectScreen";
+import DocumentsScreen from "./screens/DocumentsScreen";
 import IntervenantsScreen from "./screens/IntervenantsScreen";
 import MessagesScreen from "./screens/MessagesScreen";
 import ProAccCreation from "./screens/ProAccCreation";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectsScreen";
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
-<<<<<<< HEAD
-=======
-import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
-import DocumentsScreen from "./screens/DocumentsScreen";
->>>>>>> 629cb26dbbb599e5baa3d057266a8148e944281f
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -118,14 +114,10 @@ function RootNavigator() {
             component={CreatCraftsmanScreen}
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="ClientDetails" component={ClientDetails} />
           <Stack.Screen
-<<<<<<< HEAD
-            name="ClientDetails"
-            component={ClientDetails}
-=======
             name="Documents"
             component={DocumentsScreen}
->>>>>>> 629cb26dbbb599e5baa3d057266a8148e944281f
             options={{ headerShown: false }}
           />
         </>
