@@ -15,8 +15,10 @@ import constructeur from "./reducers/constructeur";
 
 // Import des écrans
 import AddProjectScreen from "./screens/AddProjectScreen";
+import ClientDetails from "./screens/ClientDetails";
 import ConnexionClientScreen from "./screens/ConnexionClientScreen";
 import ConnexionScreen from "./screens/ConnexionScreen";
+import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
 import DashboardScreen from "./screens/DashboardScreen";
 import DetailProjectScreen from "./screens/DetailProjectScreen";
 import IntervenantsScreen from "./screens/IntervenantsScreen";
@@ -25,7 +27,6 @@ import ProAccCreation from "./screens/ProAccCreation";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectsScreen";
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
-import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -110,6 +111,11 @@ function RootNavigator() {
           <Stack.Screen
             name="CreateCraftsman"
             component={CreatCraftsmanScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ClientDetails"
+            component={ClientDetails}
             options={{ headerShown: false }}
           />
         </>

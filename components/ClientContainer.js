@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import avatar from "../assets/avatar.png";
 
 const ClientContainer = ({
@@ -9,21 +9,22 @@ const ClientContainer = ({
   zip,
   city,
   profilePicture,
+  onPress,
 }) => {
   const profileImage = profilePicture ? { uri: profilePicture } : avatar;
   return (
-    <View style={styles.generalContainer}>
+    <TouchableOpacity style={styles.generalContainer} onPress={onPress}>
       <Image source={profileImage} style={styles.avatar} />
       <View style={styles.infosContainer}>
         <Text style={styles.nameClient}>
           {firstname} {lastname}
         </Text>
-        <Text>{address}</Text>
+        <Text style={styles.addressClient}>{address}</Text>
         <Text>
           {zip} {city}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -49,6 +50,7 @@ const styles = StyleSheet.create({
   },
   nameClient: {
     fontWeight: "500",
+    color: "#663ED9",
   },
 });
 

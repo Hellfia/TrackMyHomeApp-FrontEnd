@@ -21,7 +21,7 @@ export default function ProAccCreationScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handleSignup = () => {
-    fetch("http://192.168.0.222:4000/constructors/signup", {
+    fetch("http://192.168.1.146:4000/constructors/signup", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -41,7 +41,7 @@ export default function ProAccCreationScreen({ navigation }) {
           setEmail("");
           setPassword("");
           setConstructorSiret("");
-          navigation.replace("MainTabs");
+          navigation.navigate("MainTabs");
           console.log("fini");
         }
       });

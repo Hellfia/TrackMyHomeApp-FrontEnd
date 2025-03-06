@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -7,13 +7,12 @@ import {
   Text,
   View,
 } from "react-native";
-import { useState, useEffect } from "react";
-import { login } from "../reducers/constructeur";
-import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
+import { login } from "../reducers/constructeur";
 
 export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
@@ -21,7 +20,7 @@ export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handlePressConnexion = () => {
-    fetch("https://track-my-home-backend.vercel.app/constructors/signin", {
+    fetch("http://192.168.1.146:4000/constructors/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -11,6 +11,12 @@ const globalStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 500,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
 });
 
 export default globalStyles;

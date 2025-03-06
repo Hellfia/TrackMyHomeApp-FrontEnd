@@ -57,7 +57,7 @@ export default function ProjectsScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+    <SafeAreaView style={styles.container}>
       <Text style={globalStyles.title}>Mes chantiers</Text>
       {errorMsg ? (
         <Text style={styles.errorText}>{errorMsg}</Text>
@@ -108,6 +108,11 @@ export default function ProjectsScreen({ navigation }) {
                   zip={clientItem.client.constructionZipCode}
                   city={clientItem.client.constructionCity}
                   profilePicture={clientItem.client.profilePicture}
+                  onPress={() =>
+                    navigation.navigate("ClientDetails", {
+                      client: clientItem.client,
+                    })
+                  }
                 />
               ))
           ) : (

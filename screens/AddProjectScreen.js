@@ -5,10 +5,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
+import ReturnButton from "../components/ReturnButton";
 import globalStyles from "../styles/globalStyles";
 
 export default function AddProjectsScreen({ navigation }) {
@@ -53,7 +55,10 @@ export default function AddProjectsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={globalStyles.title}>Créer un nouveau chantier</Text>
+      <View style={globalStyles.header}>
+        <ReturnButton onPress={() => navigation.navigate("Projet")} />
+        <Text style={globalStyles.title}>Créer un nouveau chantier</Text>
+      </View>
       <KeyboardAvoidingView
         style={styles.keyboardContainer}
         behavior={Platform.OS === "ios" ? "padding" : "height"}

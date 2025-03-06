@@ -4,11 +4,12 @@ import { Image, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import PurpleButton from "../components/PurpleButton"; // import du component pour le bouton violet
-import icon from "../assets/icon.png"; // import des images/icon depuis le dossier asset
+import { useEffect, useState } from "react"; // import du useEffect et useState from react
 import { useDispatch, useSelector } from "react-redux"; // import du useDispatch et useSelector from redux
+import icon from "../assets/icon.png"; // import des images/icon depuis le dossier asset
+import PurpleButton from "../components/PurpleButton"; // import du component pour le bouton violet
 import { logout } from "../reducers/constructeur"; // import du reducer logout
-import { useState, useEffect } from "react"; // import du useEffect et useState from react
+import globalStyles from "../styles/globalStyles";
 
 export default function MonCompteScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ export default function MonCompteScreen({ navigation }) {
   // fetch le token pour retrouver les informations du constructeur sur le screen profil
   useEffect(() => {
     const token = constructeur.token;
-    fetch(`http://192.168.0.222:4000/constructors/${token}`)
+    fetch(`http://192.168.1.146:4000/constructors/${token}`)
       .then((res) => res.json())
       .then((data) => {
         setInfoConstructor(data.constructor);
@@ -41,9 +42,9 @@ export default function MonCompteScreen({ navigation }) {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
+    <SafeAreaView edges={["top", "left", "right"]}>
       <View style={styles.container}>
-        <Text style={styles.title}>Mon Profil</Text>
+        <Text style={globalStyles.title}>Mon Profil</Text>
         <View style={styles.iconContainer}>
           <Image source={icon} style={{ width: 90, height: 90 }} />
         </View>
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#663ED9",
     borderRadius: 8,
-    padding: 12,
+    padding: 16,
     fontSize: 16,
     marginBottom: 16,
   },
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   container: {
-    padding: 16,
+    padding: 20,
   },
   iconContainer: {
     alignItems: "center",

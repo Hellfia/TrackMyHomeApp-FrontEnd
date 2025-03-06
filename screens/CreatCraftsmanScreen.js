@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
-import Input from "../components/Input";
 import GradientButton from "../components/GradientButton";
+import Input from "../components/Input";
 
 export default function CreatCraftsmanScreen({ navigation }) {
   const [craftsmanName, setCraftsmanName] = useState("");
@@ -47,7 +46,7 @@ export default function CreatCraftsmanScreen({ navigation }) {
 
     console.log("Payload envoyé :", payload);
 
-    fetch("http://192.168.1.191:4000/craftsmen", {
+    fetch("http://192.168.1.146:4000/craftsmen", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

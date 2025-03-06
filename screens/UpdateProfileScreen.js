@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-import { updateProfile } from "../reducers/constructeur";
-import Input from "../components/Input";
-import GradientButton from "../components/GradientButton";
-import ReturnButton from "../components/ReturnButton";
-import globalStyles from "../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import GradientButton from "../components/GradientButton";
+import Input from "../components/Input";
+import ReturnButton from "../components/ReturnButton";
+import { updateProfile } from "../reducers/constructeur";
+import globalStyles from "../styles/globalStyles";
 
 export default function UpdateProfileScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -22,7 +22,7 @@ export default function UpdateProfileScreen({ navigation }) {
   const token = constructeur.token;
 
   const handleUpdateProfile = () => {
-    fetch(`http://192.168.1.191:4000/constructors/${token}`, {
+    fetch(`http://192.168.1.146:4000/constructors/${token}`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -47,7 +47,7 @@ export default function UpdateProfileScreen({ navigation }) {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={globalStyles.header}>
         <ReturnButton onPress={() => navigation.navigate("Profil")} />
         <Text style={globalStyles.title}>Modifier votre Profil</Text>
       </View>
@@ -106,21 +106,14 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 16,
-  },
-  header: {
-    flexDirection: "row", // Alignement horizontal des éléments
-    justifyContent: "center", // Espace entre le bouton et le titre
-    alignItems: "center", // Centrage vertical
-
-    width: "100%",
+    padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "600",
     color: "#000",
     textAlign: "center",
-    flex: 1, // Cela force le titre à prendre toute la largeur disponible pour le centrer
+    flex: 1,
   },
   inputText: {
     width: "100%",
