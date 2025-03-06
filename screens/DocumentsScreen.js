@@ -11,6 +11,7 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ReturnButton from "../components/ReturnButton";
 import * as DocumentPicker from "expo-document-picker";
+import InputFiles from "../components/InputFiles";
 
 export default function DocumentsScreen({ navigation }) {
   const [documents, setDocuments] = useState([
@@ -19,29 +20,6 @@ export default function DocumentsScreen({ navigation }) {
     { id: 3, title: "Déblocage des fonds 2" },
     { id: 4, title: "Déblocage des fonds 3" },
   ]);
-
-  const handleImportDocument = async () => {
-    console.log("handleImportDocument appelé");
-    DocumentPicker.getDocumentAsync({
-      type: "*/*", // Autorise tous les types de fichiers
-    })
-      .then((res) => {
-        if (res.type === "success") {
-          console.log("DocumentPicker résultat :", res);
-          const newDoc = {
-            id: Date.now(),
-            title: res.name,
-          };
-          setDocuments((prevDocs) => [...prevDocs, newDoc]);
-          Alert.alert("Fichier ajouté", `Nom du fichier: ${res.name}`);
-        } else {
-          console.log("Sélection annulée par l'utilisateur.");
-        }
-      })
-      .catch((err) => {
-        console.error("Erreur lors de la sélection du fichier:", err);
-      });
-  };
 
   const handleDeleteDocument = (id) => {
     setDocuments((prev) => prev.filter((doc) => doc.id !== id));
@@ -56,21 +34,7 @@ export default function DocumentsScreen({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TouchableOpacity
-          style={styles.importContainer}
-          onPress={handleImportDocument}
-        >
-          <Ionicons
-            name="add"
-            size={24}
-            color="#663ED9"
-            style={styles.plusIcon}
-          />
-          <Text style={styles.importText}>Importez un nouveau document</Text>
-          <Text style={styles.formatText}>
-            Format accepté : JPEG, HEIC, PNG
-          </Text>
-        </TouchableOpacity>
+        <InputFiles> </InputFiles>
 
         <Text style={styles.documentsTitle}>Documents Client 1</Text>
         {documents.map((doc) => (

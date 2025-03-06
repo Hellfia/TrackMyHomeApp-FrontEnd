@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, FlatList, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
 const InputFiles = () => {
   const [files, setFiles] = useState([]); // État pour stocker les fichiers ajoutés
 
@@ -32,10 +38,22 @@ const InputFiles = () => {
   return (
     <View style={styles.container}>
       {/* Affiche le bouton + */}
-      <Ionicons name="add" size={24} color="#663ED9" style={styles.plusIcon} />
+      <TouchableOpacity
+        style={styles.importContainer}
+        onPress={handleImportDocument}
+      >
+        <Ionicons
+          name="add"
+          size={24}
+          color="#663ED9"
+          style={styles.plusIcon}
+        />
+        <Text style={styles.importText}>Importez un nouveau document</Text>
+        <Text style={styles.formatText}>Format accepté : JPEG, HEIC, PNG</Text>
+      </TouchableOpacity>
+
       {/* Conteneur des fichiers ajoutés */}
       <View style={styles.fileContainer}>
-        <Text style={styles.fileHeader}>Fichiers sélectionnés:</Text>
         <FlatList
           data={files}
           keyExtractor={(item, index) => index.toString()}
@@ -70,6 +88,28 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     backgroundColor: "#f4f4f4",
     borderRadius: 5,
+  },
+  importContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    paddingVertical: 30,
+    marginBottom: 30,
+  },
+  plusIcon: {
+    marginBottom: 10,
+  },
+  importText: {
+    fontSize: 16,
+    color: "#663ED9",
+    marginBottom: 5,
+  },
+  formatText: {
+    fontSize: 12,
+    color: "#999",
   },
 });
 
