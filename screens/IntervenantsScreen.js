@@ -50,7 +50,7 @@ export default function MesIntervenants({ navigation }) {
       <View style={styles.plusButton}></View>
       <PlusButton
         icon="plus"
-        onPress={() => navigation.navigate("")}
+        onPress={() => navigation.navigate("CreateCraftsman")}
       ></PlusButton>
     </View>
   );

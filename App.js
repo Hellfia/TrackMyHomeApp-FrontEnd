@@ -25,6 +25,7 @@ import ProAccCreation from "./screens/ProAccCreation";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectsScreen";
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
+import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -104,6 +105,11 @@ function RootNavigator() {
           <Stack.Screen
             name="UpdateProfile"
             component={UpdateProfileScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CreateCraftsman"
+            component={CreatCraftsmanScreen}
             options={{ headerShown: false }}
           />
         </>
