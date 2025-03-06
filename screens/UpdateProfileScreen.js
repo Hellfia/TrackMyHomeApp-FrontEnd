@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { updateProfile } from "../reducers/constructeur";
@@ -16,23 +10,38 @@ export default function UpdateProfileScreen() {
   const dispatch = useDispatch();
 
   const constructeur = useSelector((state) => state.constructeur.value);
-
+  // console.log(constructeur);
+  // const token = "RpXgY_HBiAWaWokmkmy1scU5-EdZwZeu";
   const [constructorName, setConstructorName] = useState("");
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const token = constructeur.token;
 
   const handleUpdateProfile = () => {
-    dispatch(
-      updateProfile({
+    fetch(`http://192.168.1.191:4000/constructors/${token}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
         constructorName: constructorName,
         constructorSiret: constructorSiret,
         email: email,
         password: password,
-      })
-    );
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result === true)
+          dispatch(
+            updateProfile({
+              constructorName: constructorName,
+              constructorSiret: constructorSiret,
+              email: email,
+              password: password,
+            })
+          );
+      });
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Modifier Profil</Text>
