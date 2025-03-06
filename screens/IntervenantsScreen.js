@@ -1,39 +1,39 @@
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import PlusButton from "../components/PlusButton";
+import React, { useEffect, useState, useCallback } from "react";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { useSelector } from "react-redux";
 import CraftsmanContainer from "../components/CraftsmanContainer";
-import globalStyles from "../styles/globalStyles";
-import { useEffect, useState } from "react";
+import PlusButton from "../components/PlusButton";
+import { useFocusEffect } from "@react-navigation/native";
+import ReturnButton from "../components/ReturnButton";
 
-export default function MesIntervenants({ navigation }) {
+export default function IntervenantsScreen({ navigation }) {
   const constructeur = useSelector((state) => state.constructeur.value);
   const [craftsman, setCraftsman] = useState([]);
-  console.log("craftsman", craftsman);
-  useEffect(() => {
-    const token = constructeur.token;
-    fetch(`http://192.168.1.191:4000/craftsmen/${token}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("dataFecthed", data);
-        // data est déjà un tableau d'artisans
-        setCraftsman(data.data);
-      })
-      .catch((error) => console.error("Erreur lors du fetch:", error));
-  }, []);
-  console.log(constructeur);
+
+  useFocusEffect(
+    useCallback(() => {
+      const token = constructeur.token;
+      fetch(`http://192.168.1.191:4000/craftsmen/${token}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("dataFecthed", data);
+          setCraftsman(data.data);
+        })
+        .catch((error) => console.error("Erreur lors du fetch:", error));
+    }, [constructeur.token])
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Mes intervenants</Text>
+        <View style={styles.returnButton}>
+          <ReturnButton
+            onPress={() => navigation.navigate("Profil")}
+          ></ReturnButton>
+        </View>
         <View style={styles.listContent}>
-          <ScrollView>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
             {craftsman.map((craftsmanItem) => (
               <CraftsmanContainer
                 key={craftsmanItem._id}
@@ -42,16 +42,16 @@ export default function MesIntervenants({ navigation }) {
                 craftsmanAddress={craftsmanItem.craftsmanAddress}
                 craftsmanZip={craftsmanItem.craftsmanZip}
                 craftsmanCity={craftsmanItem.craftsmanCity}
+                phoneNumber={craftsmanItem.phoneNumber}
               />
             ))}
           </ScrollView>
         </View>
       </View>
-      <View style={styles.plusButton}></View>
       <PlusButton
         icon="plus"
         onPress={() => navigation.navigate("CreateCraftsman")}
-      ></PlusButton>
+      />
     </View>
   );
 }
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   headerContainer: {
-    paddingTop: 50,
+    paddingTop: 80,
     paddingBottom: 20,
     alignItems: "center",
     backgroundColor: "#F7F7F7",
@@ -73,32 +73,15 @@ const styles = StyleSheet.create({
     color: "#663ED9",
   },
   listContent: {
-    padding: 16,
+    width: "100%",
   },
-  card: {
-    flexDirection: "row",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    marginBottom: 12,
-    padding: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+  scrollContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 16,
   },
-
-  cardInfo: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 4,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    color: "#666",
+  returnButton: {
+    position: "absolute",
+    left: 16,
+    top: 50,
   },
 });

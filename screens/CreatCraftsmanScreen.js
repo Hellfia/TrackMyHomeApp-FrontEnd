@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import Input from "../components/Input";
 import GradientButton from "../components/GradientButton";
 
-export default function CreatCraftsmanScreen() {
+export default function CreatCraftsmanScreen({ navigation }) {
   const [craftsmanName, setCraftsmanName] = useState("");
   const [craftsmanAddress, setCraftsmanAddress] = useState("");
   const [craftsmanZip, setCraftsmanZip] = useState("");
@@ -63,7 +63,7 @@ export default function CreatCraftsmanScreen() {
           setCraftsmanCity("");
           setPhoneNumber("");
           setLogo(null);
-          navigation.navigate("MesIntervenants");
+          navigation.navigate("Intervenants");
         }
       });
   };

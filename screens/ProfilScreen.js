@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux"; // import du useDispatch
 import { logout } from "../reducers/constructeur"; // import du reducer logout
 import { useState, useEffect } from "react"; // import du useEffect et useState from react
 
-export default function MonCompteScreen({ navigation }) {
+export default function ProfilScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const constructeur = useSelector((state) => state.constructeur.value); //
@@ -33,7 +33,7 @@ export default function MonCompteScreen({ navigation }) {
   // fetch le token pour retrouver les informations du constructeur sur le screen profil
   useEffect(() => {
     const token = constructeur.token;
-    fetch(`http://192.168.0.222:4000/constructors/${token}`)
+    fetch(`http://192.168.1.191:4000/constructors/${token}`)
       .then((res) => res.json())
       .then((data) => {
         setInfoConstructor(data.constructor);
