@@ -26,6 +26,7 @@ import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectsScreen";
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
 import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
+import DocumentsScreen from "./screens/DocumentsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -110,6 +111,11 @@ function RootNavigator() {
           <Stack.Screen
             name="CreateCraftsman"
             component={CreatCraftsmanScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Documents"
+            component={DocumentsScreen}
             options={{ headerShown: false }}
           />
         </>

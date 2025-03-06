@@ -21,7 +21,7 @@ export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handlePressConnexion = () => {
-    fetch("https://track-my-home-backend.vercel.app/constructors/signin", {
+    fetch("https://192.168.1.191/constructors/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -34,12 +34,14 @@ export default function ConnexionScreen({ navigation }) {
         console.log("Réponse de l'API :", data);
         if (data.result === true) {
           console.log("lol");
-          dispatch(login({ email: signInEmail, token: data.token }));
+          dispatch(
+            login({ email: signInEmail, token: data.token, role: data.role })
+          );
 
           setSignInEmail("");
           setSignInPassword("");
 
-          navigation.navigate("MainTabs");
+          navigation.navigate("ProTabs");
         } else {
           alert("Identifiants incorrects, veuillez réessayer.");
         }
