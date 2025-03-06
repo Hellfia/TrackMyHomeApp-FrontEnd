@@ -44,7 +44,7 @@ export default function ProjectsScreen({ navigation }) {
       .map((clientItem) => {
         const address = `${clientItem.client.constructionAdress}, ${clientItem.client.constructionZipCode}, ${clientItem.client.constructionCity}`;
 
-        return fetch("http://192.168.1.146:4000/projects/geocode", {
+        return fetch("http://192.168.1.191:4000/projects/geocode", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -17,7 +17,6 @@ export default function MonCompteScreen({ navigation }) {
   //pour se déconnecter
   const handleLogout = () => {
     dispatch(logout());
-    navigation.navigate("Connexion");
   };
   const handlePress = () => {
     navigation.navigate("Intervenants");
