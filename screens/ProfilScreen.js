@@ -1,19 +1,24 @@
 import React from "react";
+
 import { Image, StyleSheet, Text, View } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
-import Input from "../components/Input";
-import PurpleButton from "../components/PurpleButton";
-import icon from "../assets/icon.png";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../reducers/constructeur";
-import { useState, useEffect } from "react";
+
+import PurpleButton from "../components/PurpleButton"; // import du component pour le bouton violet
+import icon from "../assets/icon.png"; // import des images/icon depuis le dossier asset
+import { useDispatch, useSelector } from "react-redux"; // import du useDispatch et useSelector from redux
+import { logout } from "../reducers/constructeur"; // import du reducer logout
+import { useState, useEffect } from "react"; // import du useEffect et useState from react
 
 export default function MonCompteScreen({ navigation }) {
   const dispatch = useDispatch();
-  const constructeur = useSelector((state) => state.constructeur.value);
-  const [infoConstructor, setInfoConstructor] = useState([]);
 
-  // pour édite le profil
+  const constructeur = useSelector((state) => state.constructeur.value); //
+
+  const [infoConstructor, setInfoConstructor] = useState([]);
+  //console.log(infoConstructor);
+
+  // pour se deplacer vers la screen UpdateProfile
   const handleEditProfile = () => {
     navigation.navigate("UpdateProfile");
   };
@@ -21,18 +26,20 @@ export default function MonCompteScreen({ navigation }) {
   const handleLogout = () => {
     dispatch(logout());
   };
+  // se deplacer vers les intervenants
   const handlePress = () => {
     navigation.navigate("Intervenants");
   };
-
+  // fetch le token pour retrouver les informations du constructeur sur le screen profil
   useEffect(() => {
     const token = constructeur.token;
-    fetch(`http://192.168.1.191:4000/projects/clients/${token}`)
+    fetch(`http://192.168.0.222:4000/constructors/${token}`)
       .then((res) => res.json())
       .then((data) => {
-        setInfoConstructor(data);
+        setInfoConstructor(data.constructor);
       });
   }, []);
+
   return (
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
@@ -42,16 +49,16 @@ export default function MonCompteScreen({ navigation }) {
         </View>
         <View style={styles.infosContainer}>
           <View style={styles.infoContainer}>
-            <Text>constructeur Name</Text>
+            <Text>{infoConstructor.constructorName}</Text>
           </View>
           <View style={styles.infoContainer}>
-            <Text>constructeur Siret</Text>
-          </View>{" "}
+            <Text>{infoConstructor.constructorSiret}</Text>
+          </View>
           <View style={styles.infoContainer}>
-            <Text>constructeur Email</Text>
-          </View>{" "}
+            <Text>{infoConstructor.email}</Text>
+          </View>
           <View style={styles.infoContainer}>
-            <Text>constructeur Password</Text>
+            <Text>*******</Text>
           </View>
         </View>
         <PurpleButton
@@ -87,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     width: "100%",
-    //marginTop: 6,
+
     alignItems: "center",
     paddingVertical: 14,
   },
