@@ -6,23 +6,27 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const InputFiles = () => {
   const [files, setFiles] = useState([]); // État pour stocker les fichiers ajoutés
 
-  const handleAddFile = async () => {
-    try {
-      // Utilisation de DocumentPicker pour sélectionner un fichier
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles], // Permet de sélectionner tous les types de fichiers
+  const handleImportDocument = async () => {
+    console.log("handleImportDocument appelé");
+    DocumentPicker.getDocumentAsync({
+      type: "*/*", // Autorise tous les types de fichiers
+    })
+      .then((res) => {
+        if (res.type === "success") {
+          console.log("DocumentPicker résultat :", res);
+          const newDoc = {
+            id: Date.now(),
+            title: res.name,
+          };
+          setDocuments((prevDocs) => [...prevDocs, newDoc]);
+          Alert.alert("Fichier ajouté", `Nom du fichier: ${res.name}`);
+        } else {
+          console.log("Sélection annulée par l'utilisateur.");
+        }
+      })
+      .catch((err) => {
+        console.error("Erreur lors de la sélection du fichier:", err);
       });
-      // Ajoute le fichier sélectionné au tableau "files"
-      setFiles((prevFiles) => [...prevFiles, res]);
-
-      Alert.alert("Fichier ajouté", `Nom du fichier: ${res.name}`);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log("Sélection annulée.");
-      } else {
-        console.error("Erreur de sélection de fichier: ", err);
-      }
-    }
   };
 
   return (
