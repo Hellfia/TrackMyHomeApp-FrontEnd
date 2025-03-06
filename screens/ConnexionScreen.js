@@ -20,11 +20,7 @@ export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handlePressConnexion = () => {
-<<<<<<< HEAD
     fetch("http://192.168.1.146:4000/constructors/signin", {
-=======
-    fetch("https://192.168.1.191/constructors/signin", {
->>>>>>> 629cb26dbbb599e5baa3d057266a8148e944281f
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

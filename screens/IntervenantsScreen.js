@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import CraftsmanContainer from "../components/CraftsmanContainer";
 import PlusButton from "../components/PlusButton";
-import { useFocusEffect } from "@react-navigation/native";
 import ReturnButton from "../components/ReturnButton";
 
 export default function IntervenantsScreen({ navigation }) {
@@ -24,7 +24,7 @@ export default function IntervenantsScreen({ navigation }) {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Mes intervenants</Text>
         <View style={styles.returnButton}>
