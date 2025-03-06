@@ -16,9 +16,19 @@ const CraftsmanContainer = ({
       <Image source={profileImage} style={styles.avatar} />
       <View style={styles.infosContainer}>
         <Text style={styles.nameCraftsman}>{craftsmanName}</Text>
-        <Text>{craftsmanAddress}</Text>
         <Text>
-          {craftsmanZip} {craftsmanCity} {phoneNumber}
+          <Text style={styles.bold}>Adresse: </Text>
+          {craftsmanAddress}
+        </Text>
+        <Text>
+          <Text style={styles.bold}>Code postal: </Text>
+          {craftsmanZip}
+          {"\n"}
+          <Text style={styles.bold}>Ville: </Text>
+          {craftsmanCity}
+          {"\n"}
+          <Text style={styles.bold}>Tel: </Text>
+          {phoneNumber}
         </Text>
       </View>
     </View>
@@ -27,18 +37,18 @@ const CraftsmanContainer = ({
 
 const styles = StyleSheet.create({
   generalContainer: {
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#663ED9",
     borderRadius: 8,
     padding: 12,
-    marginHorizontal: 20,
     marginVertical: 5,
+    width: "100%",
   },
   infosContainer: {
-    marginLeft: 20,
+    marginLeft: 10,
+    flex: 1,
   },
   avatar: {
     width: 60,
@@ -47,6 +57,11 @@ const styles = StyleSheet.create({
   },
   nameCraftsman: {
     fontWeight: "500",
+    marginBottom: 4,
+  },
+  bold: {
+    fontWeight: "500",
+    color: "#663ED9",
   },
 });
 
