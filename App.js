@@ -82,7 +82,7 @@ function MainTabs() {
 function RootNavigator() {
   const token = useSelector((state) => state.constructeur.value.token);
   return (
-    <Stack.Navigator initialRouteName={token ? "MainTabs" : "Connexion"}>
+    <Stack.Navigator>
       {token ? (
         <>
           <Stack.Screen

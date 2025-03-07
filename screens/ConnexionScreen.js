@@ -36,7 +36,6 @@ export default function ConnexionScreen({ navigation }) {
           dispatch(
             login({ email: signInEmail, token: data.token, role: data.role })
           );
-
           setSignInEmail("");
           setSignInPassword("");
           navigation.navigate("MainTabs");

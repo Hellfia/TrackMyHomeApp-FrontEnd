@@ -29,6 +29,14 @@ export const constructeurSlice = createSlice({
       state.value.email = action.payload.email;
       state.value.password = action.payload.password;
     },
+    AddDocument: (state, action) => {
+      state.value.documents.push(action.payload);
+    },
+    DeleteDocument: (state, action) => {
+      state.value.documents = state.value.documents.filter(
+        (doc) => doc.id !== action.payload
+      );
+    },
   },
 });
 
