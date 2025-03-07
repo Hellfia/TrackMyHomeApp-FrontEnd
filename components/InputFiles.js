@@ -80,25 +80,13 @@ const InputFiles = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <View>
-=======
     <View style={styles.container}>
->>>>>>> f6f8827db569445c44ffad42144e0f53717c9be3
+      {/* Affiche le bouton + */}
       <TouchableOpacity
         testID="importButton"
         style={styles.importContainer}
         onPress={handleImportDocument}
       >
-<<<<<<< HEAD
-        <Ionicons
-          name="add"
-          size={36}
-          color="#FE5900"
-          style={styles.plusIcon}
-        />
-        <Text style={styles.importText}>Importez un nouveau document</Text>
-=======
         {selectedFile ? (
           // Affichage immédiat du nom du fichier sélectionné
           <Text testID="selectedFileName" style={styles.importText}>
@@ -119,7 +107,6 @@ const InputFiles = () => {
             </Text>
           </>
         )}
->>>>>>> f6f8827db569445c44ffad42144e0f53717c9be3
       </TouchableOpacity>
 
       {/* Affichage de la liste des fichiers uploadés */}
@@ -142,8 +129,6 @@ const InputFiles = () => {
 };
 
 const styles = StyleSheet.create({
-<<<<<<< HEAD
-=======
   container: {
     flex: 1,
     justifyContent: "center",
@@ -153,13 +138,17 @@ const styles = StyleSheet.create({
     marginTop: 30,
     width: "80%",
   },
+  fileHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
   fileItem: {
     padding: 10,
     marginBottom: 5,
     backgroundColor: "#f4f4f4",
     borderRadius: 5,
   },
->>>>>>> f6f8827db569445c44ffad42144e0f53717c9be3
   importContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -168,12 +157,7 @@ const styles = StyleSheet.create({
     borderColor: "#663ED9",
     borderRadius: 8,
     paddingVertical: 30,
-<<<<<<< HEAD
     padding: 20,
-=======
-    marginBottom: 30,
-    width: "80%",
->>>>>>> f6f8827db569445c44ffad42144e0f53717c9be3
   },
   plusIcon: {
     marginBottom: 10,
@@ -184,7 +168,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: "center",
   },
-<<<<<<< HEAD
   fileContainer: {
     width: "80%",
   },
@@ -193,12 +176,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     backgroundColor: "#f4f4f4",
     borderRadius: 5,
-=======
-  formatText: {
-    fontSize: 12,
-    color: "#999",
-    textAlign: "center",
->>>>>>> f6f8827db569445c44ffad42144e0f53717c9be3
   },
 });
 
