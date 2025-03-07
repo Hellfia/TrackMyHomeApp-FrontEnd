@@ -1,19 +1,76 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import logo from "../assets/logo.webp";
+import PurpleButton from "../components/PurpleButton";
 import ReturnButton from "../components/ReturnButton";
+import StepItem from "../components/StepItem";
 import globalStyles from "../styles/globalStyles";
 
 export default function ClientDetails({ route, navigation }) {
-  const { client } = route.params;
+  const { data } = route.params;
+
+  // Trouver la dernière étape validée dans steps qui a le statut validée
+  const lastValidatedStep = data.steps
+    .reverse()
+    .find((step) => step.status === "validée");
+
+  // Si on a une étape validée , on prend son URI, sinon on prend le logo par défaut
+  const image =
+    lastValidatedStep && lastValidatedStep.uri
+      ? { uri: lastValidatedStep.uri }
+      : logo;
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <View style={globalStyles.header}>
         <ReturnButton onPress={() => navigation.navigate("Projet")} />
-        <Text style={globalStyles.title}>Mes intervenants</Text>
+        <Text style={globalStyles.title}>{data.client.firstname}</Text>
       </View>
-      <Text style={styles.nameClient}>{client.firstname}</Text>
+
+      <View style={styles.imageContainer}>
+        <Image source={image} style={styles.image} resizeMode="contain" />
+      </View>
+      <PurpleButton text="Mes Documents" icon="folder" />
+      <Text style={styles.stepText}>Les étapes de construction</Text>
+      <ScrollView>
+        <View style={styles.subContainer}>
+          {data.steps
+            .slice() // Créer une copy du tableau pour ne pas modifier le tableau original
+            .reverse() //Inverse le tableau
+            .map((step, index) => {
+              let iconName = "";
+              let iconColor = "";
+
+              // Déterminer l'icône et la couleur en fonction du statut
+              if (step.status === "À venir") {
+                iconName = "ban";
+                iconColor = "#FF0000";
+              } else if (step.status === "Terminé") {
+                iconName = "check";
+                iconColor = "#28DB52";
+              } else if (step.status === "En cours") {
+                iconName = "spinner";
+                iconColor = "#FFA500";
+              }
+
+              return (
+                <StepItem
+                  key={index}
+                  name={step.name}
+                  iconName={iconName}
+                  iconColor={iconColor}
+                  onPress={() =>
+                    navigation.navigate("UpdateDetails", {
+                      client: data.client, // Passer uniquement les données du client
+                      step: step,
+                    })
+                  }
+                />
+              );
+            })}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -25,11 +82,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-
-  nameClient: {
-    fontWeight: "700",
-    fontSize: 20,
+  imageContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 20,
+    width: "100%",
+    height: 180,
+    overflow: "hidden",
+    borderRadius: 20,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 20,
+  },
+  subContainer: {
+    marginVertical: 20,
+    display: "flex",
+    alignItems: "flex-start",
+  },
+  stepText: {
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "600",
     color: "#362173",
-    marginBottom: 10,
+    marginVertical: 5,
   },
 });

@@ -1,13 +1,13 @@
+import * as DocumentPicker from "expo-document-picker";
 import React, { useState } from "react";
 import {
-  View,
+  Alert,
+  FlatList,
   StyleSheet,
   Text,
-  FlatList,
-  Alert,
   TouchableOpacity,
+  View,
 } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 const InputFiles = () => {
   const [files, setFiles] = useState([]); // État pour stocker les fichiers ajoutés
@@ -36,20 +36,18 @@ const InputFiles = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Affiche le bouton + */}
+    <View>
       <TouchableOpacity
         style={styles.importContainer}
         onPress={handleImportDocument}
       >
         <Ionicons
           name="add"
-          size={24}
-          color="#663ED9"
+          size={36}
+          color="#FE5900"
           style={styles.plusIcon}
         />
         <Text style={styles.importText}>Importez un nouveau document</Text>
-        <Text style={styles.formatText}>Format accepté : JPEG, HEIC, PNG</Text>
       </TouchableOpacity>
 
       {/* Conteneur des fichiers ajoutés */}
@@ -69,26 +67,6 @@ const InputFiles = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  fileContainer: {
-    marginTop: 30,
-    width: "80%",
-  },
-  fileHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  fileItem: {
-    padding: 10,
-    marginBottom: 5,
-    backgroundColor: "#f4f4f4",
-    borderRadius: 5,
-  },
   importContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -97,7 +75,7 @@ const styles = StyleSheet.create({
     borderColor: "#663ED9",
     borderRadius: 8,
     paddingVertical: 30,
-    marginBottom: 30,
+    padding: 20,
   },
   plusIcon: {
     marginBottom: 10,
@@ -107,9 +85,14 @@ const styles = StyleSheet.create({
     color: "#663ED9",
     marginBottom: 5,
   },
-  formatText: {
-    fontSize: 12,
-    color: "#999",
+  fileContainer: {
+    width: "80%",
+  },
+  fileItem: {
+    padding: 10,
+    marginBottom: 5,
+    backgroundColor: "#f4f4f4",
+    borderRadius: 5,
   },
 });
 
