@@ -49,7 +49,6 @@ function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false,
         tabBarIcon: ({ color, size }) => {
           if (route.name === "Projet") {
             return <FontAwesome5 name="hard-hat" size={size} color={color} />;
@@ -70,6 +69,9 @@ function MainTabs() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarActiveTintColor: "#FE5900",
+        tabBarInactiveTintColor: "#663ED9",
+        headerShown: false,
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
