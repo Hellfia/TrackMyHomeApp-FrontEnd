@@ -14,12 +14,7 @@ import * as DocumentPicker from "expo-document-picker";
 import InputFiles from "../components/InputFiles";
 
 export default function DocumentsScreen({ navigation }) {
-  const [documents, setDocuments] = useState([
-    { id: 1, title: "Contrat de construction" },
-    { id: 2, title: "Déblocage des fonds 1" },
-    { id: 3, title: "Déblocage des fonds 2" },
-    { id: 4, title: "Déblocage des fonds 3" },
-  ]);
+  const [documents, setDocuments] = useState([]);
 
   const handleDeleteDocument = (id) => {
     setDocuments((prev) => prev.filter((doc) => doc.id !== id));
@@ -32,7 +27,7 @@ export default function DocumentsScreen({ navigation }) {
         <Text style={styles.title}>Les documents</Text>
         <View style={{ width: 30 }} />
       </View>
-
+      z
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <InputFiles> </InputFiles>
 
