@@ -42,7 +42,8 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
-
+// AsyncStorage.clear().then();
+// persistor.purge().then();
 function MainTabs() {
   return (
     <Tab.Navigator

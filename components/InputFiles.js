@@ -9,10 +9,13 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useDispatch } from "react-redux";
+import { addDocument } from "../reducers/constructeur";
 
 const InputFiles = () => {
   const [files, setFiles] = useState([]); // Pour stocker les fichiers uploadés
   const [selectedFile, setSelectedFile] = useState(null); // Pour stocker le fichier actuellement sélectionné
+  const dispatch = useDispatch();
 
   const handleImportDocument = async () => {
     try {
@@ -43,7 +46,7 @@ const InputFiles = () => {
           "https://api.cloudinary.com/v1_1/db0bnigaj/upload";
         console.log("Cloudinary URL:", cloudinaryUrl);
 
-        // Upload du fichier via fetch
+        // Upload du fichier via fetch vers Cloudinary
         const uploadResponse = await fetch(cloudinaryUrl, {
           method: "POST",
           body: formData,
@@ -54,12 +57,34 @@ const InputFiles = () => {
         if (uploadResponse.ok) {
           // Création d'un nouvel objet fichier incluant l'URL Cloudinary
           const newFile = {
-            id: Date.now(),
             name: fileInfo.name,
-            url: uploadResult.secure_url,
+            date: Date.now(),
+            uri: uploadResult.secure_url,
           };
           setFiles((prevFiles) => [...prevFiles, newFile]);
           Alert.alert("Fichier ajouté", `Nom du fichier: ${fileInfo.name}`);
+
+          // Utiliser directement newFile pour l'appel à l'API locale
+          fetch("http://192.168.1.191:4000/projects/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              file: newFile,
+              projectId: "67c9d8308c35c9b608aeb231",
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Réponse de l'API :", data);
+              if (data.result === true) {
+                console.log("biloute", data.documents);
+                dispatch(addDocument(data.documents));
+              }
+              zz;
+            })
+            .catch((err) =>
+              console.error("Erreur lors de l'envoi à l'API:", err)
+            );
         } else {
           console.error(
             "Erreur lors de l'upload sur Cloudinary:",

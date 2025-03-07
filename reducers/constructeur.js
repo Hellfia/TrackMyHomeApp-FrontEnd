@@ -7,6 +7,7 @@ const initialState = {
     constructorName: null,
     constructorSiret: null,
     password: null,
+    documents: [],
   },
 };
 
@@ -29,10 +30,11 @@ export const constructeurSlice = createSlice({
       state.value.email = action.payload.email;
       state.value.password = action.payload.password;
     },
-    AddDocument: (state, action) => {
-      state.value.documents.push(action.payload);
+    addDocument: (state, action) => {
+      state.value.documents = action.payload;
+      console.log("payload", action.payload);
     },
-    DeleteDocument: (state, action) => {
+    deleteDocument: (state, action) => {
       state.value.documents = state.value.documents.filter(
         (doc) => doc.id !== action.payload
       );
@@ -40,5 +42,6 @@ export const constructeurSlice = createSlice({
   },
 });
 
-export const { login, logout, updateProfile } = constructeurSlice.actions;
+export const { login, logout, updateProfile, addDocument, deleteDocument } =
+  constructeurSlice.actions;
 export default constructeurSlice.reducer;
