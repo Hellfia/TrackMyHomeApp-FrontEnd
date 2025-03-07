@@ -56,7 +56,7 @@ export default function AddProjectsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={globalStyles.header}>
-        <ReturnButton onPress={() => navigation.navigate("Projet")} />
+        <ReturnButton onPress={() => navigation.goBack()} />
         <Text style={globalStyles.title}>Créer un nouveau chantier</Text>
       </View>
       <KeyboardAvoidingView

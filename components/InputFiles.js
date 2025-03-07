@@ -1,13 +1,13 @@
+import * as DocumentPicker from "expo-document-picker";
 import React, { useState } from "react";
 import {
-  View,
+  Alert,
+  FlatList,
   StyleSheet,
   Text,
-  FlatList,
-  Alert,
   TouchableOpacity,
+  View,
 } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useDispatch } from "react-redux";
 import { addDocument } from "../reducers/constructeur";
@@ -106,6 +106,7 @@ const InputFiles = () => {
 
   return (
     <View style={styles.container}>
+      {/* Affiche le bouton + */}
       <TouchableOpacity
         testID="importButton"
         style={styles.importContainer}
@@ -162,6 +163,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     width: "80%",
   },
+  fileHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
   fileItem: {
     padding: 10,
     marginBottom: 5,
@@ -176,8 +182,7 @@ const styles = StyleSheet.create({
     borderColor: "#663ED9",
     borderRadius: 8,
     paddingVertical: 30,
-    marginBottom: 30,
-    width: "80%",
+    padding: 20,
   },
   plusIcon: {
     marginBottom: 10,
@@ -188,10 +193,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: "center",
   },
-  formatText: {
-    fontSize: 12,
-    color: "#999",
-    textAlign: "center",
+  fileContainer: {
+    width: "80%",
+  },
+  fileItem: {
+    padding: 10,
+    marginBottom: 5,
+    backgroundColor: "#f4f4f4",
+    borderRadius: 5,
   },
 });
 

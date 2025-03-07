@@ -12,6 +12,8 @@ export default function ProjectsScreen({ navigation }) {
   const [errorMsg, setErrorMsg] = useState(null);
   const [clients, setClients] = useState([]);
 
+  console.log(clients);
+
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -28,8 +30,8 @@ export default function ProjectsScreen({ navigation }) {
 
   useEffect(() => {
     // Constructeur appelé en dur, pensez a appellé via le store apres login et supprimer cette ligne
-    const constructorId = "67c9d64be023042b0b2841f5";
-    fetch(`http://192.168.1.191:4000/projects/clients/${constructorId}`)
+    const constructorId = "67c9d6cf8c35c9b608aeb221";
+    fetch(`http://192.168.1.146:4000/projects/clients/${constructorId}`)
       .then((res) => res.json())
       .then((data) => {
         setClients(data.data);
@@ -75,8 +77,8 @@ export default function ProjectsScreen({ navigation }) {
             )}
             {clients.map(
               (client, index) =>
-                client.client.constructionLat &&
-                client.client.constructionLong && (
+                client.client?.constructionLat &&
+                client.client?.constructionLong && (
                   <Marker
                     key={client._id || `marker-${index}`}
                     coordinate={{
@@ -110,13 +112,15 @@ export default function ProjectsScreen({ navigation }) {
                   profilePicture={clientItem.client.profilePicture}
                   onPress={() =>
                     navigation.navigate("ClientDetails", {
-                      client: clientItem.client,
+                      data: clientItem,
                     })
                   }
                 />
               ))
           ) : (
-            <Text>Aucun client trouvé !</Text>
+            <View style={styles.clientNotFound}>
+              <Text>Aucun client trouvé !</Text>
+            </View>
           )}
         </ScrollView>
       </View>
@@ -164,5 +168,12 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 20,
     zIndex: 10,
+  },
+  clientNotFound: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 30,
   },
 });
