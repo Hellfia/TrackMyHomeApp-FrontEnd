@@ -80,7 +80,6 @@ const InputFiles = () => {
                 console.log("biloute", data.documents);
                 dispatch(addDocument(data.documents));
               }
-              zz;
             })
             .catch((err) =>
               console.error("Erreur lors de l'envoi à l'API:", err)
