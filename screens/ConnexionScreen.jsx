@@ -8,19 +8,29 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
-import { login } from "../reducers/constructeur";
+import { loginClient } from "../reducers/client";
+import { loginConstructeur } from "../reducers/constructeur";
 
 export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
+
+  const constructeur = useSelector((state) => state.constructeur.value);
+  const client = useSelector((state) => state.client.value);
+
+  console.log("constructeur", constructeur);
+  console.log("client", client);
+
   const dispatch = useDispatch();
 
+  const devUrl = process.env.DEV_URL;
+
   const handlePressConnexion = () => {
-    fetch("http://192.168.1.146:4000/constructors/signin", {
+    fetch(`${devUrl}/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -31,11 +41,25 @@ export default function ConnexionScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         console.log("Réponse de l'API :", data);
+
         if (data.result === true) {
-          console.log("lol");
-          dispatch(
-            login({ email: signInEmail, token: data.token, role: data.role })
-          );
+          if (data.role === "client") {
+            dispatch(
+              loginClient({
+                clientId: data.clientId,
+                token: data.token,
+                role: "client",
+              })
+            );
+          } else if (data.role === "constructeur") {
+            dispatch(
+              loginConstructeur({
+                constructorId: data.constructorId,
+                token: data.token,
+                role: "constructeur",
+              })
+            );
+          }
           setSignInEmail("");
           setSignInPassword("");
           navigation.navigate("MainTabs");
@@ -43,10 +67,6 @@ export default function ConnexionScreen({ navigation }) {
           alert("Identifiants incorrects, veuillez réessayer.");
         }
       });
-  };
-
-  const handlePressConnexionClient = () => {
-    navigation.navigate("ConnexionClient");
   };
 
   const handleProAccCreation = () => {
@@ -57,12 +77,14 @@ export default function ConnexionScreen({ navigation }) {
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
         <View style={styles.logoContainer}>
-          <Image source={logo} style={{ width: 90, height: 90 }} />
+          <Image source={logo} style={{ width: 100, height: 100 }} />
         </View>
 
         <Text style={styles.title}>TrackMyHome</Text>
 
-        <Text style={styles.subtitle}>Espace Professionnel</Text>
+        <Text style={styles.subtitle}>
+          Suivez l'avancement de votre projet !
+        </Text>
 
         <KeyboardAvoidingView
           style={styles.keyboardContainer}
@@ -84,16 +106,10 @@ export default function ConnexionScreen({ navigation }) {
           <GradientButton text="Se connecter" onPress={handlePressConnexion} />
         </KeyboardAvoidingView>
 
-        <Text style={styles.profText}>
-          Vous êtes un client ?{" "}
-          <Text style={styles.profLink} onPress={handlePressConnexionClient}>
-            Cliquez-ici
-          </Text>
-        </Text>
-        <Text style={styles.profText}>
-          Vous n'avez pas de compte ?{" "}
-          <Text style={styles.profLink} onPress={handleProAccCreation}>
-            Créez-en un ici
+        <Text style={styles.text}>
+          Vous êtes un professionnel et vous n'avez pas encore de compte ?{" "}
+          <Text style={styles.link} onPress={handleProAccCreation}>
+            Cliquez-ici !
           </Text>
         </Text>
       </View>
@@ -134,11 +150,12 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 0,
   },
-  profText: {
+  text: {
     fontSize: 14,
     color: "#000000",
+    textAlign: "center",
   },
-  profLink: {
+  link: {
     color: "#8A2BE2",
     textDecorationLine: "underline",
   },

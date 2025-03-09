@@ -4,6 +4,7 @@ const initialState = {
   value: {
     token: null,
     email: null,
+    role: null,
     constructorName: null,
     constructorSiret: null,
     password: null,
@@ -15,9 +16,9 @@ export const constructeurSlice = createSlice({
   initialState,
   name: "constructeur",
   reducers: {
-    login: (state, action) => {
+    loginConstructeur: (state, action) => {
+      state.value.constructorId = action.payload.constructorId;
       state.value.token = action.payload.token;
-      state.value.email = action.payload.email;
       state.value.role = action.payload.role;
     },
     logout: (state) => {
@@ -42,6 +43,11 @@ export const constructeurSlice = createSlice({
   },
 });
 
-export const { login, logout, updateProfile, addDocument, deleteDocument } =
-  constructeurSlice.actions;
+export const {
+  loginConstructeur,
+  logout,
+  updateProfile,
+  addDocument,
+  deleteDocument,
+} = constructeurSlice.actions;
 export default constructeurSlice.reducer;

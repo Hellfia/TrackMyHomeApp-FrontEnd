@@ -121,14 +121,11 @@ const InputFiles = () => {
           <>
             <Ionicons
               name="add"
-              size={24}
-              color="#663ED9"
+              size={36}
+              color="#FE5900"
               style={styles.plusIcon}
             />
             <Text style={styles.importText}>Importez un nouveau document</Text>
-            <Text style={styles.formatText}>
-              Format accepté : JPEG, HEIC, PNG
-            </Text>
           </>
         )}
       </TouchableOpacity>
@@ -176,15 +173,24 @@ const styles = StyleSheet.create({
   importContainer: {
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
+
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+
     borderStyle: "dashed",
+    borderWidth: 1,
     borderColor: "#663ED9",
     borderRadius: 8,
-    paddingVertical: 30,
-    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   plusIcon: {
     marginBottom: 10,
+    fontWeight: "bold",
   },
   importText: {
     fontSize: 16,

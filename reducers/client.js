@@ -1,16 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: { token: null, email: null },
+  value: { token: null, email: null, role: null },
 };
 
 export const clientSlice = createSlice({
   initialState,
   name: "client",
   reducers: {
-    login: (state, action) => {
+    loginClient: (state, action) => {
+      state.value.clientId = action.payload.clientId;
       state.value.token = action.payload.token;
-      state.value.email = action.payload.email;
       state.value.role = action.payload.role;
     },
     logout: (state) => {
@@ -20,5 +20,5 @@ export const clientSlice = createSlice({
   },
 });
 
-export const { login, logout } = clientSlice.actions;
+export const { loginClient, logout, updateProfile } = clientSlice.actions;
 export default clientSlice.reducer;

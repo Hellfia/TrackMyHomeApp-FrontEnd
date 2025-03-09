@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import {
   SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   ScrollView,
-  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import ReturnButton from "../components/ReturnButton";
-import * as DocumentPicker from "expo-document-picker";
-import InputFiles from "../components/InputFiles";
+import InputFiles from "../../../../components/InputFiles";
+import ReturnButton from "../../../../components/ReturnButton";
+import globalStyles from "../../../../styles/globalStyles";
 
-export default function DocumentsScreen({ navigation }) {
+export default function DocumentsConstruteur({ navigation }) {
   const [documents, setDocuments] = useState([]);
 
   const handleDeleteDocument = (id) => {
@@ -21,13 +20,12 @@ export default function DocumentsScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.header}>
+    <SafeAreaView style={styles.container}>
+      <View style={globalStyles.header}>
         <ReturnButton onPress={() => navigation.navigate("Dashboard")} />
-        <Text style={styles.title}>Les documents</Text>
-        <View style={{ width: 30 }} />
+        <Text style={globalStyles.title}>Mes documents</Text>
       </View>
-      z
+
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <InputFiles> </InputFiles>
 
@@ -46,28 +44,15 @@ export default function DocumentsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeContainer: {
+  container: {
     flex: 1,
-    backgroundColor: "#FFF",
-  },
-  header: {
-    flexDirection: "row",
+    justifyContent: "flex-start",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-    backgroundColor: "#FFF",
-  },
-  title: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#663ED9",
+    margin: 20,
+    paddingBottom: 40,
   },
   scrollContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingTop: 40,
   },
   importContainer: {
     alignItems: "center",
@@ -95,7 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#663ED9",
-    marginBottom: 10,
+    marginVertical: 20,
   },
   documentItem: {
     flexDirection: "row",

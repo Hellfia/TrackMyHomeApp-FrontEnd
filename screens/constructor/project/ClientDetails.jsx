@@ -1,11 +1,11 @@
 import React from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import logo from "../assets/logo.webp";
-import PurpleButton from "../components/PurpleButton";
-import ReturnButton from "../components/ReturnButton";
-import StepItem from "../components/StepItem";
-import globalStyles from "../styles/globalStyles";
+import maison from "../../../assets/maison-test.jpg";
+import PurpleButton from "../../../components/PurpleButton";
+import ReturnButton from "../../../components/ReturnButton";
+import StepItem from "../../../components/StepItem";
+import globalStyles from "../../../styles/globalStyles";
 
 export default function ClientDetails({ route, navigation }) {
   const { data } = route.params;
@@ -19,24 +19,23 @@ export default function ClientDetails({ route, navigation }) {
   const image =
     lastValidatedStep && lastValidatedStep.uri
       ? { uri: lastValidatedStep.uri }
-      : logo;
+      : maison;
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <View style={globalStyles.header}>
-        <ReturnButton onPress={() => navigation.navigate("Projet")} />
+        <ReturnButton onPress={() => navigation.goBack()} />
         <Text style={globalStyles.title}>{data.client.firstname}</Text>
       </View>
 
       <View style={styles.imageContainer}>
         <Image source={image} style={styles.image} resizeMode="contain" />
       </View>
-      <PurpleButton text="Mes Documents" icon="folder" />
+      <PurpleButton text="Documents" icon="folder" />
       <Text style={styles.stepText}>Les étapes de construction</Text>
       <ScrollView>
         <View style={styles.subContainer}>
           {data.steps
-            .slice() // Créer une copy du tableau pour ne pas modifier le tableau original
             .reverse() //Inverse le tableau
             .map((step, index) => {
               let iconName = "";
@@ -62,7 +61,7 @@ export default function ClientDetails({ route, navigation }) {
                   iconColor={iconColor}
                   onPress={() =>
                     navigation.navigate("UpdateDetails", {
-                      client: data.client, // Passer uniquement les données du client
+                      data: data,
                       step: step,
                     })
                   }
@@ -80,13 +79,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   imageContainer: {
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 20,
-    width: "100%",
+    width: 340,
     height: 180,
     overflow: "hidden",
     borderRadius: 20,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    borderRadius: 20,
+    borderRadius: 10,
   },
   subContainer: {
     marginVertical: 20,
@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
   },
   stepText: {
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
     color: "#362173",
-    marginVertical: 5,
+    marginVertical: 3,
   },
 });

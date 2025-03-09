@@ -8,12 +8,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GradientButton from "../components/GradientButton";
-import Input from "../components/Input";
-import ReturnButton from "../components/ReturnButton";
-import globalStyles from "../styles/globalStyles";
+import { useSelector } from "react-redux";
+import GradientButton from "../../../components/GradientButton";
+import Input from "../../../components/Input";
+import ReturnButton from "../../../components/ReturnButton";
+import globalStyles from "../../../styles/globalStyles";
 
-export default function AddProjectsScreen({ navigation }) {
+export default function AddProjects({ navigation }) {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [constructionAdress, setConstructionAdress] = useState("");
@@ -22,10 +23,14 @@ export default function AddProjectsScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const constructorId = "67c5906967201a0f704367dc";
+  const constructeur = useSelector((state) => state.constructeur.value);
+
+  const constructorId = constructeur.constructorId;
+
+  const devUrl = process.env.DEV_URL;
 
   const handlePress = () => {
-    fetch("http://192.168.1.191:4000/projects", {
+    fetch(`${devUrl}/projects`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -118,7 +123,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   form: {
-    marginTop: 40,
     width: "100%",
+    marginTop: 40,
+    marginBottom: 10,
   },
 });

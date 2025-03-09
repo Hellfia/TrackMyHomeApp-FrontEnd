@@ -2,26 +2,27 @@ import React, { useState } from "react";
 import {
   Image,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import GradientButton from "../components/GradientButton";
-import Input from "../components/Input";
-import { login } from "../reducers/constructeur";
+import GradientButton from "../../components/GradientButton";
+import Input from "../../components/Input";
+import { login } from "../../reducers/constructeur";
 
-export default function ProAccCreation({ navigation }) {
+export default function CreatAccount({ navigation }) {
   const [constructorName, setConstructorName] = useState("");
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
 
+  const devUrl = process.env.DEV_URL;
+
   const handleSignup = () => {
-    fetch("http://192.168.1.191:4000/constructors/signup", {
+    fetch(`${devUrl}/constructors/signup`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -49,51 +50,49 @@ export default function ProAccCreation({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image source={require("../assets/logo.webp")} style={styles.logo} />
+      <Image source={require("../../assets/logo.webp")} style={styles.logo} />
 
-        <Text style={styles.title}>TrackMyHome</Text>
-        <Text style={styles.subtitle}>Créer un compte professionnel</Text>
+      <Text style={styles.title}>TrackMyHome</Text>
+      <Text style={styles.subtitle}>Créer un compte professionnel</Text>
 
-        <Input
-          style={styles.input}
-          placeholder="Nom de l'entreprise"
-          value={constructorName}
-          onChangeText={setConstructorName}
-        />
-        <Input
-          style={styles.input}
-          placeholder="Siret de l'entreprise"
-          value={constructorSiret}
-          onChangeText={setConstructorSiret}
-        />
-        <Input
-          style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <Input
-          style={styles.input}
-          placeholder="Mot de passe"
-          value={password}
-          onChangeText={setPassword}
-        />
+      <Input
+        style={styles.input}
+        placeholder="Nom de l'entreprise"
+        value={constructorName}
+        onChangeText={setConstructorName}
+      />
+      <Input
+        style={styles.input}
+        placeholder="Siret de l'entreprise"
+        value={constructorSiret}
+        onChangeText={setConstructorSiret}
+      />
+      <Input
+        style={styles.input}
+        placeholder="Email"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <Input
+        style={styles.input}
+        placeholder="Mot de passe"
+        value={password}
+        onChangeText={setPassword}
+      />
 
-        <GradientButton
-          text="Créer votre compte"
-          style={styles.button}
-          onPress={handleSignup}
-        ></GradientButton>
+      <GradientButton
+        text="Créer votre compte"
+        style={styles.button}
+        onPress={handleSignup}
+      ></GradientButton>
 
-        <View style={styles.bottomTextContainer}>
-          <Text style={styles.bottomText}>Vous avez déjà un compte? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Connexion")}>
-            <Text style={styles.linkText}>Cliquez-ici</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      <View style={styles.bottomTextContainer}>
+        <Text style={styles.bottomText}>Vous avez déjà un compte? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Connexion")}>
+          <Text style={styles.linkText}>Cliquez-ici</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -101,16 +100,14 @@ export default function ProAccCreation({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  scrollContainer: {
+    display: "flex",
+    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
+    margin: 20,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     marginBottom: 20,
     resizeMode: "contain",
   },

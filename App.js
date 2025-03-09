@@ -14,21 +14,20 @@ import client from "./reducers/client";
 import constructeur from "./reducers/constructeur";
 
 // Import des écrans
-import AddProjectScreen from "./screens/AddProjectScreen";
-import ClientDetails from "./screens/ClientDetails";
-import ConnexionClientScreen from "./screens/ConnexionClientScreen";
+import DashboardScreen from "./screens//DashboardScreen";
+import DocumentsClient from "./screens/client/documents/DocumentsClient";
+import UpdateProfileClient from "./screens/client/profil/UpdateProfileClient";
 import ConnexionScreen from "./screens/ConnexionScreen";
-import CreatCraftsmanScreen from "./screens/CreatCraftsmanScreen";
-import DashboardScreen from "./screens/DashboardScreen";
-import DetailProjectScreen from "./screens/DetailProjectScreen";
-import DocumentsScreen from "./screens/DocumentsScreen";
-import IntervenantsScreen from "./screens/IntervenantsScreen";
-import MessagesScreen from "./screens/MessagesScreen";
-import ProAccCreation from "./screens/ProAccCreation";
+import Artisans from "./screens/constructor//artisans/Artisans";
+import CreatCraftsman from "./screens/constructor/artisans/CreatCraftsman";
+import CreatAccount from "./screens/constructor/CreatAccount";
+import UpdateProfileConstructeur from "./screens/constructor/profil/UpdateProfileConstructeur";
+import AddProject from "./screens/constructor/project/AddProject";
+import ClientDetails from "./screens/constructor/project/ClientDetails";
+import DocumentsConstruteur from "./screens/constructor/project/documents/DocumentsConstruteur";
+import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import ProfilScreen from "./screens/ProfilScreen";
-import ProjectsScreen from "./screens/ProjectsScreen";
-import UpdateProfileScreen from "./screens/UpdateProfileScreen";
-import UpdateDetails from "./screens/constructor/UpdateDetails";
+import ProjectsScreen from "./screens/ProjectScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,28 +44,78 @@ const store = configureStore({
 const persistor = persistStore(store);
 // AsyncStorage.clear().then();
 // persistor.purge().then();
+// function MainTabs() {
+//   return (
+//     <Tab.Navigator
+//       screenOptions={({ route }) => ({
+//         tabBarIcon: ({ color, size }) => {
+//           if (route.name === "Projet") {
+//             return <FontAwesome5 name="hard-hat" size={size} color={color} />;
+//           }
+//           let iconName;
+//           switch (route.name) {
+//             case "Dashboard":
+//               iconName = "grid-outline";
+//               break;
+//             case "Messages":
+//               iconName = "chatbubbles";
+//               break;
+//             case "Profil":
+//               iconName = "person";
+//               break;
+//             default:
+//               iconName = "ellipse-outline";
+//           }
+//           return <Ionicons name={iconName} size={size} color={color} />;
+//         },
+//         tabBarActiveTintColor: "#FE5900",
+//         tabBarInactiveTintColor: "#663ED9",
+//         headerShown: false,
+//       })}
+//     >
+//       <Tab.Screen name="Dashboard" component={DashboardScreen} />
+//       <Tab.Screen name="Projet" component={ProjectsScreen} />
+//       <Tab.Screen name="Messages" component={MessagesScreen} />
+//       <Tab.Screen name="Profil" component={ProfilScreen} />
+//     </Tab.Navigator>
+//   );
+// }
+
 function MainTabs() {
+  const constructeurToken = useSelector(
+    (state) => state.constructeur.value.token
+  );
+  const clientToken = useSelector((state) => state.client.value.token);
+
+  // Détermine le rôle en fonction des tokens
+  const isConstructeur = !!constructeurToken;
+  const isClient = !!clientToken;
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          if (route.name === "Projet") {
-            return <FontAwesome5 name="hard-hat" size={size} color={color} />;
-          }
           let iconName;
+
           switch (route.name) {
             case "Dashboard":
               iconName = "grid-outline";
               break;
-            case "Messages":
-              iconName = "chatbubbles";
+            case "Artisans":
+              iconName = "book";
+              break;
+            case "Documents":
+              iconName = "folder";
               break;
             case "Profil":
               iconName = "person";
               break;
+            case "Projet":
+              return <FontAwesome5 name="hard-hat" size={size} color={color} />;
             default:
               iconName = "ellipse-outline";
           }
+
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: "#FE5900",
@@ -76,17 +125,25 @@ function MainTabs() {
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Projet" component={ProjectsScreen} />
-      <Tab.Screen name="Messages" component={MessagesScreen} />
+      {isConstructeur ? (
+        <Tab.Screen name="Artisans" component={Artisans} />
+      ) : (
+        <Tab.Screen name="Documents" component={DocumentsClient} />
+      )}
       <Tab.Screen name="Profil" component={ProfilScreen} />
     </Tab.Navigator>
   );
 }
 
 function RootNavigator() {
-  const token = useSelector((state) => state.constructeur.value.token);
+  const constructeurToken = useSelector(
+    (state) => state.constructeur.value.token
+  );
+  const clientToken = useSelector((state) => state.client.value.token);
+  const isAuthenticated = constructeurToken || clientToken;
   return (
     <Stack.Navigator>
-      {token ? (
+      {isAuthenticated ? (
         <>
           <Stack.Screen
             name="MainTabs"
@@ -94,28 +151,28 @@ function RootNavigator() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="DetailProject"
-            component={DetailProjectScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
             name="Intervenants"
-            component={IntervenantsScreen}
+            component={Artisans}
             options={{ headerShown: false }}
           />
           <Stack.Screen
             name="AddProject"
-            component={AddProjectScreen}
+            component={AddProject}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="UpdateProfile"
-            component={UpdateProfileScreen}
+            name="UpdateProfileConstructeur"
+            component={UpdateProfileConstructeur}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UpdateProfileClient"
+            component={UpdateProfileClient}
             options={{ headerShown: false }}
           />
           <Stack.Screen
             name="CreateCraftsman"
-            component={CreatCraftsmanScreen}
+            component={CreatCraftsman}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -130,7 +187,7 @@ function RootNavigator() {
           />
           <Stack.Screen
             name="Documents"
-            component={DocumentsScreen}
+            component={DocumentsConstruteur}
             options={{ headerShown: false }}
           />
         </>
@@ -142,13 +199,8 @@ function RootNavigator() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="ConnexionClient"
-            component={ConnexionClientScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
             name="ProAccCreation"
-            component={ProAccCreation}
+            component={CreatAccount}
             options={{ headerShown: false }}
           />
         </>

@@ -11,25 +11,17 @@ const CraftsmanContainer = ({
   phoneNumber,
 }) => {
   const profileImage = craftsmanLogo ? { uri: craftsmanLogo } : avatar;
+
   return (
     <View style={styles.generalContainer}>
       <Image source={profileImage} style={styles.avatar} />
       <View style={styles.infosContainer}>
         <Text style={styles.nameCraftsman}>{craftsmanName}</Text>
+        <Text>{craftsmanAddress}</Text>
         <Text>
-          <Text style={styles.bold}>Adresse: </Text>
-          {craftsmanAddress}
+          {craftsmanZip} {craftsmanCity}
         </Text>
-        <Text>
-          <Text style={styles.bold}>Code postal: </Text>
-          {craftsmanZip}
-          {"\n"}
-          <Text style={styles.bold}>Ville: </Text>
-          {craftsmanCity}
-          {"\n"}
-          <Text style={styles.bold}>Tel: </Text>
-          {phoneNumber}
-        </Text>
+        <Text> {phoneNumber}</Text>
       </View>
     </View>
   );
@@ -39,27 +31,29 @@ const styles = StyleSheet.create({
   generalContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#663ED9",
     borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
     padding: 12,
     marginVertical: 5,
     width: "100%",
   },
   infosContainer: {
-    marginLeft: 10,
+    marginLeft: 15,
     flex: 1,
   },
   avatar: {
-    width: 60,
-    height: 60,
+    width: 80,
+    height: 80,
     borderRadius: 10,
   },
   nameCraftsman: {
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  bold: {
     fontWeight: "500",
     color: "#663ED9",
   },

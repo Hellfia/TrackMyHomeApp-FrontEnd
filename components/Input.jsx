@@ -27,10 +27,16 @@ const Input = ({
 const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#663ED9",
     borderRadius: 8,
-    padding: 12,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    padding: 14,
     fontSize: 16,
     marginBottom: 16,
   },

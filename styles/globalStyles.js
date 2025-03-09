@@ -6,6 +6,8 @@ const globalStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 600,
     textAlign: "center",
+    marginTop: 10,
+    paddingHorizontal: 40,
   },
   subTitle: {
     fontSize: 18,
@@ -22,7 +24,7 @@ const globalStyles = StyleSheet.create({
 export default globalStyles;
 
 // A importer dans le fichier ou on veux utiliser le globalStyles
-//import globalStyles from '../styles/globalStyles';
+//import globalStyles from '../../styles/globalStyles';
 
 //exemple d'utilisation :
 //<View style={globalStyles.container}>

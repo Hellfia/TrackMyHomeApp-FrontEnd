@@ -8,7 +8,7 @@ const StepItem = ({ name, iconName, iconColor, onPress }) => {
       <View style={styles.stepContainer}>
         <FontAwesome5
           name={iconName}
-          size={20}
+          size={22}
           color={iconColor}
           style={styles.icon}
         />
@@ -28,19 +28,28 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-
-    paddingHorizontal: 20,
+    backgroundColor: "red",
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   stepContainer: {
     display: "flex",
     flexDirection: "row",
   },
   stepText: {
-    fontSize: 14,
-    fontWeight: "400",
+    fontSize: 15,
+    fontWeight: "500",
   },
   icon: {
-    marginRight: 10,
+    marginRight: 14,
   },
 });
 

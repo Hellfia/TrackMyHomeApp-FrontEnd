@@ -8,8 +8,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import globalStyles from "../../../styles/globalStyles";
 
-export default function DashboardScreen({ navigation }) {
+export default function DashboardConstructeur({ navigation }) {
   const projectsData = [
     { id: "1", name: "Maison de Paul", progress: 45 },
     { id: "2", name: "Villa de Marie", progress: 80 },
@@ -27,42 +28,24 @@ export default function DashboardScreen({ navigation }) {
   ];
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.container}>
-        {/* // le header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>DashBoard</Text>
-          <TouchableOpacity
-            style={styles.headerIcon}
-            onPress={() => navigation.navigate("Messages")}
-          >
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={24}
-              color="#6C63FF"
-            />
-          </TouchableOpacity>
+    <SafeAreaView style={styles.container}>
+      <View>
+        <View style={globalStyles.header}>
+          <Text style={globalStyles.title}>Mon dashboard</Text>
         </View>
-        {/* // le logo ( a changer car moche dans un rond enfait) */}
-        <View style={styles.logoContainer}>
-          {/*<Image
-            style={styles.logoPlaceholder}
-            source={require("../assets/logo.png")}
-          />*/}
-        </View>
-        {/* // scoll seulement le container secondaire et laisse le haut de la page */}
-        {/* propre */}
         <ScrollView style={styles.content}>
           {/* // section pour le count du nombre de chantier */}
-          <TouchableOpacity
-            style={styles.section}
-            onPress={() => navigation.navigate("Projet")}
-          >
-            <Text style={styles.sectionTitle}>Mes Chantiers</Text>
+          <View style={styles.section}>
+            <Text
+              style={styles.sectionTitle}
+              onPress={() => navigation.navigate("Projet")}
+            >
+              Mes Chantiers
+            </Text>
             <Text style={styles.sectionSubtitle}>
               Vous avez {chantierCount} chantiers en cours
             </Text>
-          </TouchableOpacity>
+          </View>
           {/* //section des clients */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Mes clients</Text>
@@ -90,14 +73,15 @@ export default function DashboardScreen({ navigation }) {
               Vous n'avez pas de nouveaux messages
             </Text>
           </View>
-          {/* // section a rendre cliquable pour routert vers la page administratif
-          si on l'a fait */}
+
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Administratif</Text>
-            <TouchableOpacity
-              style={styles.section}
+            <Text
+              style={styles.sectionTitle}
               onPress={() => navigation.navigate("Documents")}
-            />
+            >
+              Mes documents
+            </Text>
+
             <Text style={styles.sectionSubtitle}>Mes documents</Text>
             <View style={styles.clientsRow}></View>
           </View>
@@ -108,45 +92,14 @@ export default function DashboardScreen({ navigation }) {
 }
 
 export const styles = StyleSheet.create({
-  safeContainer: {
-    flex: 1,
-    backgroundColor: "#f2f2f2",
-  },
   container: {
     flex: 1,
-  },
-  header: {
-    flexDirection: "row",
+    justifyContent: "flex-start",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
-  },
-  headerIcon: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#6C63FF",
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  logoPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#ddd",
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
+    padding: 20,
   },
   section: {
     marginBottom: 20,

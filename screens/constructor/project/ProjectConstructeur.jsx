@@ -1,18 +1,22 @@
+import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ClientContainer from "../components/ClientContainer";
-import PlusButton from "../components/PlusButton";
-import globalStyles from "../styles/globalStyles";
+import { useSelector } from "react-redux";
+import ClientContainer from "../../../components/ClientContainer";
+import PlusButton from "../../../components/PlusButton";
+import globalStyles from "../../../styles/globalStyles";
 
-export default function ProjectsScreen({ navigation }) {
+export default function ProjectConstructeur({ navigation }) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [clients, setClients] = useState([]);
 
-  console.log(clients);
+  const constructeur = useSelector((state) => state.constructeur.value);
+
+  // console.log(clients);
 
   useEffect(() => {
     (async () => {
@@ -28,15 +32,18 @@ export default function ProjectsScreen({ navigation }) {
     })();
   }, []);
 
-  useEffect(() => {
-    // Constructeur appelé en dur, pensez a appellé via le store apres login et supprimer cette ligne
-    const constructorId = "67c9d6cf8c35c9b608aeb221";
-    fetch(`http://192.168.1.146:4000/projects/clients/${constructorId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setClients(data.data);
-      });
-  }, []);
+  const devUrl = process.env.DEV_URL;
+
+  useFocusEffect(
+    useCallback(() => {
+      const constructorId = constructeur.constructorId;
+      fetch(`${devUrl}/projects/clients/${constructorId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setClients(data.data);
+        });
+    }, [constructeur.constructorId])
+  );
 
   const defaultRegion = {
     latitude: 46.603354,
@@ -135,7 +142,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: 20,
   },
   mapContainer: {
     width: "90%",
@@ -143,7 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
     marginTop: 40,
-    marginBottom: 25,
+    marginBottom: 15,
   },
   map: {
     flex: 1,
@@ -161,7 +167,7 @@ const styles = StyleSheet.create({
   subTitleText: {
     textAlign: "left",
     paddingLeft: 25,
-    marginBottom: 15,
+    marginBottom: 7,
   },
   plusButton: {
     position: "absolute",

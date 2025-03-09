@@ -13,7 +13,7 @@ const ReturnButton = ({ onPress }) => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 3,
+    top: 11,
     left: 0,
     zIndex: 1,
   },
