@@ -1,7 +1,15 @@
 import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
 import React, { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
@@ -11,12 +19,11 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function ProjectConstructeur({ navigation }) {
   const [location, setLocation] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [clients, setClients] = useState([]);
 
   const constructeur = useSelector((state) => state.constructeur.value);
-
-  // console.log(clients);
 
   useEffect(() => {
     (async () => {
@@ -37,10 +44,16 @@ export default function ProjectConstructeur({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const constructorId = constructeur.constructorId;
+      setLoading(true);
       fetch(`${devUrl}/projects/clients/${constructorId}`)
         .then((res) => res.json())
         .then((data) => {
           setClients(data.data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Erreur lors de la récupération des clients", err);
+          setLoading(false);
         });
     }, [constructeur.constructorId])
   );
@@ -65,6 +78,32 @@ export default function ProjectConstructeur({ navigation }) {
     navigation.navigate("AddProject");
   };
 
+  // Fonction pour ouvrir Google Maps avec itinéraire en voiture
+  const openGoogleMaps = (latitude, longitude) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+    Linking.openURL(url).catch((err) =>
+      console.error("Erreur lors de l'ouverture de Google Maps", err)
+    );
+  };
+
+  const handleMarkerPress = (firstname, lastname, latitude, longitude) => {
+    Alert.alert(
+      `Chantier de ${firstname} ${lastname}`,
+      `\nVous souhaitez vous rendre sur ce chantier ?`,
+      [
+        {
+          text: "Annuler",
+          style: "cancel",
+        },
+        {
+          text: "Oui, go !",
+          onPress: () => openGoogleMaps(latitude, longitude),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={globalStyles.title}>Mes chantiers</Text>
@@ -72,32 +111,43 @@ export default function ProjectConstructeur({ navigation }) {
         <Text style={styles.errorText}>{errorMsg}</Text>
       ) : (
         <View style={styles.mapContainer}>
-          <MapView style={styles.map} region={region}>
-            {location && (
-              <Marker
-                coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                }}
-                title="Ma position"
-              />
-            )}
-            {clients.map(
-              (client, index) =>
-                client.client?.constructionLat &&
-                client.client?.constructionLong && (
-                  <Marker
-                    key={client._id || `marker-${index}`}
-                    coordinate={{
-                      latitude: parseFloat(client.client.constructionLat),
-                      longitude: parseFloat(client.client.constructionLong),
-                    }}
-                    title={`${client.client.firstname} ${client.client.lastname}`}
-                    pinColor="purple"
-                  />
-                )
-            )}
-          </MapView>
+          {loading ? (
+            <ActivityIndicator size="large" color="#663ED9" />
+          ) : (
+            <MapView style={styles.map} region={region}>
+              {location && (
+                <Marker
+                  coordinate={{
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  }}
+                  title="Ma position"
+                />
+              )}
+              {clients.map(
+                (client, index) =>
+                  client.client?.constructionLat &&
+                  client.client?.constructionLong && (
+                    <Marker
+                      key={client._id || `marker-${index}`}
+                      coordinate={{
+                        latitude: parseFloat(client.client.constructionLat),
+                        longitude: parseFloat(client.client.constructionLong),
+                      }}
+                      pinColor="purple"
+                      onPress={() =>
+                        handleMarkerPress(
+                          client.client.firstname,
+                          client.client.lastname,
+                          parseFloat(client.client.constructionLat),
+                          parseFloat(client.client.constructionLong)
+                        )
+                      }
+                    />
+                  )
+              )}
+            </MapView>
+          )}
         </View>
       )}
       <View style={styles.clientsContainer}>
