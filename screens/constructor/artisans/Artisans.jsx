@@ -19,7 +19,7 @@ export default function Artisans({ route, navigation }) {
       fetch(`${devUrl}/craftsmen/${token}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("dataFecthed", data);
+          console.log("dataFetched", data);
           setCraftsman(data.data);
         })
         .catch((error) => console.error("Erreur lors du fetch:", error));
@@ -35,21 +35,30 @@ export default function Artisans({ route, navigation }) {
 
       <View style={styles.listContent}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {craftsman.map((craftsmanItem) => (
-            <CraftsmanContainer
-              key={craftsmanItem._id}
-              craftsmanName={craftsmanItem.craftsmanName}
-              craftsmanLogo={craftsmanItem.craftsmanLogo}
-              craftsmanAddress={craftsmanItem.craftsmanAddress}
-              craftsmanZip={craftsmanItem.craftsmanZip}
-              craftsmanCity={craftsmanItem.craftsmanCity}
-              phoneNumber={craftsmanItem.phoneNumber}
-              navigation={navigation}
-              route={craftsman}
-            />
-          ))}
+          {craftsman.length > 0 ? (
+            craftsman.map((craftsmanItem) => (
+              <CraftsmanContainer
+                key={craftsmanItem._id}
+                craftsmanName={craftsmanItem.craftsmanName}
+                craftsmanLogo={craftsmanItem.craftsmanLogo}
+                craftsmanAddress={craftsmanItem.craftsmanAddress}
+                craftsmanZip={craftsmanItem.craftsmanZip}
+                craftsmanCity={craftsmanItem.craftsmanCity}
+                phoneNumber={craftsmanItem.phoneNumber}
+                navigation={navigation}
+                route={craftsman}
+              />
+            ))
+          ) : (
+            <View style={styles.craftsmanNotFound}>
+              <Text style={styles.craftsmanNotFoundText}>
+                Ajoutez votre premier artisan !
+              </Text>
+            </View>
+          )}
         </ScrollView>
       </View>
+
       <PlusButton
         icon="plus"
         onPress={() => navigation.navigate("CreateCraftsman")}
@@ -72,5 +81,29 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 8,
     paddingVertical: 16,
+  },
+  craftsmanNotFound: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
+    marginHorizontal: 40,
+    padding: 50,
+    width: "80%",
+    textAlign: "center",
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  craftsmanNotFoundText: {
+    fontSize: 18,
+    textAlign: "center",
+    color: "#362173",
   },
 });

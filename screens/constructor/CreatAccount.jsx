@@ -1,17 +1,20 @@
+import Joi from "joi";
 import React, { useState } from "react";
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import Joi from "joi"; // Import Joi
 import GradientButton from "../../components/GradientButton";
 import Input from "../../components/Input";
-import { login } from "../../reducers/constructeur";
+import { loginConstructeur } from "../../reducers/constructeur";
 
 export default function CreatAccount({ navigation }) {
   const [constructorName, setConstructorName] = useState("");
@@ -90,9 +93,14 @@ export default function CreatAccount({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Réponse de l'API :", data);
-        if (data.result === true) {
-          dispatch(login({ email: email, token: data.token }));
+        if (data.result) {
+          dispatch(
+            loginConstructeur({
+              constructorId: data.constructorId,
+              token: data.token,
+              role: "constructeur",
+            })
+          );
           setConstructorName("");
           setEmail("");
           setPassword("");
@@ -109,50 +117,57 @@ export default function CreatAccount({ navigation }) {
       <Text style={styles.title}>TrackMyHome</Text>
       <Text style={styles.subtitle}>Créer un compte professionnel</Text>
 
-      <Input
-        style={styles.input}
-        placeholder="Nom de l'entreprise"
-        value={constructorName}
-        onChangeText={setConstructorName}
-      />
-      {errors.constructorName && (
-        <Text style={styles.errorText}>{errors.constructorName}</Text>
-      )}
+      <KeyboardAvoidingView
+        style={styles.keyboardContainer}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView style={styles.form}>
+          <Input
+            style={styles.input}
+            placeholder="Nom de l'entreprise"
+            value={constructorName}
+            onChangeText={setConstructorName}
+          />
+          {errors.constructorName && (
+            <Text style={styles.errorText}>{errors.constructorName}</Text>
+          )}
 
-      <Input
-        style={styles.input}
-        placeholder="Siret de l'entreprise"
-        value={constructorSiret}
-        onChangeText={setConstructorSiret}
-      />
-      {errors.constructorSiret && (
-        <Text style={styles.errorText}>{errors.constructorSiret}</Text>
-      )}
+          <Input
+            style={styles.input}
+            placeholder="Siret de l'entreprise"
+            value={constructorSiret}
+            onChangeText={setConstructorSiret}
+          />
+          {errors.constructorSiret && (
+            <Text style={styles.errorText}>{errors.constructorSiret}</Text>
+          )}
 
-      <Input
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+          <Input
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-      <Input
-        style={styles.input}
-        placeholder="Mot de passe"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      {errors.password && (
-        <Text style={styles.errorText}>{errors.password}</Text>
-      )}
-      <GradientButton
-        text="Créer votre compte"
-        style={styles.button}
-        onPress={handleSignup}
-      />
+          <Input
+            style={styles.input}
+            placeholder="Mot de passe"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password}</Text>
+          )}
+          <GradientButton
+            text="Créer votre compte"
+            style={styles.button}
+            onPress={handleSignup}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <View style={styles.bottomTextContainer}>
         <Text style={styles.bottomText}>Vous avez déjà un compte? </Text>
@@ -165,12 +180,6 @@ export default function CreatAccount({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  errorText: {
-    fontSize: 12,
-    color: "red",
-    marginTop: -14,
-    paddingBottom: 12,
-  },
   container: {
     flex: 1,
     display: "flex",
@@ -195,6 +204,14 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 20,
   },
+  keyboardContainer: {
+    width: "100%",
+  },
+  form: {
+    width: "100%",
+    marginTop: 25,
+    marginBottom: 10,
+  },
   bottomTextContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -208,5 +225,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#8A2BE2",
     textDecorationLine: "underline",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "red",
+    marginTop: -14,
+    paddingBottom: 12,
   },
 });

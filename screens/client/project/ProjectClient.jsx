@@ -1,13 +1,11 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
-import { useSelector } from "react-redux";
-import globalStyles from "../../../styles/globalStyles";
-import maison from "../../../assets/maison-test.jpg";
-import PurpleButton from "../../../components/PurpleButton";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import StepItem from "../../../components/StepItem"
+import React, { useCallback, useState } from "react";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import maison from "../../../assets/maison-test.jpg";
+import StepItem from "../../../components/StepItem";
+import globalStyles from "../../../styles/globalStyles";
 
 export default function ProjectClient({ navigation }) {
   const [steps, setSteps] = useState([]);
@@ -37,43 +35,40 @@ export default function ProjectClient({ navigation }) {
         <Image source={maison} style={styles.image} resizeMode="cover" />
       </View>
 
-     
-
       <Text style={styles.stepText}>Les étapes de construction</Text>
       <ScrollView>
         <View style={styles.subContainer}>
-          {steps
-            .map((step, index) => {
-              let iconName = "";
-              let iconColor = "";
+          {steps.map((step, index) => {
+            let iconName = "";
+            let iconColor = "";
 
-              // Déterminer l'icône et la couleur en fonction du statut
-              if (step.status === "À venir") {
-                iconName = "ban";
-                iconColor = "#FF0000";
-              } else if (step.status === "Terminé") {
-                iconName = "check";
-                iconColor = "#28DB52";
-              } else if (step.status === "En cours") {
-                iconName = "spinner";
-                iconColor = "#FFA500";
-              }
+            // Déterminer l'icône et la couleur en fonction du statut
+            if (step.status === "À venir") {
+              iconName = "ban";
+              iconColor = "#FF0000";
+            } else if (step.status === "Terminé") {
+              iconName = "check";
+              iconColor = "#28DB52";
+            } else if (step.status === "En cours") {
+              iconName = "spinner";
+              iconColor = "#FFA500";
+            }
 
-              return (
-                <StepItem
-                  key={index}
-                  name={step.name}
-                  iconName={iconName}
-                  iconColor={iconColor}
-                  iconOnPress='eye'
-                  onPress={() =>
-                    navigation.navigate("UpdateDetailsClient", {
-                      data: step,
-                    })
-                  }
-                />
-              );
-            })}
+            return (
+              <StepItem
+                key={index}
+                name={step.name}
+                iconName={iconName}
+                iconColor={iconColor}
+                iconOnPress="eye"
+                onPress={() =>
+                  navigation.navigate("UpdateDetailsClient", {
+                    data: step,
+                  })
+                }
+              />
+            );
+          })}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -104,10 +99,11 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   stepText: {
-    fontSize: 18,
-    color: "#663ED9",
     marginBottom: 15,
     textAlign: "center",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#362173",
   },
   stepsContainer: {
     flex: 1,

@@ -84,22 +84,28 @@ export default function DashboardConstructeur({ navigation }) {
         <Text style={styles.sectionTitle}>Mes clients</Text>
         <View style={styles.sectionClient}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {clientsData.map((client) => (
-              <TouchableOpacity
-                key={client.id}
-                style={styles.clientCard}
-                onPress={() => callClient(client.phoneNumber)}
-              >
-                <Image
-                  source={client.logo ? { uri: client.logo } : avatar}
-                  style={styles.avatar}
-                />
-                <Text style={styles.clientText}>
-                  {client.firstname} {client.lastname}
-                </Text>
-                <FontAwesome5 name="phone-alt" color="#FE5900" size={20} />
-              </TouchableOpacity>
-            ))}
+            {clientsData.length === 0 ? (
+              <View style={styles.noClientContainer}>
+                <Text style={styles.noClientText}>Aucun client</Text>
+              </View>
+            ) : (
+              clientsData.map((client) => (
+                <TouchableOpacity
+                  key={client.id}
+                  style={styles.clientCard}
+                  onPress={() => callClient(client.phoneNumber)}
+                >
+                  <Image
+                    source={client.logo ? { uri: client.logo } : avatar}
+                    style={styles.avatar}
+                  />
+                  <Text style={styles.clientText}>
+                    {client.firstname} {client.lastname}
+                  </Text>
+                  <FontAwesome5 name="phone-alt" color="#FE5900" size={20} />
+                </TouchableOpacity>
+              ))
+            )}
           </ScrollView>
         </View>
         <Text style={styles.sectionTitle}>Mes artisans</Text>
@@ -190,5 +196,27 @@ const styles = StyleSheet.create({
     color: "#FE5900",
     fontSize: 22,
     fontWeight: "bold",
+  },
+  noClientContainer: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 35,
+    paddingHorizontal: 114,
+    textAlign: "center",
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  noClientText: {
+    fontSize: 16,
+    textAlign: "center",
   },
 });

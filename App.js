@@ -17,6 +17,7 @@ import constructeur from "./reducers/constructeur";
 import DashboardScreen from "./screens//DashboardScreen";
 import DocumentsClient from "./screens/client/documents/DocumentsClient";
 import UpdateProfileClient from "./screens/client/profil/UpdateProfileClient";
+import UpdateDetailsClient from "./screens/client/project/UpdateDetailsClient";
 import ConnexionScreen from "./screens/ConnexionScreen";
 import Artisans from "./screens/constructor//artisans/Artisans";
 import CreatCraftsman from "./screens/constructor/artisans/CreatCraftsman";
@@ -29,7 +30,6 @@ import DocumentsConstruteur from "./screens/constructor/project/documents/Docume
 import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
-import UpdateDetailsClient from "./screens/client/project/UpdateDetailsClient";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

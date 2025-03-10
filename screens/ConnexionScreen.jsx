@@ -40,9 +40,7 @@ export default function ConnexionScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Réponse de l'API :", data);
-
-        if (data.result === true) {
+        if (data.result) {
           if (data.role === "client") {
             dispatch(
               loginClient({

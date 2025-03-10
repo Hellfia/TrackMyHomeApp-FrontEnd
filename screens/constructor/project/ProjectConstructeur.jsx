@@ -176,7 +176,9 @@ export default function ProjectConstructeur({ navigation }) {
               ))
           ) : (
             <View style={styles.clientNotFound}>
-              <Text>Aucun client trouvé !</Text>
+              <Text style={styles.clientNotFoundText}>
+                Ajoutez votre premier client !
+              </Text>
             </View>
           )}
         </ScrollView>
@@ -230,6 +232,24 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 50,
+    marginHorizontal: 40,
+    padding: 50,
+    width: "80%",
+    textAlign: "center",
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  clientNotFoundText: {
+    fontSize: 18,
+    textAlign: "center",
+    color: "#362173",
   },
 });
