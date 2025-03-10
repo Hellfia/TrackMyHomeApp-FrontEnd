@@ -1,5 +1,5 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Image,
   Linking,
@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import avatar from "../../../assets/avatar.png";
 import globalStyles from "../../../styles/globalStyles";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function DashboardConstructeur({ navigation }) {
   const [projectsData, setProjectsData] = useState(0);
@@ -35,26 +36,28 @@ export default function DashboardConstructeur({ navigation }) {
       .catch(console.error);
   }, []);
 
-  useEffect(() => {
-    fetch(`${devUrl}/projects/clients/${constructeur.constructorId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setClientsData(
-            data.data.map((item, index) => ({
-              id: index,
-              logo: item.client.profilePicture,
-              firstname: item.client.firstname,
-              lastname: item.client.lastname,
-              phoneNumber: item.client.phoneNumber || "Non renseigné",
-            }))
-          );
-        } else {
-          setClientsData([]);
-        }
-      })
-      .catch(console.error);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetch(`${devUrl}/projects/clients/${constructeur.constructorId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setClientsData(
+              data.data.map((item, index) => ({
+                id: index,
+                logo: item.client.profilePicture,
+                firstname: item.client.firstname,
+                lastname: item.client.lastname,
+                phoneNumber: item.client.phoneNumber || "Non renseigné",
+              }))
+            );
+          } else {
+            setClientsData([]);
+          }
+        })
+        .catch(console.error);
+    }, [devUrl, constructeur.constructorId])
+  );
 
   const callClient = (phoneNumber) => {
     if (phoneNumber && phoneNumber !== "Non renseigné") {
@@ -66,56 +69,43 @@ export default function DashboardConstructeur({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View contentContainerStyle={styles.content}>
-        <Text style={globalStyles.title}>Mon dashboard</Text>
-        <View style={styles.subContainer}>
-          <Text
-            style={styles.sectionTitle}
-            onPress={() => navigation.navigate("Projet")}
-          >
-            Mes Chantiers
-          </Text>
-          <View style={styles.section}>
-            <Text style={styles.sectionSubtitle}>
-              Nombre de chantier en cours :{" "}
-            </Text>
-            <Text style={styles.highlight}>{projectsData}</Text>
-          </View>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={[globalStyles.title, { marginBottom: 20 }]}>Mon dashboard</Text>
 
-          <Text style={styles.sectionTitle}>Mes clients</Text>
-          <View style={styles.sectionClient}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {clientsData.map((client) => (
-                <TouchableOpacity
-                  key={client.id}
-                  style={styles.clientCard}
-                  onPress={() => callClient(client.phoneNumber)}
-                >
-                  <Image
-                    source={client.logo ? { uri: client.logo } : avatar}
-                    style={styles.avatar}
-                  />
-                  <Text style={styles.clientText}>
-                    {client.firstname} {client.lastname}
-                  </Text>
-                  <FontAwesome5 name="phone-alt" color="#FE5900" size={20} />
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+        <Text style={styles.sectionTitle}>Mes Chantiers</Text>
+        <TouchableOpacity style={styles.section} onPress={() => navigation.navigate("Projet")}>
+          <Text style={styles.sectionSubtitle}>Nombre de chantier en cours :{' '}</Text>
+          <Text style={styles.highlight}>{projectsData}</Text>
+        </TouchableOpacity>
 
-          <Text style={styles.sectionTitle}>Mes artisans</Text>
-          <TouchableOpacity
-            style={styles.section}
-            onPress={() => navigation.navigate("Intervenants")}
-          >
-            <Text style={styles.sectionSubtitle}>
-              Nombre d'artisan en activité:
-            </Text>
-            <Text style={styles.highlight}>{craftsmenData}</Text>
-          </TouchableOpacity>
+        <Text style={styles.sectionTitle}>Mes clients</Text>
+        <View style={styles.sectionClient}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {clientsData.map((client) => (
+              <TouchableOpacity
+                key={client.id}
+                style={styles.clientCard}
+                onPress={() => callClient(client.phoneNumber)}
+              >
+                <Image source={client.logo ? { uri: client.logo } : avatar} style={styles.avatar} />
+                <Text style={styles.clientText}>
+                  {client.firstname} {client.lastname}
+                </Text>
+                <FontAwesome5 name="phone-alt" color="#FE5900" size={20} />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-      </View>
+
+        <Text style={styles.sectionTitle}>Mes artisans</Text>
+        <TouchableOpacity
+          style={styles.section}
+          onPress={() => navigation.navigate("Intervenants")}
+        >
+          <Text style={styles.sectionSubtitle}>Nombre d'artisan en activité:</Text>
+          <Text style={styles.highlight}>{craftsmenData}</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -123,20 +113,18 @@ export default function DashboardConstructeur({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  subContainer: {
-    marginVertical: 40,
+    backgroundColor: "#f5f5f5",
   },
   content: {
     flexGrow: 1,
-    padding: 10,
+    padding: 20,
   },
   section: {
     marginBottom: 30,
     padding: 15,
     backgroundColor: "#fff",
     borderRadius: 12,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "#663ED9",
     shadowColor: "#000",
     shadowOpacity: 0.1,
@@ -148,7 +136,7 @@ const styles = StyleSheet.create({
   sectionClient: {
     marginBottom: 30,
     paddingBottom: 10,
-    marginLeft: 25,
+    marginHorizontal: 25,
   },
   sectionTitle: {
     fontSize: 20,
@@ -190,5 +178,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 10,
     textAlign: "center",
+  },
+  highlight: {
+    color: "#FE5900",
+    fontSize: 22,
+    fontWeight: "bold",
   },
 });
