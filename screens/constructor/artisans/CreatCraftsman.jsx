@@ -87,7 +87,7 @@ export default function CreatCraftsman({ navigation }) {
           setCraftsmanCity("");
           setPhoneNumber("");
           setLogo(null);
-          navigation.navigate("Intervenants");
+          navigation.navigate("Artisans");
         }
       });
   };

@@ -20,6 +20,7 @@ import UpdateProfileClient from "./screens/client/profil/UpdateProfileClient";
 import ConnexionScreen from "./screens/ConnexionScreen";
 import Artisans from "./screens/constructor//artisans/Artisans";
 import CreatCraftsman from "./screens/constructor/artisans/CreatCraftsman";
+import UpdateCraftsman from "./screens/constructor/artisans/UpdateCraftsman";
 import CreatAccount from "./screens/constructor/CreatAccount";
 import UpdateProfileConstructeur from "./screens/constructor/profil/UpdateProfileConstructeur";
 import AddProject from "./screens/constructor/project/AddProject";
@@ -163,6 +164,11 @@ function RootNavigator() {
           <Stack.Screen
             name="UpdateProfileConstructeur"
             component={UpdateProfileConstructeur}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UpdateCraftsman"
+            component={UpdateCraftsman}
             options={{ headerShown: false }}
           />
           <Stack.Screen

@@ -1,5 +1,14 @@
-import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+import React, { useState } from "react";
+import {
+  Button,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import maison from "../../../assets/maison-test.jpg";
 import PurpleButton from "../../../components/PurpleButton";
@@ -10,12 +19,41 @@ import globalStyles from "../../../styles/globalStyles";
 export default function ClientDetails({ route, navigation }) {
   const { data } = route.params;
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   // Trouver la dernière étape validée dans steps qui a le statut validée
   const lastValidatedStep = data.steps
     .reverse()
     .find((step) => step.status === "validée");
 
-  // Si on a une étape validée , on prend son URI, sinon on prend le logo par défaut
+  const handlePress = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const devUrl = process.env.DEV_URL;
+
+  const handleDelete = () => {
+    fetch(`${devUrl}/projects/${data._id}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          navigation.navigate("Projet");
+        } else {
+          console.error("Erreur lors de la suppression :", data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur réseau ou serveur :", error);
+      });
+  };
+
+  // Si on a une étape validée , on prend l'URI de la derniere, sinon on prend le logo par défaut
   const image =
     lastValidatedStep && lastValidatedStep.uri
       ? { uri: lastValidatedStep.uri }
@@ -26,6 +64,13 @@ export default function ClientDetails({ route, navigation }) {
       <View style={globalStyles.header}>
         <ReturnButton onPress={() => navigation.goBack()} />
         <Text style={globalStyles.title}>{data.client.firstname}</Text>
+        <FontAwesome5
+          name="trash-alt"
+          size="25"
+          color="#FF0000"
+          style={styles.icon}
+          onPress={handlePress}
+        />
       </View>
 
       <View style={styles.imageContainer}>
@@ -70,6 +115,28 @@ export default function ClientDetails({ route, navigation }) {
             })}
         </View>
       </ScrollView>
+
+      {/* Modale */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>
+              Êtes-vous sûr de supprimer ce chantier ?
+            </Text>
+            <PurpleButton
+              onPress={() => handleDelete()}
+              text="Oui, supprimer"
+              backgroundColor="#DB0000"
+            />
+            <Button title="Annuler" onPress={handleCloseModal} />
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -81,6 +148,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 20,
+  },
+  icon: {
+    position: "absolute",
+    top: 15,
+    right: 8,
   },
   imageContainer: {
     justifyContent: "center",
@@ -107,5 +179,28 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#362173",
     marginVertical: 3,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "85%",
+    backgroundColor: "#fff",
+    padding: 30,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "500",
+    paddingTop: 10,
+    paddingBottom: 30,
+    textAlign: "center",
   },
 });

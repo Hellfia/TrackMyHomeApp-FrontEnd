@@ -7,7 +7,7 @@ import PlusButton from "../../../components/PlusButton";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
-export default function Artisans({ navigation }) {
+export default function Artisans({ route, navigation }) {
   const constructeur = useSelector((state) => state.constructeur.value);
   const [craftsman, setCraftsman] = useState([]);
 
@@ -44,6 +44,8 @@ export default function Artisans({ navigation }) {
               craftsmanZip={craftsmanItem.craftsmanZip}
               craftsmanCity={craftsmanItem.craftsmanCity}
               phoneNumber={craftsmanItem.phoneNumber}
+              navigation={navigation}
+              route={craftsman}
             />
           ))}
         </ScrollView>
