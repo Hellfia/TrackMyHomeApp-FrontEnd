@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useDispatch } from "react-redux";
+import Joi from "joi"; // Import Joi
 import GradientButton from "../../components/GradientButton";
 import Input from "../../components/Input";
 import { login } from "../../reducers/constructeur";
@@ -17,11 +18,66 @@ export default function CreatAccount({ navigation }) {
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({}); // Error state to hold validation errors
   const dispatch = useDispatch();
 
   const devUrl = process.env.DEV_URL;
 
+  // Joi validation schema
+  const schema = Joi.object({
+    constructorName: Joi.string().min(1).max(50).required().messages({
+      "string.empty": "Le nom de l'entreprise est obligatoire.",
+      "string.min":
+        "Le nom de l'entreprise doit contenir au moins 1 caractères.",
+      "string.max":
+        "Le nom de l'entreprise ne doit pas dépasser 50 caractères.",
+    }),
+    constructorSiret: Joi.string()
+      .length(14)
+      .pattern(/^\d+$/)
+      .required()
+      .messages({
+        "string.empty": "Le numéro SIRET est obligatoire.",
+        "string.length": "Le numéro SIRET doit comporter 14 chiffres.",
+        "string.pattern.base":
+          "Le numéro SIRET doit être composé uniquement de chiffres.",
+      }),
+    email: Joi.string()
+      .email({ tlds: { allow: false } }) // Allowing/disallowing specific TLDs (optional)
+      .required()
+      .messages({
+        "string.empty": "L'email est obligatoire.",
+        "string.email": "Veuillez entrer un email valide.",
+      }),
+    password: Joi.string().min(3).required().messages({
+      "string.empty": "Le mot de passe est obligatoire.",
+      "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
+    }),
+  });
+
+  // Function to validate form data
+  const validate = () => {
+    const { error } = schema.validate(
+      { constructorName, constructorSiret, email, password },
+      { abortEarly: false }
+    );
+    if (error) {
+      const errorDetails = error.details.reduce((acc, curr) => {
+        acc[curr.path[0]] = curr.message;
+        return acc;
+      }, {});
+      setErrors(errorDetails); // Set validation errors
+      return false;
+    }
+    setErrors({}); // Clear errors if validation passes
+    return true;
+  };
+
   const handleSignup = () => {
+    if (!validate()) {
+      return; // Stop further execution if validation fails
+    }
+
     fetch(`${devUrl}/constructors/signup`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -36,14 +92,12 @@ export default function CreatAccount({ navigation }) {
       .then((data) => {
         console.log("Réponse de l'API :", data);
         if (data.result === true) {
-          console.log("lol");
           dispatch(login({ email: email, token: data.token }));
           setConstructorName("");
           setEmail("");
           setPassword("");
           setConstructorSiret("");
           navigation.navigate("MainTabs");
-          console.log("fini");
         }
       });
   };
@@ -61,12 +115,20 @@ export default function CreatAccount({ navigation }) {
         value={constructorName}
         onChangeText={setConstructorName}
       />
+      {errors.constructorName && (
+        <Text style={styles.errorText}>{errors.constructorName}</Text>
+      )}
+
       <Input
         style={styles.input}
         placeholder="Siret de l'entreprise"
         value={constructorSiret}
         onChangeText={setConstructorSiret}
       />
+      {errors.constructorSiret && (
+        <Text style={styles.errorText}>{errors.constructorSiret}</Text>
+      )}
+
       <Input
         style={styles.input}
         placeholder="Email"
@@ -74,18 +136,23 @@ export default function CreatAccount({ navigation }) {
         value={email}
         onChangeText={setEmail}
       />
+      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
       <Input
         style={styles.input}
         placeholder="Mot de passe"
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
       />
-
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password}</Text>
+      )}
       <GradientButton
         text="Créer votre compte"
         style={styles.button}
         onPress={handleSignup}
-      ></GradientButton>
+      />
 
       <View style={styles.bottomTextContainer}>
         <Text style={styles.bottomText}>Vous avez déjà un compte? </Text>
@@ -98,6 +165,12 @@ export default function CreatAccount({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  errorText: {
+    fontSize: 12,
+    color: "red",
+    marginTop: -14,
+    paddingBottom: 12,
+  },
   container: {
     flex: 1,
     display: "flex",
@@ -120,11 +193,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#555555",
     marginTop: 5,
-    marginBottom: 20,
-  },
-  description: {
-    fontSize: 14,
-    color: "#666666",
     marginBottom: 20,
   },
   bottomTextContainer: {

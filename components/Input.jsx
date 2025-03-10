@@ -7,10 +7,12 @@ const Input = ({
   onChangeText,
   placeholderTextColor,
   keyboardType,
+  secureTextEntry = false,
 }) => {
   return (
     <View style={styles.inputContainer}>
       <TextInput
+        secureTextEntry={secureTextEntry}
         style={styles.inputText}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
