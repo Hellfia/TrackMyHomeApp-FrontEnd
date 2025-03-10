@@ -12,12 +12,14 @@ import globalStyles from "../../../styles/globalStyles";
 export default function ProfilConstructeur({ navigation }) {
   const dispatch = useDispatch();
 
-  const constructeur = useSelector((state) => state.constructeur.value); //
+  const constructeur = useSelector((state) => state.constructeur.value);
 
   const [infoConstructor, setInfoConstructor] = useState([]);
 
   const handleEditProfile = () => {
-    navigation.navigate("UpdateProfileConstructeur");
+    navigation.navigate("UpdateProfileConstructeur", {
+      data: infoConstructor,
+    });
   };
 
   const handleLogout = () => {

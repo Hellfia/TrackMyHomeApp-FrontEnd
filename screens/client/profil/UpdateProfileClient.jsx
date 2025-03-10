@@ -13,12 +13,14 @@ import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
-export default function UpdateProfileClient({ navigation }) {
+export default function UpdateProfileClient({ route, navigation }) {
+  const { data } = route.params;
+
   const client = useSelector((state) => state.client.value);
 
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
+  const [firstname, setFirstname] = useState(data.firstname || "");
+  const [lastname, setLastname] = useState(data.lastname || "");
+  const [email, setEmail] = useState(data.email || "");
   const [password, setPassword] = useState("");
 
   const token = client.token;

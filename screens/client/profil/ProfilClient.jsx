@@ -17,7 +17,9 @@ export default function ProfilClient({ navigation }) {
   const [infoClient, setInfoClient] = useState([]);
 
   const handleEditProfile = () => {
-    navigation.navigate("UpdateProfileClient");
+    navigation.navigate("UpdateProfileClient", {
+      data: infoClient,
+    });
   };
 
   const handleLogout = () => {

@@ -7,20 +7,26 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
-export default function UpdateProfileConstructeur({ navigation }) {
-  const dispatch = useDispatch();
+export default function UpdateProfileConstructeur({ route, navigation }) {
+  const { data } = route.params;
+
+  console.log(data);
 
   const constructeur = useSelector((state) => state.constructeur.value);
 
-  const [constructorName, setConstructorName] = useState("");
-  const [constructorSiret, setConstructorSiret] = useState("");
-  const [email, setEmail] = useState("");
+  const [constructorName, setConstructorName] = useState(
+    data.constructorName || ""
+  );
+  const [constructorSiret, setConstructorSiret] = useState(
+    data.constructorSiret || ""
+  );
+  const [email, setEmail] = useState(data.email || "");
   const [password, setPassword] = useState("");
 
   const token = constructeur.token;
