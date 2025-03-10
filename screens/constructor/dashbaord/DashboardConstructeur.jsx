@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import React, { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Image,
   Linking,
@@ -13,7 +14,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import avatar from "../../../assets/avatar.png";
 import globalStyles from "../../../styles/globalStyles";
-import { useFocusEffect } from "@react-navigation/native";
 
 export default function DashboardConstructeur({ navigation }) {
   const [projectsData, setProjectsData] = useState(0);
@@ -69,15 +69,18 @@ export default function DashboardConstructeur({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[globalStyles.title, { marginBottom: 20 }]}>Mon dashboard</Text>
-
+      <Text style={globalStyles.title}>Mon dashboard</Text>
+      <View style={styles.subContainer}>
         <Text style={styles.sectionTitle}>Mes Chantiers</Text>
-        <TouchableOpacity style={styles.section} onPress={() => navigation.navigate("Projet")}>
-          <Text style={styles.sectionSubtitle}>Nombre de chantier en cours :{' '}</Text>
-          <Text style={styles.highlight}>{projectsData}</Text>
+        <TouchableOpacity
+          style={styles.section}
+          onPress={() => navigation.navigate("Projet")}
+        >
+          <Text style={styles.sectionSubtitle}>
+            Nombre de chantier en cours :{" "}
+          </Text>
+          <Text style={styles.highLight}>{projectsData}</Text>
         </TouchableOpacity>
-
         <Text style={styles.sectionTitle}>Mes clients</Text>
         <View style={styles.sectionClient}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -87,7 +90,10 @@ export default function DashboardConstructeur({ navigation }) {
                 style={styles.clientCard}
                 onPress={() => callClient(client.phoneNumber)}
               >
-                <Image source={client.logo ? { uri: client.logo } : avatar} style={styles.avatar} />
+                <Image
+                  source={client.logo ? { uri: client.logo } : avatar}
+                  style={styles.avatar}
+                />
                 <Text style={styles.clientText}>
                   {client.firstname} {client.lastname}
                 </Text>
@@ -96,16 +102,18 @@ export default function DashboardConstructeur({ navigation }) {
             ))}
           </ScrollView>
         </View>
-
         <Text style={styles.sectionTitle}>Mes artisans</Text>
         <TouchableOpacity
           style={styles.section}
           onPress={() => navigation.navigate("Intervenants")}
         >
-          <Text style={styles.sectionSubtitle}>Nombre d'artisan en activité:</Text>
-          <Text style={styles.highlight}>{craftsmenData}</Text>
+          <Text style={styles.sectionSubtitle}>
+            Nombre d'artisan en activité :
+          </Text>
+          <Text style={styles.highLight}>{craftsmenData}</Text>
         </TouchableOpacity>
-      </ScrollView>
+        -
+      </View>
     </SafeAreaView>
   );
 }
@@ -113,18 +121,17 @@ export default function DashboardConstructeur({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
-  content: {
-    flexGrow: 1,
-    padding: 20,
+  subContainer: {
+    marginVertical: 50,
   },
+
   section: {
     marginBottom: 30,
     padding: 15,
     backgroundColor: "#fff",
     borderRadius: 12,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#663ED9",
     shadowColor: "#000",
     shadowOpacity: 0.1,
@@ -136,7 +143,7 @@ const styles = StyleSheet.create({
   sectionClient: {
     marginBottom: 30,
     paddingBottom: 10,
-    marginHorizontal: 25,
+    marginLeft: 25,
   },
   sectionTitle: {
     fontSize: 20,
@@ -150,11 +157,11 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "center",
   },
-  highlight: {
+  highLight: {
     color: "#FE5900",
     fontSize: 22,
     fontWeight: "bold",
-    padding: 5,
+    padding: 10,
   },
   clientCard: {
     borderWidth: 1,
