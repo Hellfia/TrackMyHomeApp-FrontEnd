@@ -29,7 +29,7 @@ export default function UpdateProfileClient({ route, navigation }) {
 
   const handleUpdateProfile = () => {
     fetch(`${devUrl}/clients/${token}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         firstname: firstname,
@@ -90,6 +90,7 @@ export default function UpdateProfileClient({ route, navigation }) {
             onChangeText={(value) => setPassword(value)}
             autoCapitalize="none"
             autoCorrect={false}
+            secureTextEntry={true}
           />
         </View>
 
