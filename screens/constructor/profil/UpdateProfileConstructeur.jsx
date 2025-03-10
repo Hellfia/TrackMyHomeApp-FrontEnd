@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
+import Joi from "joi"; // Import Joi
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
@@ -15,8 +16,6 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function UpdateProfileConstructeur({ route, navigation }) {
   const { data } = route.params;
-
-  console.log(data);
 
   const constructeur = useSelector((state) => state.constructeur.value);
 
@@ -27,15 +26,79 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
     data.constructorSiret || ""
   );
   const [email, setEmail] = useState(data.email || "");
+
   const [password, setPassword] = useState("");
+
+  const [errors, setErrors] = useState({}); // State for holding error messages
 
   const token = constructeur.token;
 
   const devUrl = process.env.DEV_URL;
 
+  // Joi validation schema
+  const schema = Joi.object({
+    constructorName: Joi.string()
+      .min(3)
+      .optional()
+      .max(50)
+
+      .messages({
+        "string.empty": "Le nom de l'entreprise est obligatoire.",
+        "string.min":
+          "Le nom de l'entreprise doit contenir au moins 3 caractères.",
+        "string.max":
+          "Le nom de l'entreprise ne doit pas dépasser 50 caractères.",
+      }),
+    constructorSiret: Joi.string()
+      .length(14)
+      .pattern(/^\d+$/)
+
+      .optional()
+      .messages({
+        "string.empty": "Le numéro SIRET est obligatoire.",
+        "string.length": "Le numéro SIRET doit comporter 14 chiffres.",
+        "string.pattern.base":
+          "Le numéro SIRET doit être composé uniquement de chiffres.",
+      }),
+    email: Joi.string()
+      .email({ tlds: { allow: false } }) // Optional: disallow certain TLDs
+      .optional()
+      .messages({
+        "string.empty": "L'email est obligatoire.",
+        "string.email": "Veuillez entrer un email valide.",
+      }),
+    password: Joi.string().min(8).optional().messages({
+      "string.empty": "Le mot de passe est obligatoire.",
+      "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
+    }),
+  });
+
+  // Function to validate form data
+  const validate = () => {
+    const { error } = schema.validate(
+      { constructorName, constructorSiret, email, password },
+      { abortEarly: false }
+    );
+    if (error) {
+      const errorDetails = error.details.reduce((acc, curr) => {
+        acc[curr.path[0]] = curr.message;
+        return acc;
+      }, {});
+      setErrors(errorDetails); // Set validation errors
+      return false;
+    }
+    setErrors({}); // Clear errors if validation passes
+    return true;
+  };
+
   const handleUpdateProfile = () => {
+    // Validate form before making the API call
+    if (!validate()) {
+      return; // Stop execution if validation fails
+    }
+
     fetch(`${devUrl}/constructors/${token}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         constructorName: constructorName,
@@ -51,6 +114,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
         }
       });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={globalStyles.header}>
@@ -70,6 +134,9 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
             autoCapitalize="none"
             autoCorrect={false}
           />
+          {errors.constructorName && (
+            <Text style={styles.errorText}>{errors.constructorName}</Text>
+          )}
 
           <Input
             style={styles.inputText}
@@ -79,6 +146,9 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
             autoCapitalize="none"
             autoCorrect={false}
           />
+          {errors.constructorSiret && (
+            <Text style={styles.errorText}>{errors.constructorSiret}</Text>
+          )}
 
           <Input
             style={styles.inputText}
@@ -88,7 +158,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
             autoCapitalize="none"
             autoCorrect={false}
           />
-
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
           <Input
             style={styles.inputText}
             placeholder="Mot de passe"
@@ -96,13 +166,14 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
             onChangeText={(value) => setPassword(value)}
             autoCapitalize="none"
             autoCorrect={false}
+            secureTextEntry={true}
           />
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password}</Text>
+          )}
         </View>
 
-        <GradientButton
-          onPress={handleUpdateProfile}
-          text="Mettre à jour"
-        ></GradientButton>
+        <GradientButton onPress={handleUpdateProfile} text="Mettre à jour" />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -127,5 +198,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: "#ddd",
     fontSize: 16,
+  },
+  errorText: {
+    fontSize: 12,
+    color: "red",
+    paddingBottom: 12,
   },
 });

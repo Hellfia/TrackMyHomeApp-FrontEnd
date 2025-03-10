@@ -16,9 +16,11 @@ const ClientContainer = ({
     <TouchableOpacity style={styles.generalContainer} onPress={onPress}>
       <Image source={profileImage} style={styles.avatar} />
       <View style={styles.infosContainer}>
-        <Text style={styles.nameClient}>
-          {firstname} {lastname}
-        </Text>
+        <View style={styles.modifContainer}>
+          <Text style={styles.nameClient}>
+            {firstname} {lastname}
+          </Text>
+        </View>
         <Text style={styles.addressClient}>{address}</Text>
         <Text>
           {zip} {city}
