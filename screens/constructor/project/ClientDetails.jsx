@@ -76,7 +76,7 @@ export default function ClientDetails({ route, navigation }) {
       <View style={styles.imageContainer}>
         <Image source={image} style={styles.image} resizeMode="contain" />
       </View>
-      <PurpleButton text="Documents" icon="folder" />
+      <PurpleButton text="Documents" icon="folder" onPress={() => navigation.navigate("Documents")} />
       <Text style={styles.stepText}>Les étapes de construction</Text>
       <ScrollView>
         <View style={styles.subContainer}>

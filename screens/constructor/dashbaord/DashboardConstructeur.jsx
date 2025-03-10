@@ -1,31 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import globalStyles from "../../../styles/globalStyles";
+import { useSelector } from "react-redux";
 
 export default function DashboardConstructeur({ navigation }) {
-  const projectsData = [
-    { id: "1", name: "Maison de Paul", progress: 45 },
-    { id: "2", name: "Villa de Marie", progress: 80 },
-    { id: "3", name: "Extension Pierre", progress: 25 },
-  ];
+  const [projectsData, setProjectsData] = useState([]);
+  const [clientsData, setClientsData] = useState([]);
+  const devUrl = process.env.DEV_URL;
+  const constructeur = useSelector((state) => state.constructeur.value);
 
-  // juste pour tester le coun du nombre de chantier
-  const chantierCount = projectsData.length;
+  useEffect(() => {
+    const constructorId = constructeur.constructorId;
+    fetch(`${devUrl}/projects/${constructorId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('projects data', data)
+        setProjectsData(data.data.length);
+      })
+      .catch((error) => console.error(error));
+  }, []);
 
-  const clientsData = [
-    { id: "1", name: "Client 1", projectId: "1" },
-    { id: "2", name: "Client 2", projectId: "2" },
-    { id: "3", name: "Client 3", projectId: "3" },
-    { id: "4", name: "Client 4", projectId: "1" },
-  ];
+
+
+  useEffect(() => {
+    const constructorId = constructeur.constructorId;
+  
+    fetch(`${devUrl}/projects/clients/${constructorId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('clients data', data);
+  
+        if (data.result) {
+          setClientsData(
+            data.data.map((item) => ({
+              logo: item.client.profilePicture, // correction ici : 'profilePicture' au lieu de 'profilPicture'
+              firstname: item.client.firstname,
+              phoneNumber: item.client.phoneNumber || 'Non renseigné', // Ajouter un fallback si non existant
+            }))
+          );
+        } else {
+          setClientsData([]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setClientsData([]);
+      });
+  }, []);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,7 +74,7 @@ export default function DashboardConstructeur({ navigation }) {
               Mes Chantiers
             </Text>
             <Text style={styles.sectionSubtitle}>
-              Vous avez {chantierCount} chantiers en cours
+              Vous avez {projectsData} chantiers en cours
             </Text>
           </View>
           {/* //section des clients */}
@@ -54,14 +85,10 @@ export default function DashboardConstructeur({ navigation }) {
                 <TouchableOpacity
                   key={client.id}
                   style={styles.clientCard}
-                  onPress={() =>
-                    navigation.navigate("DetailProject", {
-                      projectId: client.projectId,
-                    })
-                  }
+                  
                 >
                   <Ionicons name="image-outline" size={40} color="#6C63FF" />
-                  <Text style={styles.clientText}>{client.name}</Text>
+                  <Text style={styles.clientText}>{client.firstname} { client.phoneNumber }</Text>
                 </TouchableOpacity>
               ))}
             </View>

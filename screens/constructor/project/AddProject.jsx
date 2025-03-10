@@ -22,6 +22,7 @@ export default function AddProjects({ navigation }) {
   const [constructionCity, setConstructionCity] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const constructeur = useSelector((state) => state.constructeur.value);
 
@@ -36,6 +37,7 @@ export default function AddProjects({ navigation }) {
       body: JSON.stringify({
         firstname: firstname,
         lastname: lastname,
+        phoneNumber: phoneNumber,
         constructionAdress: constructionAdress,
         constructionZipCode: constructionZipCode,
         constructionCity: constructionCity,
@@ -54,6 +56,7 @@ export default function AddProjects({ navigation }) {
           setConstructionCity(""),
           setEmail(""),
           setPassword(""),
+          setPhoneNumber("");
           navigation.navigate("MainTabs");
       });
   };
@@ -80,6 +83,11 @@ export default function AddProjects({ navigation }) {
             onChangeText={(value) => setLastname(value)}
           />
           <Input
+            placeholder="Numero de téléphone"
+            value={phoneNumber} 
+            onChangeText={(value) => setPhoneNumber(value)}
+          />
+          <Input
             placeholder="Adresse du chantier"
             value={constructionAdress}
             onChangeText={(value) => setConstructionAdress(value)}
@@ -104,6 +112,7 @@ export default function AddProjects({ navigation }) {
             value={password}
             onChangeText={(value) => setPassword(value)}
           />
+          
         </ScrollView>
 
         <GradientButton text="Valider" onPress={handlePress} />
