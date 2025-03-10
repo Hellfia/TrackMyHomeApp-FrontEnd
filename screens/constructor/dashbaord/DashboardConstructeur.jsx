@@ -1,7 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, Linking } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome5 } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import avatar from "../../../assets/avatar.png";
 import globalStyles from "../../../styles/globalStyles";
@@ -58,43 +66,56 @@ export default function DashboardConstructeur({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[globalStyles.title, { marginBottom: 20 }]}>Mon Dashboard</Text>
-
-        <Text style={styles.sectionTitle} onPress={() => navigation.navigate("Projet")}>Mes Chantiers</Text>
-        <View style={styles.section}>
-          <Text style={styles.sectionSubtitle}>
-            Nombre de chantier en cours :{' '}
+      <View contentContainerStyle={styles.content}>
+        <Text style={globalStyles.title}>Mon dashboard</Text>
+        <View style={styles.subContainer}>
+          <Text
+            style={styles.sectionTitle}
+            onPress={() => navigation.navigate("Projet")}
+          >
+            Mes Chantiers
+          </Text>
+          <View style={styles.section}>
+            <Text style={styles.sectionSubtitle}>
+              Nombre de chantier en cours :{" "}
             </Text>
-          <Text style={styles.highlight}>{projectsData}</Text>
-        </View>
+            <Text style={styles.highlight}>{projectsData}</Text>
+          </View>
 
-        <Text style={styles.sectionTitle}>Mes clients</Text>
-        <View style={styles.section}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {clientsData.map((client) => (
-              <TouchableOpacity
-                key={client.id}
-                style={styles.clientCard}
-                onPress={() => callClient(client.phoneNumber)}
-              >
-                <Image
-                  source={client.logo ? { uri: client.logo } : avatar}
-                  style={styles.avatar}
-                />
-                <Text style={styles.clientText}>{client.firstname} {client.lastname}</Text>
-                <FontAwesome5 name="phone-alt" color="#FE5900" size={20} />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+          <Text style={styles.sectionTitle}>Mes clients</Text>
+          <View style={styles.sectionClient}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {clientsData.map((client) => (
+                <TouchableOpacity
+                  key={client.id}
+                  style={styles.clientCard}
+                  onPress={() => callClient(client.phoneNumber)}
+                >
+                  <Image
+                    source={client.logo ? { uri: client.logo } : avatar}
+                    style={styles.avatar}
+                  />
+                  <Text style={styles.clientText}>
+                    {client.firstname} {client.lastname}
+                  </Text>
+                  <FontAwesome5 name="phone-alt" color="#FE5900" size={20} />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
 
-        <Text style={styles.sectionTitle}>Mes artisans</Text>
-        <TouchableOpacity style={styles.section} onPress={() => navigation.navigate("Intervenants")}>
-          <Text style={styles.sectionSubtitle}>Nombre d'artisan en activité:</Text>
-          <Text style={styles.highlight}>{craftsmenData}</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          <Text style={styles.sectionTitle}>Mes artisans</Text>
+          <TouchableOpacity
+            style={styles.section}
+            onPress={() => navigation.navigate("Intervenants")}
+          >
+            <Text style={styles.sectionSubtitle}>
+              Nombre d'artisan en activité:
+            </Text>
+            <Text style={styles.highlight}>{craftsmenData}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -102,7 +123,9 @@ export default function DashboardConstructeur({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+  },
+  subContainer: {
+    marginVertical: 40,
   },
   content: {
     flexGrow: 1,
@@ -113,19 +136,26 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#fff",
     borderRadius: 12,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#663ED9",
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
     alignItems: "center",
+    marginHorizontal: 25,
+  },
+  sectionClient: {
+    marginBottom: 30,
+    paddingBottom: 10,
+    marginLeft: 25,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "600",
     color: "#000",
     marginBottom: 10,
+    marginHorizontal: 25,
   },
   sectionSubtitle: {
     fontSize: 16,
@@ -136,6 +166,7 @@ const styles = StyleSheet.create({
     color: "#FE5900",
     fontSize: 22,
     fontWeight: "bold",
+    padding: 5,
   },
   clientCard: {
     borderWidth: 1,
