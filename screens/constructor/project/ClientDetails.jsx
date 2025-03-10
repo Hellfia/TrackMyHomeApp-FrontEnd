@@ -104,6 +104,7 @@ export default function ClientDetails({ route, navigation }) {
                   name={step.name}
                   iconName={iconName}
                   iconColor={iconColor}
+                  iconOnPress='pencil-alt'
                   onPress={() =>
                     navigation.navigate("UpdateDetails", {
                       data: data,

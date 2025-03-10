@@ -2,7 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const StepItem = ({ name, iconName, iconColor, onPress }) => {
+const StepItem = ({ name, iconName, iconColor, onPress, iconOnPress }) => {
   return (
     <View style={styles.generalContainer}>
       <View style={styles.stepContainer}>
@@ -15,7 +15,7 @@ const StepItem = ({ name, iconName, iconColor, onPress }) => {
         <Text style={styles.stepText}>{name}</Text>
       </View>
       <TouchableOpacity onPress={onPress}>
-        <FontAwesome5 name="pencil-alt" size={20} color="#663ED9" />
+        <FontAwesome5 name={iconOnPress} size={20} color="#663ED9" />
       </TouchableOpacity>
     </View>
   );

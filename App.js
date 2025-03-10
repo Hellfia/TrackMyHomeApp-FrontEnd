@@ -29,6 +29,7 @@ import DocumentsConstruteur from "./screens/constructor/project/documents/Docume
 import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
+import UpdateDetailsClient from "./screens/client/project/UpdateDetailsClient";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -194,6 +195,11 @@ function RootNavigator() {
           <Stack.Screen
             name="Documents"
             component={DocumentsConstruteur}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UpdateDetailsClient"
+            component={UpdateDetailsClient}
             options={{ headerShown: false }}
           />
         </>
