@@ -1,3 +1,4 @@
+import Joi from "joi"; // Import Joi
 import React, { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
@@ -22,50 +23,85 @@ export default function CreatCraftsman({ navigation }) {
   const [craftsmanZip, setCraftsmanZip] = useState("");
   const [craftsmanCity, setCraftsmanCity] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const token = useSelector((state) => state.constructeur.value.token);
   const [logo, setLogo] = useState(null);
+  const [errors, setErrors] = useState({}); // State to hold validation errors
+
+  const token = useSelector((state) => state.constructeur.value.token);
 
   const scrollViewRef = useRef(null);
 
+  // Schéma de validation avec Joi
+  const schema = Joi.object({
+    craftsmanName: Joi.string().min(1).required().messages({
+      "string.empty": "Le nom de l'entreprise est obligatoire.",
+      "string.min":
+        "Le nom de l'entreprise doit comporter au moins 1 caractères.",
+    }),
+    craftsmanAddress: Joi.string().min(1).required().messages({
+      "string.empty": "L'adresse est obligatoire.",
+      "string.min": "L'adresse doit comporter au moins 1 caractères.",
+    }),
+    craftsmanZip: Joi.string().length(5).pattern(/^\d+$/).required().messages({
+      "string.empty": "Le code postal est obligatoire.",
+      "string.length": "Le code postal doit comporter 5 chiffres.",
+      "string.pattern.base":
+        "Le code postal doit être composé uniquement de chiffres.",
+    }),
+    craftsmanCity: Joi.string().min(1).required().messages({
+      "string.empty": "La ville est obligatoire.",
+      "string.min": "La ville doit comporter au moins 1 caractères.",
+    }),
+    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).required().messages({
+      "string.empty": "Le numéro de téléphone est obligatoire.",
+      "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
+      "string.pattern.base":
+        "Le numéro de téléphone doit être composé uniquement de chiffres.",
+    }),
+    logo: Joi.optional(), // Le logo peut être une option
+  });
+
   useEffect(() => {
-    // Crée un écouteur d'événement pour l'apparition du clavier
     const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow", // Le type d'événement à écouter (lorsque le clavier devient visible)
+      "keyboardDidShow",
       () => {
-        // Lorsque le clavier apparaît, on fait défiler la vue jusqu'à la fin
-        // Cela garantit que le contenu du bas de l'écran soit visible quand le clavier est affiché
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }
     );
 
-    // Fonction de nettoyage qui se déclenche lorsque le clavier se ferme
     return () => {
-      // Enlève l'écouteur d'événement créé pour 'keyboardDidShow' afin d'éviter les fuites de mémoire
       keyboardDidShowListener.remove();
     };
-  }, []); // Le tableau vide [] signifie que cet effet s'exécute uniquement à l'apparaition du clavier
-
-  const handleImagePicker = () => {};
+  }, []);
 
   const handleValidate = () => {
-    if (
-      !craftsmanName ||
-      !craftsmanAddress ||
-      !craftsmanZip ||
-      !craftsmanCity ||
-      !phoneNumber
-    ) {
-      alert("Veuillez remplir tous les champs requis !");
+    const { error } = schema.validate({
+      craftsmanName,
+      craftsmanAddress,
+      craftsmanZip,
+      craftsmanCity,
+      phoneNumber,
+      logo,
+    });
+
+    if (error) {
+      // Si une erreur de validation est trouvée, on met à jour l'état des erreurs
+      const errorDetails = error.details.reduce((acc, curr) => {
+        acc[curr.path[0]] = curr.message;
+        return acc;
+      }, {});
+
+      setErrors(errorDetails);
       return;
     }
 
+    // Si la validation est correcte, on envoie les données
     const payload = {
-      craftsmanName: craftsmanName,
+      craftsmanName,
       craftsmanLogo: logo ? logo : "",
-      craftsmanAddress: craftsmanAddress,
-      craftsmanZip: craftsmanZip,
-      craftsmanCity: craftsmanCity,
-      phoneNumber: phoneNumber,
+      craftsmanAddress,
+      craftsmanZip,
+      craftsmanCity,
+      phoneNumber,
       constructeurToken: token,
     };
 
@@ -87,6 +123,7 @@ export default function CreatCraftsman({ navigation }) {
           setCraftsmanCity("");
           setPhoneNumber("");
           setLogo(null);
+          setErrors({});
           navigation.navigate("Artisans");
         }
       });
@@ -96,7 +133,6 @@ export default function CreatCraftsman({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={globalStyles.header}>
         <ReturnButton onPress={() => navigation.goBack()} />
-
         <Text style={globalStyles.title}>Créer un nouvel artisan</Text>
       </View>
       <KeyboardAvoidingView
@@ -109,26 +145,45 @@ export default function CreatCraftsman({ navigation }) {
             value={craftsmanName}
             onChangeText={(value) => setCraftsmanName(value)}
           />
+          {errors.craftsmanName && (
+            <Text style={styles.errorText}>{errors.craftsmanName}</Text>
+          )}
+
           <Input
             placeholder="Adresse de l'artisan"
             value={craftsmanAddress}
             onChangeText={(value) => setCraftsmanAddress(value)}
           />
+          {errors.craftsmanAddress && (
+            <Text style={styles.errorText}>{errors.craftsmanAddress}</Text>
+          )}
+
           <Input
             placeholder="Code postal de l'entreprise"
             value={craftsmanZip}
             onChangeText={(value) => setCraftsmanZip(value)}
           />
+          {errors.craftsmanZip && (
+            <Text style={styles.errorText}>{errors.craftsmanZip}</Text>
+          )}
+
           <Input
             placeholder="Ville de l'artisan"
             value={craftsmanCity}
             onChangeText={(value) => setCraftsmanCity(value)}
           />
+          {errors.craftsmanCity && (
+            <Text style={styles.errorText}>{errors.craftsmanCity}</Text>
+          )}
+
           <Input
             placeholder="Téléphone de l'entreprise"
             value={phoneNumber}
             onChangeText={(value) => setPhoneNumber(value)}
           />
+          {errors.phoneNumber && (
+            <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+          )}
 
           <Text style={styles.labelLogo}>Ajoutez le logo de l'artisan :</Text>
           <View style={styles.inputFilesContainer}>
@@ -159,5 +214,13 @@ const styles = StyleSheet.create({
   inputFilesContainer: {
     height: 140,
     marginBottom: 30,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: -10,
+    marginBottom: 10,
+    width: "100%",
+    marginLeft: 10,
   },
 });

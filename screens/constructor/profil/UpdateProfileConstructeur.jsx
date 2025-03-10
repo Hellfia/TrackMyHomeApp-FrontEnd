@@ -1,14 +1,15 @@
+import Joi from "joi";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import Joi from "joi"; // Import Joi
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
@@ -29,7 +30,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
 
   const [password, setPassword] = useState("");
 
-  const [errors, setErrors] = useState({}); // State for holding error messages
+  const [errors, setErrors] = useState({});
 
   const token = constructeur.token;
 
@@ -61,19 +62,18 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
           "Le numéro SIRET doit être composé uniquement de chiffres.",
       }),
     email: Joi.string()
-      .email({ tlds: { allow: false } }) // Optional: disallow certain TLDs
+      .email({ tlds: { allow: false } })
       .optional()
       .messages({
         "string.empty": "L'email est obligatoire.",
         "string.email": "Veuillez entrer un email valide.",
       }),
-    password: Joi.string().min(8).optional().messages({
+    password: Joi.string().min(0).optional().messages({
       "string.empty": "Le mot de passe est obligatoire.",
       "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
     }),
   });
 
-  // Function to validate form data
   const validate = () => {
     const { error } = schema.validate(
       { constructorName, constructorSiret, email, password },
@@ -84,17 +84,16 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
         acc[curr.path[0]] = curr.message;
         return acc;
       }, {});
-      setErrors(errorDetails); // Set validation errors
+      setErrors(errorDetails);
       return false;
     }
-    setErrors({}); // Clear errors if validation passes
+    setErrors({});
     return true;
   };
 
   const handleUpdateProfile = () => {
-    // Validate form before making the API call
     if (!validate()) {
-      return; // Stop execution if validation fails
+      return;
     }
 
     fetch(`${devUrl}/constructors/${token}`, {
@@ -125,54 +124,57 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.inputContainer}>
-          <Input
-            style={styles.inputText}
-            placeholder="Nom de l'entreprise"
-            value={constructorName}
-            onChangeText={(value) => setConstructorName(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          {errors.constructorName && (
-            <Text style={styles.errorText}>{errors.constructorName}</Text>
-          )}
+        <ScrollView>
+          <View style={styles.inputContainer}>
+            <Input
+              style={styles.inputText}
+              placeholder="Nom de l'entreprise"
+              value={constructorName}
+              onChangeText={(value) => setConstructorName(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {errors.constructorName && (
+              <Text style={styles.errorText}>{errors.constructorName}</Text>
+            )}
 
-          <Input
-            style={styles.inputText}
-            placeholder="Siret de l'entreprise"
-            value={constructorSiret}
-            onChangeText={(value) => setConstructorSiret(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          {errors.constructorSiret && (
-            <Text style={styles.errorText}>{errors.constructorSiret}</Text>
-          )}
+            <Input
+              style={styles.inputText}
+              placeholder="Siret de l'entreprise"
+              value={constructorSiret}
+              onChangeText={(value) => setConstructorSiret(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {errors.constructorSiret && (
+              <Text style={styles.errorText}>{errors.constructorSiret}</Text>
+            )}
 
-          <Input
-            style={styles.inputText}
-            placeholder="Email"
-            value={email}
-            onChangeText={(value) => setEmail(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-          <Input
-            style={styles.inputText}
-            placeholder="Mot de passe"
-            value={password}
-            onChangeText={(value) => setPassword(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry={true}
-          />
-          {errors.password && (
-            <Text style={styles.errorText}>{errors.password}</Text>
-          )}
-        </View>
-
+            <Input
+              style={styles.inputText}
+              placeholder="Email"
+              value={email}
+              onChangeText={(value) => setEmail(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+            <Input
+              style={styles.inputText}
+              placeholder="Mot de passe"
+              value={password}
+              onChangeText={(value) => setPassword(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+            />
+            {errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
+          </View>
+        </ScrollView>
         <GradientButton onPress={handleUpdateProfile} text="Mettre à jour" />
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -188,6 +190,7 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 20,
     flex: 1,
   },
   inputText: {
@@ -202,6 +205,9 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: "red",
-    paddingBottom: 12,
+    marginTop: -10,
+    marginBottom: 10,
+    width: "100%",
+    marginLeft: 15,
   },
 });

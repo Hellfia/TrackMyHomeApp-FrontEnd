@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Joi from "joi"; // Import de Joi
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -29,25 +30,21 @@ export default function UpdateDetails({ route, navigation }) {
   const [dateEnd, setDateEnd] = useState(new Date());
   const [content, setContent] = useState("");
 
+  const [errors, setErrors] = useState({});
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
-    // Crée un écouteur d'événement pour l'apparition du clavier
     const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow", // Le type d'événement à écouter (lorsque le clavier devient visible)
+      "keyboardDidShow",
       () => {
-        // Lorsque le clavier apparaît, on fait défiler la vue jusqu'à la fin
-        // Cela garantit que le contenu du bas de l'écran soit visible quand le clavier est affiché
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }
     );
 
-    // Fonction de nettoyage qui se déclenche lorsque le clavier se ferme
     return () => {
-      // Enlève l'écouteur d'événement créé pour 'keyboardDidShow' afin d'éviter les fuites de mémoire
       keyboardDidShowListener.remove();
     };
-  }, []); // Le tableau vide [] signifie que cet effet s'exécute uniquement à l'apparaition du clavier
+  }, []);
 
   const options = ["À venir", "En cours", "Terminé"];
 
@@ -70,12 +67,60 @@ export default function UpdateDetails({ route, navigation }) {
 
   const devUrl = process.env.DEV_URL;
 
+  // Fonction de validation du formulaire avec Joi
+  const validateForm = () => {
+    const schema = Joi.object({
+      status: Joi.string()
+        .valid("À venir", "En cours", "Terminé")
+        .optional()
+        .messages({
+          "any.only":
+            'Le statut doit être l\'un des suivants : "À venir", "En cours", "Terminé".',
+        }),
+      date: Joi.date().iso().optional().messages({
+        "date.base": "La date de début doit être une date valide.",
+      }),
+      dateEnd: Joi.date().iso().optional().min(Joi.ref("date")).messages({
+        "date.min":
+          'La "Date de fin prévue" doit être au même jour ou après la "Date de début".',
+      }),
+      content: Joi.string().min(0).max(500).optional().messages({
+        "string.max": "Le commentaire ne peut pas dépasser 500 caractères.",
+      }),
+    });
+
+    const { error } = schema.validate({
+      status,
+      date,
+      dateEnd,
+      content,
+    });
+
+    if (error) {
+      const formattedErrors = error.details.reduce((acc, curr) => {
+        acc[curr.path[0]] = curr.message; // Mappe chaque erreur par champ
+        return acc;
+      }, {});
+      setErrors(formattedErrors);
+      return false;
+    }
+
+    // Si pas d'erreur, on réinitialise les erreurs
+    setErrors({});
+    return true;
+  };
+
   const handlePress = () => {
+    // Valider le formulaire avant d'envoyer la requête
+    if (!validateForm()) {
+      return; // Ne pas envoyer la requête si la validation échoue
+    }
+
     const projectId = data._id;
     const stepId = step._id;
 
     fetch(`${devUrl}/projects/updateStep/${projectId}/${stepId}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
@@ -115,7 +160,6 @@ export default function UpdateDetails({ route, navigation }) {
         <ScrollView ref={scrollViewRef}>
           <InputFiles />
 
-          {/* Sélect personnalisé */}
           <View style={styles.selectContainer}>
             <View style={styles.statusContainer}>
               <Text style={styles.label}>Status :</Text>
@@ -123,7 +167,7 @@ export default function UpdateDetails({ route, navigation }) {
             </View>
             <FontAwesome5
               name="pencil-alt"
-              size="22"
+              size={22}
               color="#663ED9"
               style={styles.icon}
               onPress={() => setModalVisible(true)}
@@ -153,7 +197,11 @@ export default function UpdateDetails({ route, navigation }) {
             </View>
           </Modal>
 
-          {/* Input date */}
+          {/* Affichage de l'erreur pour le statut */}
+          {errors.status && (
+            <Text style={styles.errorText}>{errors.status}</Text>
+          )}
+
           <View style={styles.datePickerContainer}>
             <Text style={styles.label}>Date de début :</Text>
             <DateTimePicker
@@ -164,7 +212,9 @@ export default function UpdateDetails({ route, navigation }) {
             />
           </View>
 
-          {/* Input dateEnd */}
+          {/* Affichage de l'erreur pour la date de début */}
+          {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
+
           <View style={styles.datePickerContainer}>
             <Text style={styles.label}>Date de fin prévu :</Text>
             <DateTimePicker
@@ -175,7 +225,11 @@ export default function UpdateDetails({ route, navigation }) {
             />
           </View>
 
-          {/* Textarea */}
+          {/* Affichage de l'erreur pour la date de fin */}
+          {errors.dateEnd && (
+            <Text style={styles.errorText}>{errors.dateEnd}</Text>
+          )}
+
           <View style={styles.textareaContainer}>
             <Text style={styles.label}>Commentaires :</Text>
             <TextInput
@@ -187,6 +241,11 @@ export default function UpdateDetails({ route, navigation }) {
               onChangeText={setContent}
             />
           </View>
+
+          {/* Affichage de l'erreur pour le commentaire */}
+          {errors.content && (
+            <Text style={styles.errorText}>{errors.content}</Text>
+          )}
 
           <GradientButton text="Valider" onPress={handlePress} />
         </ScrollView>
@@ -240,11 +299,6 @@ const styles = StyleSheet.create({
     borderColor: "#663ED9",
     borderRadius: 8,
     backgroundColor: "#fff",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
     padding: 12,
     height: 140,
   },
@@ -257,39 +311,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 15,
   },
-  select: {
-    height: 50,
-    justifyContent: "center",
-    backgroundColor: "#663ED9",
-    borderRadius: 8,
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 5,
     paddingHorizontal: 10,
   },
-  selectText: {
-    fontSize: 16,
-    color: "#fff",
+  icon: {
+    marginLeft: 10,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(16, 16, 16, 0.5)",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    width: "80%",
     backgroundColor: "#fff",
-    borderRadius: 10,
     padding: 20,
-    elevation: 5,
+    borderRadius: 10,
+    width: "80%",
+    maxHeight: "50%",
   },
   option: {
-    paddingVertical: 10,
-    backgroundColor: "#663ED9",
-    borderRadius: 8,
-    marginVertical: 8,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
   optionText: {
-    fontSize: 16,
-    color: "#fff",
-    textAlign: "center",
+    fontSize: 18,
+    color: "#663ED9",
   },
 });

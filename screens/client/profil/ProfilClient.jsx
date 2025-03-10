@@ -62,9 +62,6 @@ export default function ProfilClient({ navigation }) {
             <Text>{infoClient.lastname}</Text>
           </View>
           <View style={styles.infoContainer}>
-            <Text>{infoClient.phoneNumber}</Text>
-          </View>
-          <View style={styles.infoContainer}>
             <Text>{infoClient.email}</Text>
           </View>
           <View style={styles.infoContainer}>
