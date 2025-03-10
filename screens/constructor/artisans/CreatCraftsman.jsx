@@ -1,3 +1,4 @@
+import Joi from "joi"; // Import Joi
 import React, { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
@@ -15,7 +16,6 @@ import Input from "../../../components/Input";
 import InputFiles from "../../../components/InputFiles";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
-import Joi from "joi"; // Import Joi
 
 export default function CreatCraftsman({ navigation }) {
   const [craftsmanName, setCraftsmanName] = useState("");
@@ -220,5 +220,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: -10,
     marginBottom: 10,
+    width: "100%",
+    marginLeft: 10,
   },
 });

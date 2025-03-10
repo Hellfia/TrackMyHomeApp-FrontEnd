@@ -1,3 +1,4 @@
+import Joi from "joi"; // Import Joi
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -11,7 +12,6 @@ import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
-import Joi from "joi"; // Import Joi
 
 export default function UpdateCraftsman({ route, navigation }) {
   const { craftsman } = route.params;
@@ -203,5 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: -10,
     marginBottom: 10,
+    marginLeft: 15,
+    width: "100%",
   },
 });
