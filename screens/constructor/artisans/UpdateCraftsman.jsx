@@ -7,45 +7,46 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
-export default function UpdateProfileConstructeur({ route, navigation }) {
-  const { data } = route.params;
+export default function UpdateCraftsman({ route, navigation }) {
+  const { craftsman } = route.params;
 
-  const constructeur = useSelector((state) => state.constructeur.value);
-
-  const [constructorName, setConstructorName] = useState(
-    data.constructorName || ""
+  const [craftsmanCompagny, setCraftsmanCompagny] = useState(
+    craftsman.craftsmanName || ""
   );
-  const [constructorSiret, setConstructorSiret] = useState(
-    data.constructorSiret || ""
+  const [craftsmanAddress, setCraftsmanAddress] = useState(
+    craftsman.craftsmanAddress || ""
   );
-  const [email, setEmail] = useState(data.email || "");
-  const [password, setPassword] = useState("");
-
-  const token = constructeur.token;
+  const [craftsmanZip, setCraftsmanZip] = useState(
+    craftsman.craftsmanZip || ""
+  );
+  const [craftsmanCity, setCraftsmanCity] = useState(
+    craftsman.craftsmanCity || ""
+  );
+  const [phoneNumber, setPhoneNumber] = useState(craftsman.phoneNumber || "");
 
   const devUrl = process.env.DEV_URL;
 
   const handleUpdateProfile = () => {
-    fetch(`${devUrl}/constructors/${token}`, {
+    fetch(`${devUrl}/craftsmen/${craftsman.craftsmanName}`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        constructorName: constructorName,
-        constructorSiret: constructorSiret,
-        email: email,
-        password: password,
+        craftsmanName: craftsmanCompagny,
+        craftsmanAddress: craftsmanAddress,
+        craftsmanZip: craftsmanZip,
+        craftsmanCity: craftsmanCity,
+        phoneNumber: phoneNumber,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          navigation.navigate("Profil");
+          navigation.goBack();
         }
       });
   };
@@ -53,7 +54,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={globalStyles.header}>
         <ReturnButton onPress={() => navigation.goBack()} />
-        <Text style={globalStyles.title}>Modifier votre Profil</Text>
+        <Text style={globalStyles.title}>Modifier votre artisan</Text>
       </View>
       <KeyboardAvoidingView
         style={styles.container}
@@ -62,36 +63,45 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
         <View style={styles.inputContainer}>
           <Input
             style={styles.inputText}
-            placeholder="Nom de l'entreprise"
-            value={constructorName}
-            onChangeText={(value) => setConstructorName(value)}
+            placeholder="Nom de l'artisan"
+            value={craftsmanCompagny}
+            onChangeText={(value) => setCraftsmanCompagny(value)}
             autoCapitalize="none"
             autoCorrect={false}
           />
 
           <Input
             style={styles.inputText}
-            placeholder="Siret de l'entreprise"
-            value={constructorSiret}
-            onChangeText={(value) => setConstructorSiret(value)}
+            placeholder="Adresse de l'artisan"
+            value={craftsmanAddress}
+            onChangeText={(value) => setCraftsmanAddress(value)}
             autoCapitalize="none"
             autoCorrect={false}
           />
 
           <Input
             style={styles.inputText}
-            placeholder="Email"
-            value={email}
-            onChangeText={(value) => setEmail(value)}
+            placeholder="Code postal de l'artisan"
+            value={craftsmanZip}
+            onChangeText={(value) => setCraftsmanZip(value)}
             autoCapitalize="none"
             autoCorrect={false}
           />
 
           <Input
             style={styles.inputText}
-            placeholder="Mot de passe"
-            value={password}
-            onChangeText={(value) => setPassword(value)}
+            placeholder="Ville de l'artisan"
+            value={craftsmanCity}
+            onChangeText={(value) => setCraftsmanCity(value)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          <Input
+            style={styles.inputText}
+            placeholder="Téléphone de l'artisan"
+            value={phoneNumber}
+            onChangeText={(value) => setPhoneNumber(value)}
             autoCapitalize="none"
             autoCorrect={false}
           />
