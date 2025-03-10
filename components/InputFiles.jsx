@@ -16,6 +16,7 @@ const InputFiles = () => {
   const [files, setFiles] = useState([]); // Pour stocker les fichiers uploadés
   const [selectedFile, setSelectedFile] = useState(null); // Pour stocker le fichier actuellement sélectionné
   const dispatch = useDispatch();
+  const devUrl = process.env.DEV_URL
 
   const handleImportDocument = async () => {
     try {
@@ -62,10 +63,10 @@ const InputFiles = () => {
             uri: uploadResult.secure_url,
           };
           setFiles((prevFiles) => [...prevFiles, newFile]);
-          Alert.alert("Fichier ajouté", `Nom du fichier: ${fileInfo.name}`);
+          
 
           // Utiliser directement newFile pour l'appel à l'API locale
-          fetch("http://192.168.1.191:4000/projects/upload", {
+          fetch(`${devUrl}/projects/upload`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
