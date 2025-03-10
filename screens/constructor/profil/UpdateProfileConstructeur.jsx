@@ -30,7 +30,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
 
   const [password, setPassword] = useState("");
 
-  const [errors, setErrors] = useState({}); // State for holding error messages
+  const [errors, setErrors] = useState({});
 
   const token = constructeur.token;
 
@@ -62,19 +62,18 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
           "Le numéro SIRET doit être composé uniquement de chiffres.",
       }),
     email: Joi.string()
-      .email({ tlds: { allow: false } }) // Optional: disallow certain TLDs
+      .email({ tlds: { allow: false } })
       .optional()
       .messages({
         "string.empty": "L'email est obligatoire.",
         "string.email": "Veuillez entrer un email valide.",
       }),
-    password: Joi.string().min(8).optional().messages({
+    password: Joi.string().min(0).optional().messages({
       "string.empty": "Le mot de passe est obligatoire.",
       "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
     }),
   });
 
-  // Function to validate form data
   const validate = () => {
     const { error } = schema.validate(
       { constructorName, constructorSiret, email, password },
@@ -85,17 +84,16 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
         acc[curr.path[0]] = curr.message;
         return acc;
       }, {});
-      setErrors(errorDetails); // Set validation errors
+      setErrors(errorDetails);
       return false;
     }
-    setErrors({}); // Clear errors if validation passes
+    setErrors({});
     return true;
   };
 
   const handleUpdateProfile = () => {
-    // Validate form before making the API call
     if (!validate()) {
-      return; // Stop execution if validation fails
+      return;
     }
 
     fetch(`${devUrl}/constructors/${token}`, {
