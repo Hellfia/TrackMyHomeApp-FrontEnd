@@ -28,10 +28,10 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
   );
   const [email, setEmail] = useState(data.email || "");
   const [password, setPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [zipCode, setZipCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(data.phoneNumber || "");
+  const [address, setAddress] = useState(data.address || "");
+  const [city, setCity] = useState(data.city || "");
+  const [zipCode, setZipCode] = useState(data.zipCode || "");
   const [errors, setErrors] = useState({});
 
   const token = constructeur.token;
@@ -74,20 +74,20 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
       "string.empty": "Le mot de passe est obligatoire.",
       "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
     }),
-    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).required().messages({
+    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).optional().messages({
       "string.empty": "Le numéro de téléphone est obligatoire.",
       "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
       "string.pattern.base":
         "Le numéro de téléphone doit être composé uniquement de chiffres.",
     }),
-    city: Joi.string().min(3).required().messages({
+    city: Joi.string().min(3).optional().messages({
       "string.empty": "La ville est obligatoire.",
       "string.min": "Le ville doit contenir au moins 3 caractères.",
     }),
-    address: Joi.string().required().messages({
+    address: Joi.string().optional().messages({
       "string.empty": "L'adresse est obligatoire.",
     }),
-    zipCode: Joi.string().length(5).pattern(/^\d+$/).required().messages({
+    zipCode: Joi.string().length(5).pattern(/^\d+$/).optional().messages({
       "string.empty": "Le code postal est obligatoire.",
       "string.length": "Le code postal doit comporter 5 chiffres.",
       "string.pattern.base":
@@ -97,7 +97,16 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
 
   const validate = () => {
     const { error } = schema.validate(
-      { constructorName, constructorSiret, email, password },
+      {
+        constructorName,
+        constructorSiret,
+        email,
+        password,
+        zipCode,
+        address,
+        city,
+        phoneNumber,
+      },
       { abortEarly: false }
     );
     if (error) {

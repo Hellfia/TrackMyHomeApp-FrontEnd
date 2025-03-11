@@ -85,7 +85,16 @@ export default function CreatAccount({ navigation }) {
   // Function to validate form data
   const validate = () => {
     const { error } = schema.validate(
-      { constructorName, constructorSiret, email, password },
+      {
+        constructorName,
+        constructorSiret,
+        email,
+        password,
+        city,
+        zipCode,
+        address,
+        phoneNumber,
+      },
       { abortEarly: false }
     );
     if (error) {
