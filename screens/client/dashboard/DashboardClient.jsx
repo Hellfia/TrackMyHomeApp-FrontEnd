@@ -77,7 +77,7 @@ export default function DashboardClient({ navigation }) {
 
   // Fonction pour ouvrir la modal avec les étapes correspondantes
   const openModal = (stepsList) => {
-    const stepsNames = stepsList.map((step) => ({ name: step.name })); // Récupérer seulement le nom des étapes
+    const stepsNames = stepsList.reverse().map((step) => ({ name: step.name })); // Récupérer seulement le nom des étapes
     setModalContent(stepsNames); // Mettre à jour le contenu de la modal avec seulement les noms
     setModalVisible(true);
   };
@@ -179,14 +179,20 @@ export default function DashboardClient({ navigation }) {
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Détails des étapes</Text>
             <ScrollView>
-              {modalContent.map((step, index) => (
-                <View key={index} style={styles.stepDetailContainer}>
-                  <Text style={styles.stepName}>{step.name}</Text>
-                  {step.content && (
-                    <Text style={styles.stepContent}>{step.content}</Text>
-                  )}
-                </View>
-              ))}
+              {modalContent.length > 0 ? (
+                modalContent.map((step, index) => (
+                  <View key={index} style={styles.stepDetailContainer}>
+                    <Text style={styles.stepName}>{step.name}</Text>
+                    {step.content && (
+                      <Text style={styles.stepContent}>{step.content}</Text>
+                    )}
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.noStepsText}>
+                  Aucune étape pour le moment
+                </Text>
+              )}
             </ScrollView>
             <TouchableOpacity
               style={styles.closeModalButton}
@@ -366,5 +372,12 @@ const styles = StyleSheet.create({
   closeModalButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  noStepsText: {
+    fontSize: 16,
+    fontWeight: "400",
+    textAlign: "center",
+    color: "#555",
+    marginTop: 10,
   },
 });
