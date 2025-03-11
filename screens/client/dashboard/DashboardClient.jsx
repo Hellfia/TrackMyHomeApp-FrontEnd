@@ -3,6 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import {
   Image,
+  Linking,
   Modal,
   ScrollView,
   StyleSheet,
@@ -138,7 +139,7 @@ export default function DashboardClient({ navigation }) {
         </View>
       </View>
 
-      {/* Info Constructeur */}
+      {/* Container Constructor */}
       <View style={styles.section}>
         <Text style={styles.subTitle}>Mon constructeur</Text>
         <TouchableOpacity
@@ -146,17 +147,22 @@ export default function DashboardClient({ navigation }) {
           style={styles.infoConstructeurContainer}
           onPress={() => callConstructor(infoConstructor.phoneNumber)}
         >
-          <Image source={profileImage} style={styles.profilPicture} />
-          <Text style={styles.constructorName}>
-            {infoConstructor.constructorName}
-          </Text>
-          <Text style={styles.constructorName}>
-            {infoConstructor.constructorAddress}
-          </Text>
+          <View style={styles.infoLeftContainer}>
+            <Image source={profileImage} style={styles.profilPicture} />
+            <View style={styles.constructorInfo}>
+              <Text style={styles.constructorName}>
+                {infoConstructor.constructorName}
+              </Text>
+              <Text>{infoConstructor.address}</Text>
+              <Text>
+                {infoConstructor.zipCode} {infoConstructor.city}
+              </Text>
+            </View>
+          </View>
           <FontAwesome5
             name="phone-alt"
             color="#FE5900"
-            size={22}
+            size={24}
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -167,7 +173,7 @@ export default function DashboardClient({ navigation }) {
         visible={modalVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setModalVisible(false)} // Fermer la modal
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
@@ -258,19 +264,23 @@ const styles = StyleSheet.create({
     padding: 12,
     marginVertical: 5,
   },
-  profilPicture: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-  },
-  constructorName: {
-    marginLeft: 20,
-    fontWeight: "700",
-    color: "#663ED9",
+  infoLeftContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
-  icon: {
-    marginVertical: 10,
+  profilPicture: {
+    width: 70,
+    height: 70,
+    borderRadius: 10,
+  },
+  constructorInfo: {
+    marginLeft: 15,
+  },
+  constructorName: {
+    fontWeight: "700",
+    color: "#663ED9",
   },
   infosStep: {
     display: "flex",
