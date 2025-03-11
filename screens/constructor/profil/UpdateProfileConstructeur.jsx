@@ -74,6 +74,25 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
       "string.empty": "Le mot de passe est obligatoire.",
       "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
     }),
+    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).required().messages({
+      "string.empty": "Le numéro de téléphone est obligatoire.",
+      "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
+      "string.pattern.base":
+        "Le numéro de téléphone doit être composé uniquement de chiffres.",
+    }),
+    city: Joi.string().min(3).required().messages({
+      "string.empty": "La ville est obligatoire.",
+      "string.min": "Le ville doit contenir au moins 3 caractères.",
+    }),
+    address: Joi.string().required().messages({
+      "string.empty": "L'adresse est obligatoire.",
+    }),
+    zipCode: Joi.string().length(5).pattern(/^\d+$/).required().messages({
+      "string.empty": "Le code postal est obligatoire.",
+      "string.length": "Le code postal doit comporter 5 chiffres.",
+      "string.pattern.base":
+        "Le code postal doit être composé uniquement de chiffres.",
+    }),
   });
 
   const validate = () => {
