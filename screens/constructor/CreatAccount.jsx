@@ -56,16 +56,45 @@ export default function CreatAccount({ navigation }) {
         "string.empty": "L'email est obligatoire.",
         "string.email": "Veuillez entrer un email valide.",
       }),
+
     password: Joi.string().min(3).required().messages({
       "string.empty": "Le mot de passe est obligatoire.",
       "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
+    }),
+    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).required().messages({
+      "string.empty": "Le numéro de téléphone est obligatoire.",
+      "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
+      "string.pattern.base":
+        "Le numéro de téléphone doit être composé uniquement de chiffres.",
+    }),
+    city: Joi.string().min(3).required().messages({
+      "string.empty": "La ville est obligatoire.",
+      "string.min": "Le ville doit contenir au moins 3 caractères.",
+    }),
+    address: Joi.string().required().messages({
+      "string.empty": "L'adresse est obligatoire.",
+    }),
+    zipCode: Joi.string().length(5).pattern(/^\d+$/).required().messages({
+      "string.empty": "Le code postal est obligatoire.",
+      "string.length": "Le code postal doit comporter 5 chiffres.",
+      "string.pattern.base":
+        "Le code postal doit être composé uniquement de chiffres.",
     }),
   });
 
   // Function to validate form data
   const validate = () => {
     const { error } = schema.validate(
-      { constructorName, constructorSiret, email, password },
+      {
+        constructorName,
+        constructorSiret,
+        email,
+        password,
+        city,
+        zipCode,
+        address,
+        phoneNumber,
+      },
       { abortEarly: false }
     );
     if (error) {
@@ -93,6 +122,10 @@ export default function CreatAccount({ navigation }) {
         constructorSiret: constructorSiret,
         email: email,
         password: password,
+        city: city,
+        address: address,
+        zipCode: zipCode,
+        phoneNumber: phoneNumber,
       }),
     })
       .then((response) => response.json())
@@ -109,6 +142,10 @@ export default function CreatAccount({ navigation }) {
           setEmail("");
           setPassword("");
           setConstructorSiret("");
+          setCity("");
+          setPhoneNumber("");
+          setZipCode("");
+          setAddress("");
           navigation.navigate("MainTabs");
         }
       });
@@ -175,13 +212,6 @@ export default function CreatAccount({ navigation }) {
           )}
           <Input
             style={styles.input}
-            placeholder="Ville"
-            value={city}
-            onChangeText={setCity}
-          />
-          {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
-          <Input
-            style={styles.input}
             placeholder="Code Postal"
             keyboardType="numeric"
             value={zipCode}
@@ -190,6 +220,14 @@ export default function CreatAccount({ navigation }) {
           {errors.zipCode && (
             <Text style={styles.errorText}>{errors.zipCode}</Text>
           )}
+          <Input
+            style={styles.input}
+            placeholder="Ville"
+            value={city}
+            onChangeText={setCity}
+          />
+          {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
+
           <Input
             style={styles.input}
             placeholder="Mot de passe"
