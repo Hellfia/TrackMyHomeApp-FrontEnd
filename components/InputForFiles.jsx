@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View, Image, Modal } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
@@ -7,59 +7,71 @@ import * as ImagePicker from "expo-image-picker";
 export default function InputForFiles({ documents, setDocuments }) {
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    console.log("État de modalVisible :", modalVisible);
-  }, [modalVisible]);
+  const handlePress = () => setModalVisible(true);
 
   const handleOptionSelect = async (option) => {
-    console.log("Option sélectionnée :", option);
     setModalVisible(false);
 
     if (option === "camera") {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission refusée", "Accès à la caméra requis");
+      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!cameraPermission.granted) {
+        Alert.alert("Permission refusée", "Accès caméra requis");
         return;
       }
+
       let result = await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 0.8 });
-      if (!result.canceled) {
-        setDocuments((prev) => [...prev, { uri: result.assets[0].uri, name: "Photo" }]);
-      }
+      if (!result.canceled) uploadToCloudinary(result.assets[0].uri);
     }
 
     if (option === "gallery") {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
+      const galleryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!galleryPermission.granted) {
         Alert.alert("Permission refusée", "Accès à la galerie requis");
         return;
       }
+
       let result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
-      if (!result.canceled) {
-        setDocuments((prev) => [...prev, { uri: result.assets[0].uri, name: "Image" }]);
-      }
+      if (!result.canceled) uploadToCloudinary(result.assets[0].uri);
     }
 
     if (option === "document") {
       const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
       if (!result.canceled && result.assets) {
-        setDocuments((prev) => [...prev, { uri: result.assets[0].uri, name: result.assets[0].name }]);
+        uploadToCloudinary(result.assets[0].uri, result.assets[0].name);
       }
     }
   };
 
+  const uploadToCloudinary = async (uri, name = "document") => {
+    const formData = new FormData();
+    formData.append("file", { uri, name, type: "multipart/form-data" });
+    formData.append("upload_preset", "db0bnigaj");
+
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/db0bnigaj/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      if (result.secure_url) {
+        const newDoc = { id: Date.now().toString(), name, uri: result.secure_url };
+        setDocuments((prev) => [...prev, newFile]);
+      }
+    } catch (error) {
+      Alert.alert("Erreur", "Échec de l'upload : " + error.message);
+    }
+  };
+
+  
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.importContainer} 
-        onPress={() => {
-          console.log("Bouton pressé, ouverture de la modal...");
-          setModalVisible(true);
-        }}>
+      <TouchableOpacity style={styles.importContainer} onPress={() => setModalVisible(true)}>
         <Ionicons name="add" size={36} color="#FE5900" style={styles.plusIcon} />
         <Text style={styles.importText}>Importer un nouveau document</Text>
       </TouchableOpacity>
 
-      <Modal visible={modalVisible} transparent={true} animationType="fade">
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <TouchableOpacity onPress={() => handleOptionSelect("camera")} style={styles.modalButton}>
@@ -105,15 +117,13 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-end",
   },
   modalContainer: {
     backgroundColor: "#FFF",
     padding: 20,
-    borderRadius: 12,
-    width: "80%",
-    alignItems: "center",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
   modalButton: {
     paddingVertical: 12,
@@ -127,4 +137,3 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 });
-
