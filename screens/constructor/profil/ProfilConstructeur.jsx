@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import avatar from "../../../assets/avatar.png";
@@ -53,37 +53,52 @@ export default function ProfilConstructeur({ navigation }) {
 
   return (
     <SafeAreaView edges={["top", "left", "right"]}>
-      <View style={styles.container}>
-        <Text style={globalStyles.title}>Mon Profil</Text>
-        <View style={styles.iconContainer}>
-          <Image source={profileImage} style={styles.image} />
-        </View>
-        <View style={styles.infosContainer}>
-          <View style={styles.infoContainer}>
-            <Text>{infoConstructor.constructorName}</Text>
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={globalStyles.title}>Mon Profil</Text>
+          <View style={styles.iconContainer}>
+            <Image source={profileImage} style={styles.image} />
           </View>
-          <View style={styles.infoContainer}>
-            <Text>{infoConstructor.constructorSiret}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text>{infoConstructor.email}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text>*******</Text>
-          </View>
-        </View>
 
-        <GradientButton
-          text="Modifier mon profil"
-          onPress={() => handleEditProfile()}
-        />
-        <PurpleButton
-          onPress={() => handleLogout()}
-          text="Se déconnecter"
-          backgroundColor="#DB0000"
-          icon="door-open"
-        />
-      </View>
+          <View style={styles.infosContainer}>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.constructorName}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.constructorSiret}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.email}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.phoneNumber}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.address}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.city}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.zipCode}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text>*******</Text>
+            </View>
+          </View>
+
+          <GradientButton
+            text="Modifier mon profil"
+            onPress={() => handleEditProfile()}
+          />
+          <PurpleButton
+            onPress={() => handleLogout()}
+            text="Se déconnecter"
+            backgroundColor="#DB0000"
+            icon="door-open"
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

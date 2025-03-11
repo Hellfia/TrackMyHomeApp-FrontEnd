@@ -27,9 +27,11 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
     data.constructorSiret || ""
   );
   const [email, setEmail] = useState(data.email || "");
-
   const [password, setPassword] = useState("");
-
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [errors, setErrors] = useState({});
 
   const token = constructeur.token;
@@ -158,8 +160,51 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               autoCapitalize="none"
               autoCorrect={false}
             />
+
             {errors.email && (
               <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+            <Input
+              style={styles.inputText}
+              placeholder="Numéro de téléphone"
+              value={phoneNumber}
+              onChangeText={(value) => setPhoneNumber(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {errors.phoneNumber && (
+              <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+            )}
+            <Input
+              style={styles.inputText}
+              placeholder="Adresse "
+              value={address}
+              onChangeText={(value) => setAddress(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {errors.address && (
+              <Text style={styles.errorText}>{errors.address}</Text>
+            )}
+            <Input
+              style={styles.inputText}
+              placeholder="Ville"
+              value={city}
+              onChangeText={(value) => setCity(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
+            <Input
+              style={styles.inputText}
+              placeholder="Code Postal"
+              value={zipCode}
+              onChangeText={(value) => setZipCode(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {errors.zipCode && (
+              <Text style={styles.errorText}>{errors.zipCode}</Text>
             )}
             <Input
               style={styles.inputText}

@@ -28,6 +28,10 @@ export const constructeurSlice = createSlice({
     updateProfile: (state, action) => {
       state.value.constructorName = action.payload.constructorName;
       state.value.constructorSiret = action.payload.constructorSiret;
+      state.value.city = action.payload.city;
+      state.value.address = action.payload.address;
+      state.value.phoneNumber = action.payload.phoneNumber;
+      state.value.zipCode = action.payload.zipCode;
       state.value.email = action.payload.email;
       state.value.password = action.payload.password;
     },
