@@ -1,12 +1,20 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Linking,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import avatar from "../../../assets/avatar.png";
 import maison from "../../../assets/maison-test.jpg";
-import StepItem from "../../../components/StepItem";
 import globalStyles from "../../../styles/globalStyles";
 
 export default function DashboardClient({ navigation }) {
@@ -14,8 +22,10 @@ export default function DashboardClient({ navigation }) {
   const [steps, setSteps] = useState([]);
   const devUrl = process.env.DEV_URL;
   const client = useSelector((state) => state.client.value);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState([]);
 
-  console.log("data", steps);
+  console.log("data", infoConstructor);
 
   useFocusEffect(
     useCallback(() => {
@@ -37,15 +47,6 @@ export default function DashboardClient({ navigation }) {
   ).length;
   const totalSteps = steps.length;
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
-
-  // Récupérer la dernière étape validée et les deux étapes suivantes
-  const lastValidatedIndex = steps.findIndex(
-    (step) => step.status === "Terminé"
-  );
-  const displayedSteps =
-    lastValidatedIndex >= 0
-      ? steps.slice(lastValidatedIndex, lastValidatedIndex + 3)
-      : [];
 
   // Trouver l'URI de la dernière étape validée
   const lastValidatedStep = steps // Cloner pour éviter de modifier l'ordre d'origine
@@ -69,56 +70,133 @@ export default function DashboardClient({ navigation }) {
     ? { uri: profilePicture }
     : avatar;
 
+  // Filtrer les étapes
+  const stepsInComing = steps.filter((step) => step.status === "À venir");
+  const stepsInProgress = steps.filter((step) => step.status === "En cours");
+  const stepsFinished = steps.filter((step) => step.status === "Terminé");
+
+  // Fonction pour ouvrir la modal avec les étapes correspondantes
+  const openModal = (stepsList) => {
+    const stepsNames = stepsList.map((step) => ({ name: step.name })); // Récupérer seulement le nom des étapes
+    setModalContent(stepsNames); // Mettre à jour le contenu de la modal avec seulement les noms
+    setModalVisible(true);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={globalStyles.header}>
         <Text style={globalStyles.title}>Mon dashboard</Text>
       </View>
 
-      <Text style={styles.subTitle}>Mon projet</Text>
-
-      <View style={styles.imageContainer}>
-        <Image source={image} style={styles.image} resizeMode="cover" />
-      </View>
-      {/* Barre de progression */}
-      <View style={styles.progressContainer}>
-        <View style={[styles.progressBar, { width: `${progress}%` }]} />
-      </View>
-      <Text style={styles.progressText}>
-        {completedSteps} étapes terminées sur {totalSteps}
-      </Text>
-
-      {/* Étapes : dernière validée et suivantes */}
-      <View style={styles.stepsContainer}>
-        {displayedSteps.map((step, index) => (
-          <StepItem
-            key={index}
-            name={step.name}
-            iconName="check-circle"
-            iconColor={index === 0 ? "#4caf50" : "#663ED9"}
-            iconOnPress="chevron-right"
-          />
-        ))}
-      </View>
-
-      {/* Info Constructeur */}
-      <Text style={styles.subTitle}>Mon constructeur</Text>
-      <TouchableOpacity
-        key={client.id}
-        style={styles.infoConstructeurContainer}
-        onPress={() => callConstructor(infoConstructor.phoneNumber)}
-      >
-        <Image source={profileImage} style={styles.profilPicture} />
-        <Text style={styles.constructorName}>
-          {infoConstructor.constructorName}
+      <View style={styles.section}>
+        <Text style={styles.subTitle}>Mon projet</Text>
+        <View style={styles.imageContainer}>
+          <Image source={image} style={styles.image} resizeMode="cover" />
+        </View>
+        {/* Barre de progression */}
+        <View style={styles.progressContainer}>
+          <View style={[styles.progressBar, { width: `${progress}%` }]} />
+        </View>
+        <Text style={styles.progressText}>
+          {completedSteps} étapes terminées sur {totalSteps}
         </Text>
-        <FontAwesome5
-          name="phone-alt"
-          color="#FE5900"
-          size={22}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
+      </View>
+
+      {/* États des steps */}
+      <View style={styles.sectionSteps}>
+        <View style={styles.infosStep}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <TouchableOpacity
+              style={styles.stepContainer}
+              onPress={() => openModal(stepsInComing)}
+            >
+              <Text style={styles.stepText}>À venir</Text>
+              <Text style={styles.stepNumberTextInComming}>
+                {stepsInComing.length}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.stepContainer}
+              onPress={() => openModal(stepsInProgress)}
+            >
+              <Text style={styles.stepText}>En cours</Text>
+              <Text style={styles.stepNumberTextInProgress}>
+                {stepsInProgress.length}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.stepContainer}
+              onPress={() => openModal(stepsFinished)}
+            >
+              <Text style={styles.stepText}>Terminé</Text>
+              <Text style={styles.stepNumberTextFinished}>
+                {stepsFinished.length}
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </View>
+
+      {/* Container Constructor */}
+      <View style={styles.section}>
+        <Text style={styles.subTitle}>Mon constructeur</Text>
+        <TouchableOpacity
+          key={client.id}
+          style={styles.infoConstructeurContainer}
+          onPress={() => callConstructor(infoConstructor.phoneNumber)}
+        >
+          <View style={styles.infoLeftContainer}>
+            <Image source={profileImage} style={styles.profilPicture} />
+            <View style={styles.constructorInfo}>
+              <Text style={styles.constructorName}>
+                {infoConstructor.constructorName}
+              </Text>
+              <Text>{infoConstructor.address}</Text>
+              <Text>
+                {infoConstructor.zipCode} {infoConstructor.city}
+              </Text>
+            </View>
+          </View>
+          <FontAwesome5
+            name="phone-alt"
+            color="#FE5900"
+            size={24}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Modal */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Détails des étapes</Text>
+            <ScrollView>
+              {modalContent.map((step, index) => (
+                <View key={index} style={styles.stepDetailContainer}>
+                  <Text style={styles.stepName}>{step.name}</Text>
+                  {step.content && (
+                    <Text style={styles.stepContent}>{step.content}</Text>
+                  )}
+                </View>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.closeModalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeModalButtonText}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -126,7 +204,6 @@ export default function DashboardClient({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
   },
   subTitle: {
     fontSize: 20,
@@ -135,6 +212,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginLeft: 20,
     textAlign: "left",
+  },
+  section: {
+    paddingHorizontal: 20,
+  },
+  sectionSteps: {
+    paddingLeft: 20,
   },
   imageContainer: {
     width: "100%",
@@ -181,24 +264,107 @@ const styles = StyleSheet.create({
     padding: 12,
     marginVertical: 5,
   },
-  profilPicture: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-  },
-  constructorName: {
-    marginLeft: 20,
-    fontWeight: "700",
-    color: "#663ED9",
+  infoLeftContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
-  icon: {
-    marginVertical: 10,
+  profilPicture: {
+    width: 70,
+    height: 70,
+    borderRadius: 10,
   },
-  stepItem: {
-    padding: 10,
+  constructorInfo: {
+    marginLeft: 15,
   },
-  stepsContainer: {
-    paddingTop: 20,
+  constructorName: {
+    fontWeight: "700",
+    color: "#663ED9",
+  },
+  infosStep: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 20,
+    marginBottom: -20,
+  },
+  stepContainer: {
+    display: "flex",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    width: 150,
+    height: 130,
+    marginRight: 15,
+  },
+  stepText: {
+    fontSize: 16,
+    marginVertical: 20,
+    fontWeight: "700",
+    color: "#663ED9",
+  },
+  stepNumberTextInComming: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#FF0000",
+  },
+  stepNumberTextInProgress: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#FFA500",
+  },
+  stepNumberTextFinished: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#28DB52",
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "85%",
+    maxHeight: "85%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+    marginTop: 15,
+    marginBottom: 25,
+    color: "#362173",
+  },
+  stepDetailContainer: {
+    marginBottom: 15,
+  },
+  stepName: {
+    fontSize: 16,
+    fontWeight: "400",
+  },
+  closeModalButton: {
+    marginTop: 20,
+    backgroundColor: "#663ED9",
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  closeModalButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
