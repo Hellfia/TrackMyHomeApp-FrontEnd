@@ -1,12 +1,18 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import avatar from "../../../assets/avatar.png";
 import maison from "../../../assets/maison-test.jpg";
-import StepItem from "../../../components/StepItem";
 import globalStyles from "../../../styles/globalStyles";
 
 export default function DashboardClient({ navigation }) {
@@ -37,15 +43,6 @@ export default function DashboardClient({ navigation }) {
   ).length;
   const totalSteps = steps.length;
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
-
-  // Récupérer la dernière étape validée et les deux étapes suivantes
-  const lastValidatedIndex = steps.findIndex(
-    (step) => step.status === "Terminé"
-  );
-  const displayedSteps =
-    lastValidatedIndex >= 0
-      ? steps.slice(lastValidatedIndex, lastValidatedIndex + 3)
-      : [];
 
   // Trouver l'URI de la dernière étape validée
   const lastValidatedStep = steps // Cloner pour éviter de modifier l'ordre d'origine
@@ -88,17 +85,22 @@ export default function DashboardClient({ navigation }) {
         {completedSteps} étapes terminées sur {totalSteps}
       </Text>
 
-      {/* Étapes : dernière validée et suivantes */}
-      <View style={styles.stepsContainer}>
-        {displayedSteps.map((step, index) => (
-          <StepItem
-            key={index}
-            name={step.name}
-            iconName="check-circle"
-            iconColor={index === 0 ? "#4caf50" : "#663ED9"}
-            iconOnPress="chevron-right"
-          />
-        ))}
+      {/* États des steps */}
+      <View style={styles.infosStep}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.stepContainer}>
+            <Text>À venir</Text>
+            <Text>0</Text>
+          </View>
+          <View style={styles.stepContainer}>
+            <Text>En cours</Text>
+            <Text>0</Text>
+          </View>
+          <View style={styles.stepContainer}>
+            <Text>Terminé</Text>
+            <Text>0</Text>
+          </View>
+        </ScrollView>
       </View>
 
       {/* Info Constructeur */}
@@ -195,10 +197,26 @@ const styles = StyleSheet.create({
   icon: {
     marginVertical: 10,
   },
-  stepItem: {
-    padding: 10,
+  infosStep: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 20,
+    marginBottom: -20,
   },
-  stepsContainer: {
-    paddingTop: 20,
+  stepContainer: {
+    display: "flex",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    width: 150,
+    height: 130,
+    marginRight: 15,
   },
 });
