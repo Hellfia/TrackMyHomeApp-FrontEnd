@@ -134,6 +134,10 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
         constructorSiret: constructorSiret,
         email: email,
         password: password,
+        city: city,
+        zipCode: zipCode,
+        address: address,
+        phoneNumber: phoneNumber,
       }),
     })
       .then((response) => response.json())
@@ -161,7 +165,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Nom de l'entreprise"
               value={constructorName}
               onChangeText={(value) => setConstructorName(value)}
-              autoCapitalize="none"
+              autoCapitalize="words"
               autoCorrect={false}
             />
             {errors.constructorName && (
@@ -208,21 +212,12 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Adresse "
               value={address}
               onChangeText={(value) => setAddress(value)}
-              autoCapitalize="none"
+              autoCapitalize="words"
               autoCorrect={false}
             />
             {errors.address && (
               <Text style={styles.errorText}>{errors.address}</Text>
             )}
-            <Input
-              style={styles.inputText}
-              placeholder="Ville"
-              value={city}
-              onChangeText={(value) => setCity(value)}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
             <Input
               style={styles.inputText}
               placeholder="Code Postal"
@@ -234,6 +229,16 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
             {errors.zipCode && (
               <Text style={styles.errorText}>{errors.zipCode}</Text>
             )}
+            <Input
+              style={styles.inputText}
+              placeholder="Ville"
+              value={city}
+              onChangeText={(value) => setCity(value)}
+              autoCapitalize="words"
+              autoCorrect={false}
+            />
+            {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
+
             <Input
               style={styles.inputText}
               placeholder="Mot de passe"
