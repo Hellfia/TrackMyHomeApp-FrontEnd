@@ -1,24 +1,204 @@
-import React from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import avatar from "../../../assets/avatar.png";
+import maison from "../../../assets/maison-test.jpg";
+import StepItem from "../../../components/StepItem";
 import globalStyles from "../../../styles/globalStyles";
 
 export default function DashboardClient({ navigation }) {
+  const [infoConstructor, setInfoConstructor] = useState([]);
+  const [steps, setSteps] = useState([]);
+  const devUrl = process.env.DEV_URL;
+  const client = useSelector((state) => state.client.value);
+
+  console.log("data", steps);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetch(`${devUrl}/projects/chantier/${client.clientId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.result) {
+            setSteps(data.data.steps);
+            setInfoConstructor(data.data.constructeur);
+          }
+        })
+        .catch(console.error);
+    }, [client.clientId])
+  );
+
+  // Calculer le pourcentage des étapes terminées
+  const completedSteps = steps.filter(
+    (step) => step.status === "Terminé"
+  ).length;
+  const totalSteps = steps.length;
+  const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+
+  // Récupérer la dernière étape validée et les deux étapes suivantes
+  const lastValidatedIndex = steps.findIndex(
+    (step) => step.status === "Terminé"
+  );
+  const displayedSteps =
+    lastValidatedIndex >= 0
+      ? steps.slice(lastValidatedIndex, lastValidatedIndex + 3)
+      : [];
+
+  // Trouver l'URI de la dernière étape validée
+  const lastValidatedStep = steps // Cloner pour éviter de modifier l'ordre d'origine
+    .reverse()
+    .find((step) => step.status === "validée");
+
+  const callConstructor = (phoneNumber) => {
+    if (phoneNumber && phoneNumber !== "Non renseigné") {
+      Linking.openURL(`tel:${phoneNumber}`);
+    } else {
+      alert("Numéro de téléphone non renseigné");
+    }
+  };
+
+  const image =
+    lastValidatedStep && lastValidatedStep.uri
+      ? { uri: lastValidatedStep.uri }
+      : maison;
+
+  const profileImage = infoConstructor.profilePicture
+    ? { uri: profilePicture }
+    : avatar;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={globalStyles.header}>
         <Text style={globalStyles.title}>Mon dashboard</Text>
       </View>
-      // Ajouter le reste du composant ici
+
+      <Text style={styles.subTitle}>Mon projet</Text>
+
+      <View style={styles.imageContainer}>
+        <Image source={image} style={styles.image} resizeMode="cover" />
+      </View>
+      {/* Barre de progression */}
+      <View style={styles.progressContainer}>
+        <View style={[styles.progressBar, { width: `${progress}%` }]} />
+      </View>
+      <Text style={styles.progressText}>
+        {completedSteps} étapes terminées sur {totalSteps}
+      </Text>
+
+      {/* Étapes : dernière validée et suivantes */}
+      <View style={styles.stepsContainer}>
+        {displayedSteps.map((step, index) => (
+          <StepItem
+            key={index}
+            name={step.name}
+            iconName="check-circle"
+            iconColor={index === 0 ? "#4caf50" : "#663ED9"}
+            iconOnPress="chevron-right"
+          />
+        ))}
+      </View>
+
+      {/* Info Constructeur */}
+      <Text style={styles.subTitle}>Mon constructeur</Text>
+      <TouchableOpacity
+        key={client.id}
+        style={styles.infoConstructeurContainer}
+        onPress={() => callConstructor(infoConstructor.phoneNumber)}
+      >
+        <Image source={profileImage} style={styles.profilPicture} />
+        <Text style={styles.constructorName}>
+          {infoConstructor.constructorName}
+        </Text>
+        <FontAwesome5
+          name="phone-alt"
+          color="#FE5900"
+          size={22}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingTop: 20,
     paddingHorizontal: 20,
+  },
+  subTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginTop: 40,
+    marginBottom: 15,
+    marginLeft: 20,
+    textAlign: "left",
+  },
+  imageContainer: {
+    width: "100%",
+    height: 180,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  progressContainer: {
+    height: 20,
+    width: "100%",
+    backgroundColor: "#e0e0e0",
+    borderRadius: 10,
+    marginTop: 20,
+    overflow: "hidden",
+  },
+  progressBar: {
+    height: "100%",
+    backgroundColor: "#4caf50",
+  },
+  progressText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  infoConstructeurContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    padding: 12,
+    marginVertical: 5,
+  },
+  profilPicture: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+  },
+  constructorName: {
+    marginLeft: 20,
+    fontWeight: "700",
+    color: "#663ED9",
+    flex: 1,
+  },
+  icon: {
+    marginVertical: 10,
+  },
+  stepItem: {
+    padding: 10,
+  },
+  stepsContainer: {
+    paddingTop: 20,
   },
 });

@@ -25,6 +25,17 @@ export default function ProjectClient({ navigation }) {
     }, [client.clientId])
   );
 
+  // Trouver la dernière étape validée dans steps qui a le statut validée
+  const lastValidatedStep = steps
+    .reverse()
+    .find((step) => step.status === "validée");
+
+  // Si on a une étape validée , on prend l'URI de la derniere, sinon on prend le logo par défaut
+  const image =
+    lastValidatedStep && lastValidatedStep.uri
+      ? { uri: lastValidatedStep.uri }
+      : maison;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={globalStyles.header}>
@@ -32,13 +43,13 @@ export default function ProjectClient({ navigation }) {
       </View>
 
       <View style={styles.imageContainer}>
-        <Image source={maison} style={styles.image} resizeMode="cover" />
+        <Image source={image} style={styles.image} resizeMode="cover" />
       </View>
 
       <Text style={styles.stepText}>Les étapes de construction</Text>
       <ScrollView>
         <View style={styles.subContainer}>
-          {steps.map((step, index) => {
+          {steps.reverse().map((step, index) => {
             let iconName = "";
             let iconColor = "";
 
@@ -80,7 +91,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 20,
-    backgroundColor: "#fff",
   },
   imageContainer: {
     width: "100%",
