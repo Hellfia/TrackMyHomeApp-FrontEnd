@@ -122,6 +122,10 @@ export default function CreatAccount({ navigation }) {
         constructorSiret: constructorSiret,
         email: email,
         password: password,
+        city: city,
+        address: address,
+        zipCode: zipCode,
+        phoneNumber: phoneNumber,
       }),
     })
       .then((response) => response.json())
@@ -138,6 +142,10 @@ export default function CreatAccount({ navigation }) {
           setEmail("");
           setPassword("");
           setConstructorSiret("");
+          setCity("");
+          setPhoneNumber("");
+          setZipCode("");
+          setAddress("");
           navigation.navigate("MainTabs");
         }
       });
