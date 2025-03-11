@@ -168,6 +168,8 @@ export default function CreatAccount({ navigation }) {
             placeholder="Nom de l'entreprise"
             value={constructorName}
             onChangeText={setConstructorName}
+            autoCapitalize="words"
+            autoCorrect={false}
           />
           {errors.constructorName && (
             <Text style={styles.errorText}>{errors.constructorName}</Text>
@@ -206,6 +208,8 @@ export default function CreatAccount({ navigation }) {
             placeholder="Adresse"
             value={address}
             onChangeText={setAddress}
+            autoCapitalize="words"
+            autoCorrect={false}
           />
           {errors.address && (
             <Text style={styles.errorText}>{errors.address}</Text>
@@ -225,6 +229,8 @@ export default function CreatAccount({ navigation }) {
             placeholder="Ville"
             value={city}
             onChangeText={setCity}
+            autoCapitalize="words"
+            autoCorrect={false}
           />
           {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
 

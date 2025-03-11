@@ -77,11 +77,12 @@ export default function ProfilConstructeur({ navigation }) {
               <Text>{infoConstructor.address}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.city}</Text>
-            </View>
-            <View style={styles.infoContainer}>
               <Text>{infoConstructor.zipCode}</Text>
             </View>
+            <View style={styles.infoContainer}>
+              <Text>{infoConstructor.city}</Text>
+            </View>
+
             <View style={styles.infoContainer}>
               <Text>*******</Text>
             </View>

@@ -22,12 +22,14 @@ export default function DashboardConstructeur({ navigation }) {
   const devUrl = process.env.DEV_URL;
   const constructeur = useSelector((state) => state.constructeur.value);
 
-  useEffect(() => {
-    fetch(`${devUrl}/constructors/${constructeur.token}`)
-      .then((response) => response.json())
-      .then((data) => setCraftsmenData(data.constructor.craftsmen.length))
-      .catch(console.error);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetch(`${devUrl}/constructors/${constructeur.token}`)
+        .then((response) => response.json())
+        .then((data) => setCraftsmenData(data.constructor.craftsmen.length))
+        .catch(console.error);
+    }, [devUrl, constructeur.token])
+  );
 
   useFocusEffect(
     useCallback(() => {
