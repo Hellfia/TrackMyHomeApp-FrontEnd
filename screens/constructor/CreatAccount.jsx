@@ -21,6 +21,10 @@ export default function CreatAccount({ navigation }) {
   const [constructorSiret, setConstructorSiret] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [errors, setErrors] = useState({}); // Error state to hold validation errors
   const dispatch = useDispatch();
 
@@ -150,7 +154,42 @@ export default function CreatAccount({ navigation }) {
             onChangeText={setEmail}
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
+          <Input
+            style={styles.input}
+            placeholder="Numéro de téléphone"
+            keyboardType="numeric"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+          />
+          {errors.phoneNumber && (
+            <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+          )}
+          <Input
+            style={styles.input}
+            placeholder="Adresse"
+            value={address}
+            onChangeText={setAddress}
+          />
+          {errors.address && (
+            <Text style={styles.errorText}>{errors.address}</Text>
+          )}
+          <Input
+            style={styles.input}
+            placeholder="Ville"
+            value={city}
+            onChangeText={setCity}
+          />
+          {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
+          <Input
+            style={styles.input}
+            placeholder="Code Postal"
+            keyboardType="numeric"
+            value={zipCode}
+            onChangeText={setZipCode}
+          />
+          {errors.zipCode && (
+            <Text style={styles.errorText}>{errors.zipCode}</Text>
+          )}
           <Input
             style={styles.input}
             placeholder="Mot de passe"

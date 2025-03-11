@@ -29,12 +29,14 @@ export default function DashboardConstructeur({ navigation }) {
       .catch(console.error);
   }, []);
 
-  useEffect(() => {
-    fetch(`${devUrl}/projects/${constructeur.constructorId}`)
-      .then((response) => response.json())
-      .then((data) => setProjectsData(data.data.length))
-      .catch(console.error);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetch(`${devUrl}/projects/${constructeur.constructorId}`)
+        .then((response) => response.json())
+        .then((data) => setProjectsData(data.data.length))
+        .catch(console.error);
+    }, [])
+  );
 
   useFocusEffect(
     useCallback(() => {
