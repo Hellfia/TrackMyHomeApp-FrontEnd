@@ -125,7 +125,7 @@ export default function ProjectConstructeur({ navigation }) {
                   title="Ma position"
                 />
               )}
-              {clients.map(
+              {clients?.map(
                 (client, index) =>
                   client.client?.constructionLat &&
                   client.client?.constructionLong && (
