@@ -2,6 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import {
+  Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -9,14 +10,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { WebView } from "react-native-webview";
 import InputFiles from "../../../../components/InputFiles";
 import ReturnButton from "../../../../components/ReturnButton";
 import globalStyles from "../../../../styles/globalStyles";
 
 export default function DocumentsConstruteur({ navigation }) {
   const [documents, setDocuments] = useState([]);
-  const [selectedDocument, setSelectedDocument] = useState(null); // Pour gérer le document sélectionné
 
   const devUrl = process.env.DEV_URL;
 
@@ -26,6 +25,7 @@ export default function DocumentsConstruteur({ navigation }) {
       fetch(`${devUrl}/upload/documents/${projectId}`)
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setDocuments(data.documents);
         })
         .catch((err) => {
@@ -54,53 +54,18 @@ export default function DocumentsConstruteur({ navigation }) {
       });
   };
 
-  const handleViewDocument = (uri) => {
-    setSelectedDocument(uri);
+  const handleViewDocument = async (uri) => {
+    try {
+      const supported = await Linking.canOpenURL(uri);
+      if (supported) {
+        await Linking.openURL(uri);
+      } else {
+        console.error("Impossible d'ouvrir l'URL :", uri);
+      }
+    } catch (err) {
+      console.error("Erreur lors de l'ouverture de l'URL :", err);
+    }
   };
-
-  if (selectedDocument) {
-    const htmlContent = `
-      <html>
-        <head>
-          <style>
-            body {
-              margin: 0;
-              padding: 0;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100vh;
-              background-color: #f7f7f7;
-            }
-            img {
-              max-width: 100%;
-              max-height: 100%;
-              object-fit: contain;
-            }
-          </style>
-        </head>
-        <body>
-          <img src="${selectedDocument}" />
-        </body>
-      </html>
-    `;
-
-    return (
-      <SafeAreaView style={styles.webviewContainer}>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => setSelectedDocument(null)} // Ferme la WebView
-        >
-          <FontAwesome5 name="times" size={24} color="white" />
-        </TouchableOpacity>
-        <WebView
-          originWhitelist={["*"]}
-          source={{ html: htmlContent }} // Charge le contenu HTML avec l'image centrée
-          style={styles.webview}
-        />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -118,20 +83,17 @@ export default function DocumentsConstruteur({ navigation }) {
         ) : (
           documents.map((document) => (
             <View key={document._id} style={styles.documentItem}>
-              <TouchableOpacity
-                onPress={() => handleViewDocument(document.uri)}
-                style={styles.documentTitle}
-              >
+              <View style={styles.documentTitle}>
                 <Text>{document.name}</Text>
-              </TouchableOpacity>
+              </View>
 
               <View style={styles.actions}>
-                {/* Icone œil pour visualiser le document */}
+                {/* Icone œil pour télécharger ou ouvrir le document */}
                 <TouchableOpacity
-                // onPress={() =>  }
+                  onPress={() => handleViewDocument(document.uri)}
                 >
                   <FontAwesome5
-                    name="arrow-alt-circle-down"
+                    name="eye"
                     size={24}
                     color="#663ED9"
                     style={styles.icon}
@@ -204,27 +166,6 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems: "center",
-  },
-  webviewContainer: {
-    flex: 1,
-    position: "relative",
-  },
-  webview: {
-    flex: 1,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 70,
-    right: 30,
-    zIndex: 10,
-    backgroundColor: "red",
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    padding: 10,
-    display: "flex",
-    justifyContent: "center",
     alignItems: "center",
   },
 });
