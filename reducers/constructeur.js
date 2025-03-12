@@ -37,7 +37,6 @@ export const constructeurSlice = createSlice({
     },
     addDocument: (state, action) => {
       state.value.documents = action.payload;
-      console.log("payload", action.payload);
     },
     deleteDocument: (state, action) => {
       state.value.documents = state.value.documents.filter(

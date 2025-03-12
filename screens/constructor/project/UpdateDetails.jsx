@@ -134,10 +134,7 @@ export default function UpdateDetails({ route, navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("Étape mise à jour avec succès !");
           navigation.navigate("Projet");
-        } else {
-          console.log("Erreur :", data.error);
         }
       })
       .catch((error) => {

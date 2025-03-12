@@ -116,6 +116,7 @@ export default function AddProjects({ navigation }) {
         email: email,
         password: password,
         constructeurId: constructorId,
+        token: constructeur.token,
       }),
     })
       .then((response) => response.json())

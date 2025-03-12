@@ -26,10 +26,6 @@ export default function ProfilConstructeur({ navigation }) {
     dispatch(logout());
   };
 
-  const handlePress = () => {
-    navigation.navigate("Intervenants");
-  };
-
   const devUrl = process.env.DEV_URL;
 
   useFocusEffect(

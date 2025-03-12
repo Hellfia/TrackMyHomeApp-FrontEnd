@@ -14,7 +14,7 @@ export default function ProjectClient({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`${devUrl}/projects/chantier/${client.clientId}`)
+      fetch(`${devUrl}/projects/chantier/${client.clientId}/${client.token}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.result) {

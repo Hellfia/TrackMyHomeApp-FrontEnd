@@ -46,52 +46,14 @@ const store = configureStore({
 const persistor = persistStore(store);
 //AsyncStorage.clear().then();
 //persistor.purge().then();
-// function MainTabs() {
-//   return (
-//     <Tab.Navigator
-//       screenOptions={({ route }) => ({
-//         tabBarIcon: ({ color, size }) => {
-//           if (route.name === "Projet") {
-//             return <FontAwesome5 name="hard-hat" size={size} color={color} />;
-//           }
-//           let iconName;
-//           switch (route.name) {
-//             case "Dashboard":
-//               iconName = "grid-outline";
-//               break;
-//             case "Messages":
-//               iconName = "chatbubbles";
-//               break;
-//             case "Profil":
-//               iconName = "person";
-//               break;
-//             default:
-//               iconName = "ellipse-outline";
-//           }
-//           return <Ionicons name={iconName} size={size} color={color} />;
-//         },
-//         tabBarActiveTintColor: "#FE5900",
-//         tabBarInactiveTintColor: "#663ED9",
-//         headerShown: false,
-//       })}
-//     >
-//       <Tab.Screen name="Dashboard" component={DashboardScreen} />
-//       <Tab.Screen name="Projet" component={ProjectsScreen} />
-//       <Tab.Screen name="Messages" component={MessagesScreen} />
-//       <Tab.Screen name="Profil" component={ProfilScreen} />
-//     </Tab.Navigator>
-//   );
-// }
 
 function MainTabs() {
   const constructeurToken = useSelector(
     (state) => state.constructeur.value.token
   );
-  const clientToken = useSelector((state) => state.client.value.token);
 
   // Détermine le rôle en fonction des tokens
   const isConstructeur = !!constructeurToken;
-  const isClient = !!clientToken;
 
   return (
     <Tab.Navigator

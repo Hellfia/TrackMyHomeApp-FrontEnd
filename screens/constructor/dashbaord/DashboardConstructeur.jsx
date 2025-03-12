@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Image,
   Linking,
@@ -33,7 +33,9 @@ export default function DashboardConstructeur({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`${devUrl}/projects/${constructeur.constructorId}`)
+      fetch(
+        `${devUrl}/projects/${constructeur.constructorId}/${constructeur.token}`
+      )
         .then((response) => response.json())
         .then((data) => setProjectsData(data.data.length))
         .catch(console.error);
@@ -42,7 +44,9 @@ export default function DashboardConstructeur({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`${devUrl}/projects/clients/${constructeur.constructorId}`)
+      fetch(
+        `${devUrl}/projects/clients/${constructeur.constructorId}/${constructeur.token}`
+      )
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
