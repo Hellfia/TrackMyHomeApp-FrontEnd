@@ -10,14 +10,19 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
 import maison from "../../../assets/maison-test.jpg";
 import PurpleButton from "../../../components/PurpleButton";
 import ReturnButton from "../../../components/ReturnButton";
 import StepItem from "../../../components/StepItem";
+import { addDocument } from "../../../reducers/constructeur";
 import globalStyles from "../../../styles/globalStyles";
 
 export default function ClientDetails({ route, navigation }) {
+  const dispatch = useDispatch();
   const { data } = route.params;
+
+  const projectId = data._id;
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -53,6 +58,13 @@ export default function ClientDetails({ route, navigation }) {
       });
   };
 
+  const handleDocument = () => {
+    navigation.navigate("Documents", {
+      data: data,
+    });
+    dispatch(addDocument(projectId));
+  };
+
   // Si on a une étape validée , on prend l'URI de la derniere, sinon on prend le logo par défaut
   const image =
     lastValidatedStep && lastValidatedStep.uri
@@ -76,7 +88,7 @@ export default function ClientDetails({ route, navigation }) {
       <View style={styles.imageContainer}>
         <Image source={image} style={styles.image} resizeMode="contain" />
       </View>
-      <PurpleButton text="Documents" icon="folder" onPress={() => navigation.navigate("Documents")} />
+      <PurpleButton text="Documents" icon="folder" onPress={handleDocument} />
       <Text style={styles.stepText}>Les étapes de construction</Text>
       <ScrollView>
         <View style={styles.subContainer}>
@@ -104,7 +116,7 @@ export default function ClientDetails({ route, navigation }) {
                   name={step.name}
                   iconName={iconName}
                   iconColor={iconColor}
-                  iconOnPress='pencil-alt'
+                  iconOnPress="pencil-alt"
                   onPress={() =>
                     navigation.navigate("UpdateDetails", {
                       data: data,

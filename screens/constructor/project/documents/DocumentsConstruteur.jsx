@@ -14,19 +14,21 @@ import InputFiles from "../../../../components/InputFiles";
 import ReturnButton from "../../../../components/ReturnButton";
 import globalStyles from "../../../../styles/globalStyles";
 
-export default function DocumentsConstruteur({ navigation }) {
+export default function DocumentsConstruteur({ route, navigation }) {
+  const { data } = route.params;
+
   const [documents, setDocuments] = useState([]);
 
   const devUrl = process.env.DEV_URL;
 
   useFocusEffect(
     useCallback(() => {
-      const projectId = "67d01b03db992024d53a2038";
+      const projectId = data._id;
       fetch(`${devUrl}/upload/documents/${projectId}`)
         .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setDocuments(data.documents);
+        .then((dataFetch) => {
+          console.log(dataFetch);
+          setDocuments(dataFetch.documents);
         })
         .catch((err) => {
           console.error("Erreur lors de la récupération des documents", err);
@@ -35,13 +37,13 @@ export default function DocumentsConstruteur({ navigation }) {
   );
 
   const handleDeleteDocument = (id) => {
-    const projectId = "67d01b03db992024d53a2038";
+    const projectId = data._id;
     fetch(`${devUrl}/upload/documents/${projectId}/${id}`, {
       method: "DELETE",
     })
       .then((res) => res.json())
-      .then((data) => {
-        if (data.result) {
+      .then((dataFetch) => {
+        if (dataFetch.result) {
           setDocuments((prevDocuments) =>
             prevDocuments.filter((doc) => doc._id !== id)
           );
@@ -83,30 +85,19 @@ export default function DocumentsConstruteur({ navigation }) {
         ) : (
           documents.map((document) => (
             <View key={document._id} style={styles.documentItem}>
-              <View style={styles.documentTitle}>
+              <TouchableOpacity
+                onPress={() => handleViewDocument(document.uri)}
+                style={styles.documentTitle}
+              >
                 <Text>{document.name}</Text>
-              </View>
+              </TouchableOpacity>
 
-              <View style={styles.actions}>
-                {/* Icone œil pour télécharger ou ouvrir le document */}
-                <TouchableOpacity
-                  onPress={() => handleViewDocument(document.uri)}
-                >
-                  <FontAwesome5
-                    name="eye"
-                    size={24}
-                    color="#663ED9"
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-
-                {/* Icone poubelle pour supprimer le document */}
-                <TouchableOpacity
-                  onPress={() => handleDeleteDocument(document._id)}
-                >
-                  <FontAwesome5 name="trash-alt" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
+              {/* Icone poubelle pour supprimer le document */}
+              <TouchableOpacity
+                onPress={() => handleDeleteDocument(document._id)}
+              >
+                <FontAwesome5 name="trash-alt" size={24} color="red" />
+              </TouchableOpacity>
             </View>
           ))
         )}
@@ -162,10 +153,5 @@ const styles = StyleSheet.create({
   },
   noDocuments: {
     textAlign: "center",
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
   },
 });

@@ -10,8 +10,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
 
-export default function InputFile({ navigation }) {
+export default function InputFile() {
+  const constructeur = useSelector((state) => state.constructeur.value);
+  const client = useSelector((state) => state.client.value);
+
+  const projectId =
+    constructeur.projectId === null ? client.projectId : constructeur.projectId;
+
   const devUrl = process.env.DEV_URL;
 
   // Demande la permission pour accéder à la galerie (au moment du choix de l'image)
@@ -44,7 +51,7 @@ export default function InputFile({ navigation }) {
       name: result.assets[0].fileName,
       type: result.assets[0].mimeType,
     });
-    fetch(`${devUrl}/upload/67d01b03db992024d53a2038`, {
+    fetch(`${devUrl}/upload/${projectId}`, {
       method: "POST",
       body: formData,
     })
@@ -72,7 +79,7 @@ export default function InputFile({ navigation }) {
       name: result.assets[0].name,
       type: result.assets[0].mimeType,
     });
-    fetch(`${devUrl}/upload/67d01b03db992024d53a2038`, {
+    fetch(`${devUrl}/upload/${projectId}`, {
       method: "POST",
       body: formData,
     })

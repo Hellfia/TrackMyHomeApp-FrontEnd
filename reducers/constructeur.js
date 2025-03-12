@@ -3,12 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   value: {
     token: null,
-    email: null,
     role: null,
-    constructorName: null,
-    constructorSiret: null,
-    password: null,
-    documents: [],
+    projectId: null,
   },
 };
 
@@ -22,35 +18,17 @@ export const constructeurSlice = createSlice({
       state.value.role = action.payload.role;
     },
     logout: (state) => {
+      state.value.constructorId = null;
       state.value.token = null;
-      state.value.email = null;
-    },
-    updateProfile: (state, action) => {
-      state.value.constructorName = action.payload.constructorName;
-      state.value.constructorSiret = action.payload.constructorSiret;
-      state.value.city = action.payload.city;
-      state.value.address = action.payload.address;
-      state.value.phoneNumber = action.payload.phoneNumber;
-      state.value.zipCode = action.payload.zipCode;
-      state.value.email = action.payload.email;
-      state.value.password = action.payload.password;
+      state.value.role = null;
+      state.value.projectId = null;
     },
     addDocument: (state, action) => {
-      state.value.documents = action.payload;
-    },
-    deleteDocument: (state, action) => {
-      state.value.documents = state.value.documents.filter(
-        (doc) => doc.id !== action.payload
-      );
+      state.value.projectId = action.payload;
     },
   },
 });
 
-export const {
-  loginConstructeur,
-  logout,
-  updateProfile,
-  addDocument,
-  deleteDocument,
-} = constructeurSlice.actions;
+export const { loginConstructeur, logout, addDocument } =
+  constructeurSlice.actions;
 export default constructeurSlice.reducer;

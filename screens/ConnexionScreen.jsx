@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import logo from "../assets/logo.webp";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
@@ -18,12 +18,6 @@ import { loginConstructeur } from "../reducers/constructeur";
 export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
-
-  const constructeur = useSelector((state) => state.constructeur.value);
-  const client = useSelector((state) => state.client.value);
-
-  console.log("constructeur", constructeur);
-  console.log("client", client);
 
   const dispatch = useDispatch();
 
@@ -47,6 +41,7 @@ export default function ConnexionScreen({ navigation }) {
                 clientId: data.clientId,
                 token: data.token,
                 role: "client",
+                projectId: data.projectId,
               })
             );
           } else if (data.role === "constructeur") {
