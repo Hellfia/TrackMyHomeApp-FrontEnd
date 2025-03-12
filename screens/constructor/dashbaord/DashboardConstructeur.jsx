@@ -81,7 +81,7 @@ export default function DashboardConstructeur({ navigation }) {
           onPress={() => navigation.navigate("Projet")}
         >
           <Text style={styles.sectionSubtitle}>
-            Nombre de chantier en cours :{" "}
+            Nombre de chantier en cours :
           </Text>
           <Text style={styles.highLight}>{projectsData}</Text>
         </TouchableOpacity>

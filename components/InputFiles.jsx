@@ -1,82 +1,158 @@
-import React, { useState, useEffect } from "react";
-import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import * as DocumentPicker from "expo-document-picker";
-import * as ImagePicker from "expo-image-picker";
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActionSheetIOS,
+  Platform,
+  Alert,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 
-export default function InputForFiles({ documents, setDocuments }) {
-  const [modalVisible, setModalVisible] = useState(false);
+export default function InputFile() {
+  const devUrl = process.env.DEV_URL
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  useEffect(() => {
-    console.log("État de modalVisible :", modalVisible);
-  }, [modalVisible]);
-
-  const handleOptionSelect = async (option) => {
-    console.log("Option sélectionnée :", option);
-    setModalVisible(false);
-
-    if (option === "camera") {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission refusée", "Accès à la caméra requis");
-        return;
-      }
-      let result = await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 0.8 });
-      if (!result.canceled) {
-        setDocuments((prev) => [...prev, { uri: result.assets[0].uri, name: "Photo" }]);
-      }
+  // Demande la permission pour accéder à la galerie (au moment du choix de l'image)
+  const requestMediaLibraryPermissions = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert("Permission d'accès à la galerie refusée");
+      return false;
     }
+    return true;
+  };
 
-    if (option === "gallery") {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission refusée", "Accès à la galerie requis");
-        return;
-      }
-      let result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
-      if (!result.canceled) {
-        setDocuments((prev) => [...prev, { uri: result.assets[0].uri, name: "Image" }]);
-      }
+  // Fonction pour sélectionner une image depuis la galerie
+  const pickImage = async () => {
+    const hasPermission = await requestMediaLibraryPermissions();
+    if (!hasPermission) return;
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.3,
+    });
+    console.log("biloute")
+    console.log(result)
+    if (result.canceled) {
+      return 
     }
+    console.log("biloute2", result.assets[0].uri)
+    const formData = new FormData()
+    formData.append("file", {
+      uri: result.assets[0].uri,
+      name: result.assets[0].fileName,
+      type: result.assets[0].mimeType 
+    })
+    console.log("biloute3", formData.file)
+    fetch(`${devUrl}/upload/67d01b03db992024d53a2038`, {
+       method: "POST",
+      //  headers: { "Content-Type": "image" },
+      body: formData
+      })
+        .then((response) => response.json())
+         .then((data) => {
+         console.log("Réponse de l'API :", data);
+         if (data.result === true) {
+          console.log("biloute", data.documents);
+          dispatch(addDocument(data.documents));
+    }
+  })
+             
+};
 
-    if (option === "document") {
-      const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
-      if (!result.canceled && result.assets) {
-        setDocuments((prev) => [...prev, { uri: result.assets[0].uri, name: result.assets[0].name }]);
-      }
+  // Fonction pour sélectionner un fichier (PDF, etc.) via DocumentPicker
+  const pickFile = async () => {
+    let result = await DocumentPicker.getDocumentAsync({
+      type: '*/*', // vous pouvez restreindre, ex: 'application/pdf'
+      copyToCacheDirectory: true,
+    });
+console.log('chtio', result)
+if (result.canceled) {
+  return 
+}
+console.log("biloute2", result.assets[0].uri)
+const formData = new FormData()
+formData.append("file", {
+  uri: result.assets[0].uri,
+  name: result.assets[0].name,
+  type: result.assets[0].mimeType 
+})
+console.log("biloute3", formData.file)
+fetch(`${devUrl}/upload/67d01b03db992024d53a2038`, {
+   method: "POST",
+  //  headers: { "Content-Type": "image" },
+  body: formData
+  })
+    .then((response) => response.json())
+     .then((data) => {
+     console.log("Réponse de l'API :", data);
+     if (data.result === true) {
+      console.log("biloute", data.documents);
+      dispatch(addDocument(data.documents));
+}
+})
+  }
+  // Ouvre un ActionSheet (iOS) ou un simple Alert (Android) pour choisir le type de fichier
+  const openActionSheet = () => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Annuler', 'Choisir une image', 'Choisir un document'],
+          cancelButtonIndex: 0,
+        },
+        buttonIndex => {
+          if (buttonIndex === 1) {
+            pickImage();
+          } else if (buttonIndex === 2) {
+            pickFile();
+          }
+        }
+      );
+    } else {
+      // Sur Android, on peut utiliser un Alert ou une bibliothèque tierce
+      Alert.alert(
+        'Choisir une option',
+        '',
+        [
+          { text: 'Choisir une image', onPress: pickImage },
+          { text: 'Choisir un document', onPress: pickFile },
+          { text: 'Annuler', style: 'cancel' },
+        ],
+        { cancelable: true }
+      );
     }
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.importContainer} 
-        onPress={() => {
-          console.log("Bouton pressé, ouverture de la modal...");
-          setModalVisible(true);
-        }}>
-        <Ionicons name="add" size={36} color="#FE5900" style={styles.plusIcon} />
-        <Text style={styles.importText}>Importer un nouveau document</Text>
+      {/* Zone cliquable avec style pointillé */}
+      <TouchableOpacity style={styles.uploadContainer} onPress={openActionSheet}>
+        <Text style={styles.plusSign}>+</Text>
+        <Text style={styles.mainText}>Importez une image du chantier</Text>
+        <Text style={styles.subText}>Format accepté : JPEG, HEIC, PNG</Text>
       </TouchableOpacity>
 
-      <Modal visible={modalVisible} transparent={true} animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <TouchableOpacity onPress={() => handleOptionSelect("camera")} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Prendre une photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleOptionSelect("gallery")} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Photothèque</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleOptionSelect("document")} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Document</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalCancel}>
-              <Text style={styles.modalCancelText}>Annuler</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Prévisualisation de l'image ou du fichier sélectionné */}
+      {selectedImage && (
+        <View style={styles.preview}>
+          <Text style={styles.previewTitle}>Image sélectionnée :</Text>
+          <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
         </View>
-      </Modal>
+      )}
+      {selectedFile && (
+        <View style={styles.preview}>
+          <Text style={styles.previewTitle}>Fichier sélectionné :</Text>
+          <Text numberOfLines={1} style={styles.fileText}>
+            {selectedFile}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -84,47 +160,51 @@ export default function InputForFiles({ documents, setDocuments }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    marginTop: 20,
+    alignItems: 'center',
   },
-  importContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    borderStyle: "dashed",
-    borderWidth: 1,
-    borderColor: "#663ED9",
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  uploadContainer: {
+    width: '100%',
+    height: 150,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: '#663ED9', 
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+  plusSign: {
+    fontSize: 40,
+    color: '#FF6600', 
+    marginBottom: 10,
   },
-  modalContainer: {
-    backgroundColor: "#FFF",
-    padding: 20,
-    borderRadius: 12,
-    width: "80%",
-    alignItems: "center",
+  mainText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#663ED9',
+    marginBottom: 5,
   },
-  modalButton: {
-    paddingVertical: 12,
+  subText: {
+    fontSize: 12,
+    color: '#888',
   },
-  modalButtonText: {
-    fontSize: 18,
-    textAlign: "center",
-    color: "#663ED9",
+  // Preview
+  preview: {
+    marginTop: 20,
+    alignItems: 'center',
   },
-  modalCancel: {
-    paddingVertical: 10,
+  previewTitle: {
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  imagePreview: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
+  },
+  fileText: {
+    maxWidth: '80%',
+    textAlign: 'center',
   },
 });
-
