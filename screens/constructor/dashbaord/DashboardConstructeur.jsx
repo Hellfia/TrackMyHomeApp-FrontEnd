@@ -37,7 +37,7 @@ export default function DashboardConstructeur({ navigation }) {
         `${devUrl}/projects/${constructeur.constructorId}/${constructeur.token}`
       )
         .then((response) => response.json())
-        .then((data) => setProjectsData(data.data.length))
+        .then((data) => setProjectsData(data.data?.length))
         .catch(console.error);
     }, [])
   );
