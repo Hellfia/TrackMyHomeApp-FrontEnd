@@ -44,8 +44,9 @@ export default function ProjectConstructeur({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const constructorId = constructeur.constructorId;
+      const token = constructeur.token;
       setLoading(true);
-      fetch(`${devUrl}/projects/clients/${constructorId}`)
+      fetch(`${devUrl}/projects/clients/${constructorId}/${token}`)
         .then((res) => res.json())
         .then((data) => {
           setClients(data.data);

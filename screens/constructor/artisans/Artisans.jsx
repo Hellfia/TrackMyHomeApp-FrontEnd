@@ -19,7 +19,6 @@ export default function Artisans({ route, navigation }) {
       fetch(`${devUrl}/craftsmen/${token}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("dataFetched", data);
           setCraftsman(data.data);
         })
         .catch((error) => console.error("Erreur lors du fetch:", error));
