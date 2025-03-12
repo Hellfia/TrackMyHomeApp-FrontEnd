@@ -7,7 +7,7 @@ import PlusButton from "../../../components/PlusButton";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
-export default function Artisans({ route, navigation }) {
+export default function Artisans({ navigation }) {
   const constructeur = useSelector((state) => state.constructeur.value);
   const [craftsman, setCraftsman] = useState([]);
 

@@ -44,8 +44,8 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
-//AsyncStorage.clear().then();
-//persistor.purge().then();
+// AsyncStorage.clear().then();
+// persistor.purge().then();
 
 function MainTabs() {
   const constructeurToken = useSelector(

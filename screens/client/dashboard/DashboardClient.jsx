@@ -17,7 +17,7 @@ import avatar from "../../../assets/avatar.png";
 import maison from "../../../assets/maison-test.jpg";
 import globalStyles from "../../../styles/globalStyles";
 
-export default function DashboardClient({ navigation }) {
+export default function DashboardClient() {
   const [infoConstructor, setInfoConstructor] = useState([]);
   const [steps, setSteps] = useState([]);
   const devUrl = process.env.DEV_URL;

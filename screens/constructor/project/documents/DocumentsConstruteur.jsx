@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -6,106 +8,99 @@ import {
   Text,
   TouchableOpacity,
   View,
-
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { WebView } from "react-native-webview";
 import InputFiles from "../../../../components/InputFiles";
 import ReturnButton from "../../../../components/ReturnButton";
 import globalStyles from "../../../../styles/globalStyles";
-import { useDispatch } from 'react-redux'
-import { addDocument } from "../../../../reducers/constructeur";
 
 export default function DocumentsConstruteur({ navigation }) {
   const [documents, setDocuments] = useState([]);
-  
-const [files, setFiles] = useState([]); // Pour stocker les fichiers uploadés
-  const [selectedFile, setSelectedFile] = useState(null); // Pour stocker le fichier actuellement sélectionné
-  const dispatch = useDispatch();
- 
-  const devUrl = process.env.DEV_URL
+  const [selectedDocument, setSelectedDocument] = useState(null); // Pour gérer le document sélectionné
 
-  // const handleImportDocument = async () => {
-    
-  //     // Sélection du fichier via DocumentPicker avec la nouvelle structure
-  //     const res = await DocumentPicker.getDocumentAsync({
-  //       type: "*/*", // Autorise tous les types de fichiers
-  //     });
-  //     console.log("DocumentPicker result:", res);
+  const devUrl = process.env.DEV_URL;
 
-  //     // Vérifier que l'utilisateur n'a pas annulé et qu'il y a bien un fichier dans assets
-  //     if (!res.canceled && res.assets && res.assets.length > 0) {
-  //       const fileInfo = res.assets[0];
+  useFocusEffect(
+    useCallback(() => {
+      const projectId = "67d01b03db992024d53a2038";
+      fetch(`${devUrl}/upload/documents/${projectId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setDocuments(data.documents);
+        })
+        .catch((err) => {
+          console.error("Erreur lors de la récupération des documents", err);
+        });
+    }, [])
+  );
 
-  //       // Mise à jour immédiate de l'état pour afficher le nom du fichier sélectionné
-  //       setSelectedFile({ name: fileInfo.name, uri: fileInfo.uri });
-
-  //       // Préparation du FormData pour Cloudinary
-  //       const formData = new FormData();
-  //       formData.append("file", {
-  //         uri: fileInfo.uri,
-  //         name: fileInfo.name,
-  //         type: fileInfo.mimeType || "application/octet-stream",
-  //       });
-  //       formData.append("upload_preset", "Document"); // Remplacez par votre upload preset
-
-  //       // Utilisation de l'URL de l'API REST de Cloudinary
-  //       const cloudinaryUrl =
-  //         "https://api.cloudinary.com/v1_1/db0bnigaj/upload";
-  //       console.log("Cloudinary URL:", cloudinaryUrl);
-
-  //       // Upload du fichier via fetch vers Cloudinary
-  //       const uploadResponse = await fetch(cloudinaryUrl, {
-  //         method: "POST",
-  //         body: formData,
-  //       });
-  //       const uploadResult = await uploadResponse.json();
-  //       console.log("Cloudinary upload result:", uploadResult);
-
-  //       if (uploadResponse.ok) {
-  //         // Création d'un nouvel objet fichier incluant l'URL Cloudinary
-  //         const newFile = {
-  //           name: fileInfo.name,
-  //           date: Date.now(),
-  //           uri: uploadResult.secure_url,
-  //         };
-  //         setFiles((prevFiles) => [...prevFiles, newFile]);
-          
-           
-  //         // Utiliser directement newFile pour l'appel à l'API locale
-  //         fetch(`${devUrl}/projects/upload`, {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({
-  //             file: newFile,
-  //             projectId: "67c9d8308c35c9b608aeb231",
-  //           }),
-  //         })
-  //           .then((response) => response.json())
-  //           .then((data) => {
-  //             console.log("Réponse de l'API :", data);
-  //             if (data.result === true) {
-  //               console.log("biloute", data.documents);
-  //               dispatch(addDocument(data.documents));
-  //             }
-  //           })
-  //           .catch((err) =>
-  //             console.error("Erreur lors de l'envoi à l'API:", err)
-  //           );
-  //       } else {
-  //         console.error(
-  //           "Erreur lors de l'upload sur Cloudinary:",
-  //           uploadResult
-  //         );
-  //         Alert.alert("Erreur", "L'upload du fichier a échoué");
-  //       }
-  //     } else {
-  //       console.log("Sélection annulée par l'utilisateur.");
-  //     }
-
-  // };
   const handleDeleteDocument = (id) => {
-    setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+    const projectId = "67d01b03db992024d53a2038";
+    fetch(`${devUrl}/upload/documents/${projectId}/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result) {
+          setDocuments((prevDocuments) =>
+            prevDocuments.filter((doc) => doc._id !== id)
+          );
+        } else {
+          console.error("Erreur lors de la suppression du document");
+        }
+      })
+      .catch((err) => {
+        console.error("Erreur lors de la suppression du document", err);
+      });
   };
+
+  const handleViewDocument = (uri) => {
+    setSelectedDocument(uri);
+  };
+
+  if (selectedDocument) {
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            body {
+              margin: 0;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              background-color: #f7f7f7;
+            }
+            img {
+              max-width: 100%;
+              max-height: 100%;
+              object-fit: contain;
+            }
+          </style>
+        </head>
+        <body>
+          <img src="${selectedDocument}" />
+        </body>
+      </html>
+    `;
+
+    return (
+      <SafeAreaView style={styles.webviewContainer}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => setSelectedDocument(null)} // Ferme la WebView
+        >
+          <FontAwesome5 name="times" size={24} color="white" />
+        </TouchableOpacity>
+        <WebView
+          originWhitelist={["*"]}
+          source={{ html: htmlContent }} // Charge le contenu HTML avec l'image centrée
+          style={styles.webview}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -113,19 +108,46 @@ const [files, setFiles] = useState([]); // Pour stocker les fichiers uploadés
         <ReturnButton onPress={() => navigation.navigate("Dashboard")} />
         <Text style={globalStyles.title}>Mes documents</Text>
       </View>
+      <View style={styles.inputContainer}>
+        <InputFiles />
+      </View>
+      <Text style={styles.documentsTitle}>Documents</Text>
+      <ScrollView>
+        {documents.length === 0 ? (
+          <Text style={styles.noDocuments}>Aucun document disponible</Text>
+        ) : (
+          documents.map((document) => (
+            <View key={document._id} style={styles.documentItem}>
+              <TouchableOpacity
+                onPress={() => handleViewDocument(document.uri)}
+                style={styles.documentTitle}
+              >
+                <Text>{document.name}</Text>
+              </TouchableOpacity>
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <InputFiles/>
+              <View style={styles.actions}>
+                {/* Icone œil pour visualiser le document */}
+                <TouchableOpacity
+                // onPress={() =>  }
+                >
+                  <FontAwesome5
+                    name="arrow-alt-circle-down"
+                    size={24}
+                    color="#663ED9"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
 
-        <Text style={styles.documentsTitle}>Documents Client 1</Text>
-        {files.map((doc) => (
-          <View key={doc.id} style={styles.documentItem}>
-            <Text style={styles.documentTitle}>{doc.title}</Text>
-            <TouchableOpacity onPress={() => handleDeleteDocument(doc.id)}>
-              <Ionicons name="trash-outline" size={24} color="#FF0000" />
-            </TouchableOpacity>
-          </View>
-        ))}
+                {/* Icone poubelle pour supprimer le document */}
+                <TouchableOpacity
+                  onPress={() => handleDeleteDocument(document._id)}
+                >
+                  <FontAwesome5 name="trash-alt" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -139,38 +161,17 @@ const styles = StyleSheet.create({
     margin: 20,
     paddingBottom: 40,
   },
-  scrollContainer: {
-    paddingTop: 40,
-  },
-  importContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: "#663ED9",
-    borderRadius: 8,
-    paddingVertical: 30,
-    marginBottom: 30,
-  },
-  plusIcon: {
-    marginBottom: 10,
-  },
-  importText: {
-    fontSize: 16,
-    color: "#663ED9",
-    marginBottom: 5,
-  },
-  formatText: {
-    fontSize: 12,
-    color: "#999",
+  inputContainer: {
+    height: 180,
+    marginTop: 20,
   },
   documentsTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#663ED9",
     marginVertical: 20,
   },
   documentItem: {
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -179,10 +180,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 14,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#663ED9",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   documentTitle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#333",
+    paddingLeft: 10,
+    maxWidth: 230,
+  },
+  icon: {
+    marginRight: 15,
+  },
+  noDocuments: {
+    textAlign: "center",
+  },
+  actions: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  webviewContainer: {
+    flex: 1,
+    position: "relative",
+  },
+  webview: {
+    flex: 1,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 70,
+    right: 30,
+    zIndex: 10,
+    backgroundColor: "red",
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    padding: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
