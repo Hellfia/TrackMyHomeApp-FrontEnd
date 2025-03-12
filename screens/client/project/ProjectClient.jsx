@@ -28,7 +28,7 @@ export default function ProjectClient({ navigation }) {
   // Trouver la dernière étape validée dans steps qui a le statut validée
   const lastValidatedStep = steps
     .reverse()
-    .find((step) => step.status === "validée");
+    .find((step) => step.status === "Terminé");
 
   // Si on a une étape validée , on prend l'URI de la derniere, sinon on prend le logo par défaut
   const image =

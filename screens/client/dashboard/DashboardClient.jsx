@@ -49,7 +49,7 @@ export default function DashboardClient() {
   // Trouver l'URI de la dernière étape validée
   const lastValidatedStep = steps // Cloner pour éviter de modifier l'ordre d'origine
     .reverse()
-    .find((step) => step.status === "validée");
+    .find((step) => step.status === "Terminé");
 
   const callConstructor = (phoneNumber) => {
     if (phoneNumber && phoneNumber !== "Non renseigné") {
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 20,
     fontWeight: "600",
-    marginTop: 40,
+    marginTop: 30,
     marginBottom: 15,
     marginLeft: 20,
     textAlign: "left",

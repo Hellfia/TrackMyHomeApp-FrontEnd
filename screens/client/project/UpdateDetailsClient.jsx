@@ -8,7 +8,6 @@ import {
   Text,
   View,
 } from "react-native";
-import maison from "../../../assets/maison-test.jpg";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
@@ -50,9 +49,16 @@ export default function UpdateDetailsClient({ route, navigation }) {
         <ReturnButton onPress={() => navigation.goBack()} />
         <Text style={globalStyles.title}>{data.name}</Text>
       </View>
-      <View style={styles.imageContainer}>
-        <Image source={maison} style={styles.image} resizeMode="cover" />
-      </View>
+      {data.uri ? ( // Vérifie si l'URI existe
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: data.uri }} // Affiche l'image si l'URI est valide
+            style={styles.image}
+            resizeMode="cover"
+          />
+        </View>
+      ) : null}{" "}
+      {/* Masque l'image si l'URI n'est pas valide */}
       <ScrollView>
         <View style={styles.infosContainer}>
           <View style={styles.infoContainer}>
@@ -105,14 +111,14 @@ export const styles = StyleSheet.create({
     height: 180,
     borderRadius: 20,
     overflow: "hidden",
-    marginVertical: 20,
+    marginTop: 20,
   },
   image: {
     width: "100%",
     height: "100%",
   },
   infosContainer: {
-    marginVertical: 10,
+    marginVertical: 30,
   },
   infoContainer: {
     flexDirection: "column",

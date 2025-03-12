@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Joi from "joi"; // Import de Joi
+import Joi from "joi";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -17,12 +17,14 @@ import {
   View,
 } from "react-native";
 import GradientButton from "../../../components/GradientButton";
-import InputFiles from "../../../components/InputFiles";
+import InputPicture from "../../../components/InputPicture";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
 export default function UpdateDetails({ route, navigation }) {
   const { data, step } = route.params;
+
+  const clientIdProps = data.client._id;
 
   const [status, setStatus] = useState(step.status || "");
   const [isModalVisible, setModalVisible] = useState(false);
@@ -155,7 +157,7 @@ export default function UpdateDetails({ route, navigation }) {
         keyboardVerticalOffset={20}
       >
         <ScrollView ref={scrollViewRef}>
-          <InputFiles />
+          <InputPicture step={step} clientIdProps={clientIdProps} />
 
           <View style={styles.selectContainer}>
             <View style={styles.statusContainer}>
@@ -259,7 +261,7 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   nameStepText: {
-    margin: 30,
+    margin: 20,
     fontSize: 18,
     fontWeight: "600",
     color: "#362173",
