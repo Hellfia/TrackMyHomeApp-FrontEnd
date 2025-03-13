@@ -1,6 +1,14 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { Button, Image, Modal, StyleSheet, Text, View } from "react-native";
+import {
+  Button,
+  Image,
+  Linking,
+  Modal,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import avatar from "../assets/avatar.png";
 import PurpleButton from "./PurpleButton";
 
@@ -60,6 +68,14 @@ const CraftsmanContainer = ({
       });
   };
 
+  const handleCall = () => {
+    const phoneUrl = `tel:${phoneNumber}`; // format du numéro pour l'appel
+    Linking.openURL(phoneUrl).catch((err) =>
+      console.error("Erreur lors de l'appel :", err)
+    );
+    setIsModalVisible(false); // Ferme la modale après l'appel
+  };
+
   return (
     <View style={styles.generalContainer}>
       <Image source={profileImage} style={styles.avatar} />
@@ -77,7 +93,6 @@ const CraftsmanContainer = ({
         <Text>
           {craftsmanZip} {craftsmanCity}
         </Text>
-        <Text> {phoneNumber}</Text>
       </View>
 
       {/* Modale */}
@@ -90,6 +105,12 @@ const CraftsmanContainer = ({
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Que voulez-vous faire ?</Text>
+            <PurpleButton
+              onPress={() => handleCall()}
+              text="Appeller"
+              backgroundColor="#FE5900"
+              icon="phone-alt"
+            />
             <PurpleButton onPress={() => handleModify()} text="Modifier" />
             <PurpleButton
               onPress={() => handleDelete()}
@@ -126,8 +147,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     borderRadius: 10,
   },
   modifContainer: {

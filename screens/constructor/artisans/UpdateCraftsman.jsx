@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -10,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
+import InputLogo from "../../../components/InputLogo";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
@@ -106,75 +108,81 @@ export default function UpdateCraftsman({ route, navigation }) {
         <ReturnButton onPress={() => navigation.goBack()} />
         <Text style={globalStyles.title}>Modifier votre artisan</Text>
       </View>
+
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.inputContainer}>
-          <Input
-            style={styles.inputText}
-            placeholder="Nom de l'artisan"
-            value={craftsmanCompagny}
-            onChangeText={(value) => setCraftsmanCompagny(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="default"
-          />
-          {errors.craftsmanCompagny && (
-            <Text style={styles.errorText}>{errors.craftsmanCompagny}</Text>
-          )}
+        <ScrollView>
+          <View style={styles.inputLogoContainer}>
+            <InputLogo craftsman={craftsman} />
+          </View>
+          <View style={styles.inputContainer}>
+            <Input
+              style={styles.inputText}
+              placeholder="Nom de l'artisan"
+              value={craftsmanCompagny}
+              onChangeText={(value) => setCraftsmanCompagny(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="default"
+            />
+            {errors.craftsmanCompagny && (
+              <Text style={styles.errorText}>{errors.craftsmanCompagny}</Text>
+            )}
 
-          <Input
-            style={styles.inputText}
-            placeholder="Adresse de l'artisan"
-            value={craftsmanAddress}
-            onChangeText={(value) => setCraftsmanAddress(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="default"
-          />
-          {errors.craftsmanAddress && (
-            <Text style={styles.errorText}>{errors.craftsmanAddress}</Text>
-          )}
+            <Input
+              style={styles.inputText}
+              placeholder="Adresse de l'artisan"
+              value={craftsmanAddress}
+              onChangeText={(value) => setCraftsmanAddress(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="default"
+            />
+            {errors.craftsmanAddress && (
+              <Text style={styles.errorText}>{errors.craftsmanAddress}</Text>
+            )}
 
-          <Input
-            style={styles.inputText}
-            placeholder="Code postal de l'artisan"
-            value={craftsmanZip}
-            onChangeText={(value) => setCraftsmanZip(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="phone-pad"
-          />
-          {errors.craftsmanZip && (
-            <Text style={styles.errorText}>{errors.craftsmanZip}</Text>
-          )}
+            <Input
+              style={styles.inputText}
+              placeholder="Code postal de l'artisan"
+              value={craftsmanZip}
+              onChangeText={(value) => setCraftsmanZip(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="phone-pad"
+            />
+            {errors.craftsmanZip && (
+              <Text style={styles.errorText}>{errors.craftsmanZip}</Text>
+            )}
 
-          <Input
-            style={styles.inputText}
-            placeholder="Ville de l'artisan"
-            value={craftsmanCity}
-            onChangeText={(value) => setCraftsmanCity(value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="default"
-          />
-          {errors.craftsmanCity && (
-            <Text style={styles.errorText}>{errors.craftsmanCity}</Text>
-          )}
+            <Input
+              style={styles.inputText}
+              placeholder="Ville de l'artisan"
+              value={craftsmanCity}
+              onChangeText={(value) => setCraftsmanCity(value)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="default"
+            />
+            {errors.craftsmanCity && (
+              <Text style={styles.errorText}>{errors.craftsmanCity}</Text>
+            )}
 
-          <Input
-            style={styles.inputText}
-            placeholder="Téléphone de l'artisan"
-            value={phoneNumber}
-            onChangeText={(value) => setPhoneNumber(value)}
-            keyboardType="phone-pad"
-            autoCorrect={false}
-          />
-          {errors.phoneNumber && (
-            <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-          )}
-        </View>
+            <Input
+              style={styles.inputText}
+              placeholder="Téléphone de l'artisan"
+              value={phoneNumber}
+              onChangeText={(value) => setPhoneNumber(value)}
+              keyboardType="phone-pad"
+              autoCorrect={false}
+            />
+            {errors.phoneNumber && (
+              <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+            )}
+          </View>
+        </ScrollView>
 
         <GradientButton onPress={handleUpdateProfile} text="Mettre à jour" />
       </KeyboardAvoidingView>
@@ -186,6 +194,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  inputLogoContainer: {
+    marginVertical: 20,
   },
   inputContainer: {
     display: "flex",
