@@ -40,7 +40,7 @@ const addProject = Joi.object({
       "string.empty": "L'email est obligatoire.",
       "string.email": "Veuillez entrer un email valide.",
     }),
-  password: Joi.string().min(6).required().messages({
+  password: Joi.string().min(0).required().messages({
     "string.empty": "Le mot de passe est obligatoire.",
     "string.min": "Le mot de passe doit comporter au moins 6 caractères.",
   }),
