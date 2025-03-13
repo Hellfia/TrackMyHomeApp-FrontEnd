@@ -27,7 +27,6 @@ export default function DocumentsConstruteur({ route, navigation }) {
       fetch(`${devUrl}/upload/documents/${projectId}`)
         .then((res) => res.json())
         .then((dataFetch) => {
-          console.log(dataFetch);
           setDocuments(dataFetch.documents);
         })
         .catch((err) => {

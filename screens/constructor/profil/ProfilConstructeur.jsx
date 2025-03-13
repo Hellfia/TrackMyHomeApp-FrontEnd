@@ -107,13 +107,13 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: "center",
-    marginTop: 30,
-    marginBottom: 50,
+    marginTop: 20,
+    marginBottom: 20,
   },
   image: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     borderWidth: 2,
     borderColor: "#663ED9",
   },

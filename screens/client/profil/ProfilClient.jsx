@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: "center",
     marginTop: 20,
-    marginBottom: 40,
+    marginBottom: 30,
   },
   image: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     borderWidth: 2,
     borderColor: "#663ED9",
   },
