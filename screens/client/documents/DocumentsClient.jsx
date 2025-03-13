@@ -18,8 +18,6 @@ import globalStyles from "../../../styles/globalStyles";
 export default function DocumentsConstruteur({ navigation }) {
   const client = useSelector((state) => state.client.value);
 
-  console.log(client.projectId);
-
   const [documents, setDocuments] = useState([]);
 
   const devUrl = process.env.DEV_URL;
@@ -30,7 +28,6 @@ export default function DocumentsConstruteur({ navigation }) {
       fetch(`${devUrl}/upload/documents/${projectId}`)
         .then((res) => res.json())
         .then((dataFetch) => {
-          console.log(dataFetch);
           setDocuments(dataFetch.documents);
         })
         .catch((err) => {

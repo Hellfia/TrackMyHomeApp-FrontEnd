@@ -65,7 +65,7 @@ export default function DashboardClient() {
       : maison;
 
   const profileImage = infoConstructor.profilePicture
-    ? { uri: profilePicture }
+    ? { uri: infoConstructor.profilePicture }
     : avatar;
 
   // Filtrer les étapes

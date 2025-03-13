@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
+import InputProfil from "../../../components/InputProfil";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
@@ -159,6 +160,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView>
+          <InputProfil />
           <View style={styles.inputContainer}>
             <Input
               style={styles.inputText}

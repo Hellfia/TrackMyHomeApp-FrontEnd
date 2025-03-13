@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
+import InputProfil from "../../../components/InputProfil";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
@@ -108,6 +109,9 @@ export default function UpdateProfileClient({ route, navigation }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView>
+          <View style={styles.inputProfilContainer}>
+            <InputProfil />
+          </View>
           <View style={styles.inputContainer}>
             <Input
               style={styles.inputText}
@@ -173,12 +177,15 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
+  inputProfilContainer: {
+    marginTop: 40,
+  },
   inputContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
-    marginTop: 20,
+    marginTop: 40,
   },
   inputText: {
     width: "100%",
