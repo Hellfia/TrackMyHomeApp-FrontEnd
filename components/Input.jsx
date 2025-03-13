@@ -8,6 +8,7 @@ const Input = ({
   placeholderTextColor,
   keyboardType,
   secureTextEntry = false,
+  autoCapitalize,
 }) => {
   return (
     <View style={styles.inputContainer}>
@@ -19,7 +20,7 @@ const Input = ({
         value={value}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
-        autoCapitalize="words"
+        autoCapitalize={autoCapitalize}
         autoCorrect={false}
       />
     </View>

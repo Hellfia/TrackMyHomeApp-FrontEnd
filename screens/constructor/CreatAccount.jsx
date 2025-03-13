@@ -1,4 +1,3 @@
-import Joi from "joi";
 import React, { useState } from "react";
 import {
   Image,
@@ -15,6 +14,7 @@ import { useDispatch } from "react-redux";
 import GradientButton from "../../components/GradientButton";
 import Input from "../../components/Input";
 import { loginConstructeur } from "../../reducers/constructeur";
+import creatAccount from "../../schemas/CreatAccountSchema";
 
 export default function CreatAccount({ navigation }) {
   const [constructorName, setConstructorName] = useState("");
@@ -30,61 +30,9 @@ export default function CreatAccount({ navigation }) {
 
   const devUrl = process.env.DEV_URL;
 
-  // Joi validation schema
-  const schema = Joi.object({
-    constructorName: Joi.string().min(1).max(50).required().messages({
-      "string.empty": "Le nom de l'entreprise est obligatoire.",
-      "string.min":
-        "Le nom de l'entreprise doit contenir au moins 1 caractères.",
-      "string.max":
-        "Le nom de l'entreprise ne doit pas dépasser 50 caractères.",
-    }),
-    constructorSiret: Joi.string()
-      .length(14)
-      .pattern(/^\d+$/)
-      .required()
-      .messages({
-        "string.empty": "Le numéro SIRET est obligatoire.",
-        "string.length": "Le numéro SIRET doit comporter 14 chiffres.",
-        "string.pattern.base":
-          "Le numéro SIRET doit être composé uniquement de chiffres.",
-      }),
-    email: Joi.string()
-      .email({ tlds: { allow: false } }) // Allowing/disallowing specific TLDs (optional)
-      .required()
-      .messages({
-        "string.empty": "L'email est obligatoire.",
-        "string.email": "Veuillez entrer un email valide.",
-      }),
-
-    password: Joi.string().min(3).required().messages({
-      "string.empty": "Le mot de passe est obligatoire.",
-      "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
-    }),
-    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).required().messages({
-      "string.empty": "Le numéro de téléphone est obligatoire.",
-      "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
-      "string.pattern.base":
-        "Le numéro de téléphone doit être composé uniquement de chiffres.",
-    }),
-    city: Joi.string().min(3).required().messages({
-      "string.empty": "La ville est obligatoire.",
-      "string.min": "Le ville doit contenir au moins 3 caractères.",
-    }),
-    address: Joi.string().required().messages({
-      "string.empty": "L'adresse est obligatoire.",
-    }),
-    zipCode: Joi.string().length(5).pattern(/^\d+$/).required().messages({
-      "string.empty": "Le code postal est obligatoire.",
-      "string.length": "Le code postal doit comporter 5 chiffres.",
-      "string.pattern.base":
-        "Le code postal doit être composé uniquement de chiffres.",
-    }),
-  });
-
   // Function to validate form data
   const validate = () => {
-    const { error } = schema.validate(
+    const { error } = creatAccount.validate(
       {
         constructorName,
         constructorSiret,
@@ -168,7 +116,7 @@ export default function CreatAccount({ navigation }) {
             placeholder="Nom de l'entreprise"
             value={constructorName}
             onChangeText={setConstructorName}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             autoCorrect={false}
             keyboardType="default"
           />
@@ -211,7 +159,7 @@ export default function CreatAccount({ navigation }) {
             placeholder="Adresse"
             value={address}
             onChangeText={setAddress}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             autoCorrect={false}
             keyboardType="default"
           />
@@ -233,7 +181,7 @@ export default function CreatAccount({ navigation }) {
             placeholder="Ville"
             value={city}
             onChangeText={setCity}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             autoCorrect={false}
             keyboardType="default"
           />

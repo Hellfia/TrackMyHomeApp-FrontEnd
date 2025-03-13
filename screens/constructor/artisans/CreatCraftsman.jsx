@@ -1,4 +1,3 @@
-import Joi from "joi"; // Import Joi
 import React, { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
@@ -16,6 +15,7 @@ import Input from "../../../components/Input";
 import InputFiles from "../../../components/InputFiles";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
+import creatCraftsman from "../../../schemas/CreatCraftsmanSchema";
 
 export default function CreatCraftsman({ navigation }) {
   const [craftsmanName, setCraftsmanName] = useState("");
@@ -29,36 +29,6 @@ export default function CreatCraftsman({ navigation }) {
   const token = useSelector((state) => state.constructeur.value.token);
 
   const scrollViewRef = useRef(null);
-
-  // Schéma de validation avec Joi
-  const schema = Joi.object({
-    craftsmanName: Joi.string().min(1).required().messages({
-      "string.empty": "Le nom de l'entreprise est obligatoire.",
-      "string.min":
-        "Le nom de l'entreprise doit comporter au moins 1 caractères.",
-    }),
-    craftsmanAddress: Joi.string().min(1).required().messages({
-      "string.empty": "L'adresse est obligatoire.",
-      "string.min": "L'adresse doit comporter au moins 1 caractères.",
-    }),
-    craftsmanZip: Joi.string().length(5).pattern(/^\d+$/).required().messages({
-      "string.empty": "Le code postal est obligatoire.",
-      "string.length": "Le code postal doit comporter 5 chiffres.",
-      "string.pattern.base":
-        "Le code postal doit être composé uniquement de chiffres.",
-    }),
-    craftsmanCity: Joi.string().min(1).required().messages({
-      "string.empty": "La ville est obligatoire.",
-      "string.min": "La ville doit comporter au moins 1 caractères.",
-    }),
-    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).required().messages({
-      "string.empty": "Le numéro de téléphone est obligatoire.",
-      "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
-      "string.pattern.base":
-        "Le numéro de téléphone doit être composé uniquement de chiffres.",
-    }),
-    logo: Joi.optional(), // Le logo peut être une option
-  });
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -74,7 +44,7 @@ export default function CreatCraftsman({ navigation }) {
   }, []);
 
   const handleValidate = () => {
-    const { error } = schema.validate({
+    const { error } = creatCraftsman.validate({
       craftsmanName,
       craftsmanAddress,
       craftsmanZip,
@@ -144,7 +114,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Nom de l'entreprise"
             value={craftsmanName}
             onChangeText={(value) => setCraftsmanName(value)}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             keyboardType="default"
           />
           {errors.craftsmanName && (
@@ -155,7 +125,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Adresse de l'artisan"
             value={craftsmanAddress}
             onChangeText={(value) => setCraftsmanAddress(value)}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             keyboardType="default"
           />
           {errors.craftsmanAddress && (
@@ -176,7 +146,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Ville de l'artisan"
             value={craftsmanCity}
             onChangeText={(value) => setCraftsmanCity(value)}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             keyboardType="default"
           />
           {errors.craftsmanCity && (

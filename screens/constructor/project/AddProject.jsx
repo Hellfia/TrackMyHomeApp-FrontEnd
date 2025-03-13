@@ -1,4 +1,3 @@
-import Joi from "joi"; // Import Joi
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -14,6 +13,7 @@ import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
+import addProject from "../../../schemas/AddProjectSchema";
 
 export default function AddProjects({ navigation }) {
   const [firstname, setFirstname] = useState("");
@@ -31,57 +31,8 @@ export default function AddProjects({ navigation }) {
 
   const devUrl = process.env.DEV_URL;
 
-  // Schéma de validation avec Joi
-  const schema = Joi.object({
-    firstname: Joi.string().min(1).required().messages({
-      "string.empty": "Le prénom est obligatoire.",
-      "string.min": "Le prénom doit comporter au moins 1 caractères.",
-    }),
-    lastname: Joi.string().min(1).required().messages({
-      "string.empty": "Le nom est obligatoire.",
-      "string.min": "Le nom doit comporter au moins 1 caractères.",
-    }),
-    phoneNumber: Joi.string().length(10).pattern(/^\d+$/).required().messages({
-      "string.empty": "Le numéro de téléphone est obligatoire.",
-      "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
-      "string.pattern.base":
-        "Le numéro de téléphone doit être composé uniquement de chiffres.",
-    }),
-    constructionAdress: Joi.string().min(1).required().messages({
-      "string.empty": "L'adresse du chantier est obligatoire.",
-      "string.min":
-        "L'adresse du chantier doit comporter au moins 1 caractères.",
-    }),
-    constructionZipCode: Joi.string()
-      .length(5)
-      .pattern(/^\d+$/)
-      .required()
-      .messages({
-        "string.empty": "Le code postal est obligatoire.",
-        "string.length": "Le code postal doit comporter 5 chiffres.",
-        "string.pattern.base":
-          "Le code postal doit être composé uniquement de chiffres.",
-      }),
-    constructionCity: Joi.string().min(3).required().messages({
-      "string.empty": "La ville du chantier est obligatoire.",
-      "string.min":
-        "La ville du chantier doit comporter au moins 3 caractères.",
-    }),
-    email: Joi.string()
-      .email({ tlds: { allow: false } }) // Allowing/disallowing specific TLDs (optional)
-      .required()
-      .messages({
-        "string.empty": "L'email est obligatoire.",
-        "string.email": "Veuillez entrer un email valide.",
-      }),
-    password: Joi.string().min(6).required().messages({
-      "string.empty": "Le mot de passe est obligatoire.",
-      "string.min": "Le mot de passe doit comporter au moins 6 caractères.",
-    }),
-  });
-
   const handlePress = () => {
-    const { error } = schema.validate({
+    const { error } = addProject.validate({
       firstname,
       lastname,
       phoneNumber,
@@ -149,7 +100,7 @@ export default function AddProjects({ navigation }) {
             value={firstname}
             onChangeText={(value) => setFirstname(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.firstname && (
             <Text style={styles.errorText}>{errors.firstname}</Text>
@@ -160,7 +111,7 @@ export default function AddProjects({ navigation }) {
             value={lastname}
             onChangeText={(value) => setLastname(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.lastname && (
             <Text style={styles.errorText}>{errors.lastname}</Text>
@@ -181,7 +132,7 @@ export default function AddProjects({ navigation }) {
             value={constructionAdress}
             onChangeText={(value) => setConstructionAdress(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.constructionAdress && (
             <Text style={styles.errorText}>{errors.constructionAdress}</Text>
@@ -202,7 +153,7 @@ export default function AddProjects({ navigation }) {
             value={constructionCity}
             onChangeText={(value) => setConstructionCity(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.constructionCity && (
             <Text style={styles.errorText}>{errors.constructionCity}</Text>
@@ -212,7 +163,7 @@ export default function AddProjects({ navigation }) {
             placeholder="Adresse email du client"
             value={email}
             onChangeText={(value) => setEmail(value)}
-            autoCapitalize="words"
+            autoCapitalize="none"
             keyboardType="email-address"
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}

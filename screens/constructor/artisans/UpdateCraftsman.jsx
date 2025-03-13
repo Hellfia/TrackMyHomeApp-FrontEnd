@@ -1,4 +1,3 @@
-import Joi from "joi"; // Import Joi
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -13,6 +12,7 @@ import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import InputLogo from "../../../components/InputLogo";
 import ReturnButton from "../../../components/ReturnButton";
+import updateCraftsman from "../../../schemas/UpdateCraftsmanSchema";
 import globalStyles from "../../../styles/globalStyles";
 
 export default function UpdateCraftsman({ route, navigation }) {
@@ -35,36 +35,8 @@ export default function UpdateCraftsman({ route, navigation }) {
 
   const devUrl = process.env.DEV_URL;
 
-  // Schéma de validation avec Joi
-  const schema = Joi.object({
-    craftsmanCompagny: Joi.string().min(1).optional().messages({
-      "string.empty": "Le nom de l'artisan est obligatoire.",
-      "string.min": "Le nom de l'artisan doit comporter au moins 1 caractères.",
-    }),
-    craftsmanAddress: Joi.string().min(1).optional().messages({
-      "string.empty": "L'adresse de l'artisan est obligatoire.",
-      "string.min": "L'adresse doit comporter au moins 1 caractères.",
-    }),
-    craftsmanZip: Joi.string().length(5).pattern(/^\d+$/).optional().messages({
-      "string.empty": "Le code postal est obligatoire.",
-      "string.length": "Le code postal doit comporter 5 chiffres.",
-      "string.pattern.base":
-        "Le code postal doit être composé uniquement de chiffres.",
-    }),
-    craftsmanCity: Joi.string().min(1).optional().messages({
-      "string.empty": "La ville est obligatoire.",
-      "string.min": "La ville doit comporter au moins 1 caractères.",
-    }),
-    phoneNumber: Joi.string().optional().length(10).pattern(/^\d+$/).messages({
-      "string.empty": "Le numéro de téléphone est obligatoire.",
-      "string.length": "Le numéro de téléphone doit comporter 10 chiffres.",
-      "string.pattern.base":
-        "Le numéro de téléphone doit être composé uniquement de chiffres.",
-    }),
-  });
-
   const handleUpdateProfile = () => {
-    const { error } = schema.validate({
+    const { error } = updateCraftsman.validate({
       craftsmanCompagny,
       craftsmanAddress,
       craftsmanZip,
@@ -123,7 +95,7 @@ export default function UpdateCraftsman({ route, navigation }) {
               placeholder="Nom de l'artisan"
               value={craftsmanCompagny}
               onChangeText={(value) => setCraftsmanCompagny(value)}
-              autoCapitalize="none"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
@@ -136,7 +108,7 @@ export default function UpdateCraftsman({ route, navigation }) {
               placeholder="Adresse de l'artisan"
               value={craftsmanAddress}
               onChangeText={(value) => setCraftsmanAddress(value)}
-              autoCapitalize="none"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
@@ -149,7 +121,6 @@ export default function UpdateCraftsman({ route, navigation }) {
               placeholder="Code postal de l'artisan"
               value={craftsmanZip}
               onChangeText={(value) => setCraftsmanZip(value)}
-              autoCapitalize="none"
               autoCorrect={false}
               keyboardType="phone-pad"
             />
@@ -162,7 +133,7 @@ export default function UpdateCraftsman({ route, navigation }) {
               placeholder="Ville de l'artisan"
               value={craftsmanCity}
               onChangeText={(value) => setCraftsmanCity(value)}
-              autoCapitalize="none"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />

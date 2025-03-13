@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Joi from "joi";
+
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -20,6 +20,7 @@ import GradientButton from "../../../components/GradientButton";
 import InputPicture from "../../../components/InputPicture";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
+import updateDetails from "../../../schemas/UpdateDetails";
 
 export default function UpdateDetails({ route, navigation }) {
   const { data, step } = route.params;
@@ -71,27 +72,7 @@ export default function UpdateDetails({ route, navigation }) {
 
   // Fonction de validation du formulaire avec Joi
   const validateForm = () => {
-    const schema = Joi.object({
-      status: Joi.string()
-        .valid("À venir", "En cours", "Terminé")
-        .optional()
-        .messages({
-          "any.only":
-            'Le statut doit être l\'un des suivants : "À venir", "En cours", "Terminé".',
-        }),
-      date: Joi.date().iso().optional().messages({
-        "date.base": "La date de début doit être une date valide.",
-      }),
-      dateEnd: Joi.date().iso().optional().min(Joi.ref("date")).messages({
-        "date.min":
-          'La "Date de fin prévue" doit être au même jour ou après la "Date de début".',
-      }),
-      content: Joi.string().min(0).max(500).optional().messages({
-        "string.max": "Le commentaire ne peut pas dépasser 500 caractères.",
-      }),
-    });
-
-    const { error } = schema.validate({
+    const { error } = updateDetails.validate({
       status,
       date,
       dateEnd,
@@ -237,7 +218,9 @@ export default function UpdateDetails({ route, navigation }) {
               multiline={true}
               numberOfLines={4}
               value={content}
+              keyboardType="default"
               onChangeText={setContent}
+              autoCapitalize="sentences"
             />
           </View>
 

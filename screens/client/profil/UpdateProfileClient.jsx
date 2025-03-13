@@ -1,4 +1,3 @@
-import Joi from "joi";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -16,6 +15,8 @@ import InputProfil from "../../../components/InputProfil";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 
+import updateProfileClientSchema from "../../../schemas/UpdateProfilClientSchema";
+
 export default function UpdateProfileClient({ route, navigation }) {
   const { data } = route.params;
 
@@ -32,33 +33,9 @@ export default function UpdateProfileClient({ route, navigation }) {
 
   const devUrl = process.env.DEV_URL;
 
-  // Schéma de validation avec Joi
-  const schema = Joi.object({
-    firstname: Joi.string().min(2).max(30).required().messages({
-      "string.empty": "Le prénom est obligatoire.",
-      "string.min": "Le prénom doit contenir au moins 2 caractères.",
-      "string.max": "Le prénom ne doit pas dépasser 30 caractères.",
-    }),
-    lastname: Joi.string().min(2).max(30).required().messages({
-      "string.empty": "Le nom est obligatoire.",
-      "string.min": "Le nom doit contenir au moins 2 caractères.",
-      "string.max": "Le nom ne doit pas dépasser 30 caractères.",
-    }),
-    email: Joi.string()
-      .email({ tlds: { allow: false } })
-      .required()
-      .messages({
-        "string.empty": "L'email est obligatoire.",
-        "string.email": "Veuillez entrer un email valide.",
-      }),
-    password: Joi.string().min(0).optional().messages({
-      "string.min": "Le mot de passe doit contenir au moins 6 caractères.",
-    }),
-  });
-
   // Validation des données
   const validate = () => {
-    const { error } = schema.validate(
+    const { error } = updateProfileClientSchema.validate(
       { firstname, lastname, email, password },
       { abortEarly: false }
     );
@@ -118,7 +95,7 @@ export default function UpdateProfileClient({ route, navigation }) {
               placeholder="Nom"
               value={firstname}
               onChangeText={(value) => setFirstname(value)}
-              autoCapitalize="words"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
@@ -131,7 +108,7 @@ export default function UpdateProfileClient({ route, navigation }) {
               placeholder="Prénom"
               value={lastname}
               onChangeText={(value) => setLastname(value)}
-              autoCapitalize="words"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
