@@ -110,7 +110,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Nom de l'entreprise"
               value={constructorName}
               onChangeText={(value) => setConstructorName(value)}
-              autoCapitalize="words"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
@@ -159,7 +159,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Adresse "
               value={address}
               onChangeText={(value) => setAddress(value)}
-              autoCapitalize="words"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
@@ -182,7 +182,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Ville"
               value={city}
               onChangeText={(value) => setCity(value)}
-              autoCapitalize="words"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
@@ -193,7 +193,6 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Mot de passe"
               value={password}
               onChangeText={(value) => setPassword(value)}
-              autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry={true}
               keyboardType="default"

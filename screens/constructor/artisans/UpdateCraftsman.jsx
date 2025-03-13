@@ -88,7 +88,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             placeholder="Nom de l'artisan"
             value={craftsmanCompagny}
             onChangeText={(value) => setCraftsmanCompagny(value)}
-            autoCapitalize="none"
+            autoCapitalize="sentences"
             autoCorrect={false}
             keyboardType="default"
           />
@@ -101,7 +101,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             placeholder="Adresse de l'artisan"
             value={craftsmanAddress}
             onChangeText={(value) => setCraftsmanAddress(value)}
-            autoCapitalize="none"
+            autoCapitalize="sentences"
             autoCorrect={false}
             keyboardType="default"
           />
@@ -114,7 +114,6 @@ export default function UpdateCraftsman({ route, navigation }) {
             placeholder="Code postal de l'artisan"
             value={craftsmanZip}
             onChangeText={(value) => setCraftsmanZip(value)}
-            autoCapitalize="none"
             autoCorrect={false}
             keyboardType="phone-pad"
           />
@@ -127,7 +126,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             placeholder="Ville de l'artisan"
             value={craftsmanCity}
             onChangeText={(value) => setCraftsmanCity(value)}
-            autoCapitalize="none"
+            autoCapitalize="sentences"
             autoCorrect={false}
             keyboardType="default"
           />

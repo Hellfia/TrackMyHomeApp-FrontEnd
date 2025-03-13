@@ -100,7 +100,7 @@ export default function AddProjects({ navigation }) {
             value={firstname}
             onChangeText={(value) => setFirstname(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.firstname && (
             <Text style={styles.errorText}>{errors.firstname}</Text>
@@ -111,7 +111,7 @@ export default function AddProjects({ navigation }) {
             value={lastname}
             onChangeText={(value) => setLastname(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.lastname && (
             <Text style={styles.errorText}>{errors.lastname}</Text>
@@ -132,7 +132,7 @@ export default function AddProjects({ navigation }) {
             value={constructionAdress}
             onChangeText={(value) => setConstructionAdress(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.constructionAdress && (
             <Text style={styles.errorText}>{errors.constructionAdress}</Text>
@@ -153,7 +153,7 @@ export default function AddProjects({ navigation }) {
             value={constructionCity}
             onChangeText={(value) => setConstructionCity(value)}
             keyboardType="default"
-            autoCapitalize="words"
+            autoCapitalize="sentences"
           />
           {errors.constructionCity && (
             <Text style={styles.errorText}>{errors.constructionCity}</Text>
@@ -163,7 +163,7 @@ export default function AddProjects({ navigation }) {
             placeholder="Adresse email du client"
             value={email}
             onChangeText={(value) => setEmail(value)}
-            autoCapitalize="words"
+            autoCapitalize="none"
             keyboardType="email-address"
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}

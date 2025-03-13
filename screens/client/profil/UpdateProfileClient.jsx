@@ -95,7 +95,7 @@ export default function UpdateProfileClient({ route, navigation }) {
               placeholder="Nom"
               value={firstname}
               onChangeText={(value) => setFirstname(value)}
-              autoCapitalize="words"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />
@@ -108,7 +108,7 @@ export default function UpdateProfileClient({ route, navigation }) {
               placeholder="Prénom"
               value={lastname}
               onChangeText={(value) => setLastname(value)}
-              autoCapitalize="words"
+              autoCapitalize="sentences"
               autoCorrect={false}
               keyboardType="default"
             />

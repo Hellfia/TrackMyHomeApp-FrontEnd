@@ -114,7 +114,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Nom de l'entreprise"
             value={craftsmanName}
             onChangeText={(value) => setCraftsmanName(value)}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             keyboardType="default"
           />
           {errors.craftsmanName && (
@@ -125,7 +125,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Adresse de l'artisan"
             value={craftsmanAddress}
             onChangeText={(value) => setCraftsmanAddress(value)}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             keyboardType="default"
           />
           {errors.craftsmanAddress && (
@@ -146,7 +146,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Ville de l'artisan"
             value={craftsmanCity}
             onChangeText={(value) => setCraftsmanCity(value)}
-            autoCapitalize="words"
+            autoCapitalize="sentences"
             keyboardType="default"
           />
           {errors.craftsmanCity && (

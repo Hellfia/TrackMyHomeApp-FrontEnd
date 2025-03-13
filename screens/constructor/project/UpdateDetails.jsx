@@ -218,7 +218,9 @@ export default function UpdateDetails({ route, navigation }) {
               multiline={true}
               numberOfLines={4}
               value={content}
+              keyboardType="default"
               onChangeText={setContent}
+              autoCapitalize="sentences"
             />
           </View>
 

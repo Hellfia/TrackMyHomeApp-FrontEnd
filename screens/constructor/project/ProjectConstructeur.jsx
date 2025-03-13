@@ -156,7 +156,7 @@ export default function ProjectConstructeur({ navigation }) {
           Mes clients
         </Text>
         <ScrollView>
-          {clients.length > 0 ? (
+          {clients?.length > 0 ? (
             clients
               .filter((clientItem) => clientItem.client !== null)
               .map((clientItem) => (
