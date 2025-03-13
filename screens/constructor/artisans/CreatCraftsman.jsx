@@ -144,6 +144,8 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Nom de l'entreprise"
             value={craftsmanName}
             onChangeText={(value) => setCraftsmanName(value)}
+            autoCapitalize="words"
+            keyboardType="default"
           />
           {errors.craftsmanName && (
             <Text style={styles.errorText}>{errors.craftsmanName}</Text>
@@ -153,6 +155,8 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Adresse de l'artisan"
             value={craftsmanAddress}
             onChangeText={(value) => setCraftsmanAddress(value)}
+            autoCapitalize="words"
+            keyboardType="default"
           />
           {errors.craftsmanAddress && (
             <Text style={styles.errorText}>{errors.craftsmanAddress}</Text>
@@ -162,6 +166,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Code postal de l'entreprise"
             value={craftsmanZip}
             onChangeText={(value) => setCraftsmanZip(value)}
+            keyboardType="phone-pad"
           />
           {errors.craftsmanZip && (
             <Text style={styles.errorText}>{errors.craftsmanZip}</Text>
@@ -171,6 +176,8 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Ville de l'artisan"
             value={craftsmanCity}
             onChangeText={(value) => setCraftsmanCity(value)}
+            autoCapitalize="words"
+            keyboardType="default"
           />
           {errors.craftsmanCity && (
             <Text style={styles.errorText}>{errors.craftsmanCity}</Text>
@@ -180,6 +187,7 @@ export default function CreatCraftsman({ navigation }) {
             placeholder="Téléphone de l'entreprise"
             value={phoneNumber}
             onChangeText={(value) => setPhoneNumber(value)}
+            keyboardType="phone-pad"
           />
           {errors.phoneNumber && (
             <Text style={styles.errorText}>{errors.phoneNumber}</Text>

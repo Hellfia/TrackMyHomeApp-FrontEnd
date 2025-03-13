@@ -118,6 +118,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             onChangeText={(value) => setCraftsmanCompagny(value)}
             autoCapitalize="none"
             autoCorrect={false}
+            keyboardType="default"
           />
           {errors.craftsmanCompagny && (
             <Text style={styles.errorText}>{errors.craftsmanCompagny}</Text>
@@ -130,6 +131,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             onChangeText={(value) => setCraftsmanAddress(value)}
             autoCapitalize="none"
             autoCorrect={false}
+            keyboardType="default"
           />
           {errors.craftsmanAddress && (
             <Text style={styles.errorText}>{errors.craftsmanAddress}</Text>
@@ -142,6 +144,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             onChangeText={(value) => setCraftsmanZip(value)}
             autoCapitalize="none"
             autoCorrect={false}
+            keyboardType="phone-pad"
           />
           {errors.craftsmanZip && (
             <Text style={styles.errorText}>{errors.craftsmanZip}</Text>
@@ -154,6 +157,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             onChangeText={(value) => setCraftsmanCity(value)}
             autoCapitalize="none"
             autoCorrect={false}
+            keyboardType="default"
           />
           {errors.craftsmanCity && (
             <Text style={styles.errorText}>{errors.craftsmanCity}</Text>
@@ -164,7 +168,7 @@ export default function UpdateCraftsman({ route, navigation }) {
             placeholder="Téléphone de l'artisan"
             value={phoneNumber}
             onChangeText={(value) => setPhoneNumber(value)}
-            autoCapitalize="none"
+            keyboardType="phone-pad"
             autoCorrect={false}
           />
           {errors.phoneNumber && (
