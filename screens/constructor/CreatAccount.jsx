@@ -193,6 +193,7 @@ export default function CreatAccount({ navigation }) {
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize="none"
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
           <Input
