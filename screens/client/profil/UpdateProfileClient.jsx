@@ -118,8 +118,9 @@ export default function UpdateProfileClient({ route, navigation }) {
               placeholder="Nom"
               value={firstname}
               onChangeText={(value) => setFirstname(value)}
-              autoCapitalize="none"
+              autoCapitalize="words"
               autoCorrect={false}
+              keyboardType="default"
             />
             {errors.firstname && (
               <Text style={styles.errorText}>{errors.firstname}</Text>
@@ -130,8 +131,9 @@ export default function UpdateProfileClient({ route, navigation }) {
               placeholder="Prénom"
               value={lastname}
               onChangeText={(value) => setLastname(value)}
-              autoCapitalize="none"
+              autoCapitalize="words"
               autoCorrect={false}
+              keyboardType="default"
             />
             {errors.lastname && (
               <Text style={styles.errorText}>{errors.lastname}</Text>
@@ -144,6 +146,7 @@ export default function UpdateProfileClient({ route, navigation }) {
               onChangeText={(value) => setEmail(value)}
               autoCapitalize="none"
               autoCorrect={false}
+              keyboardType="email-address"
             />
             {errors.email && (
               <Text style={styles.errorText}>{errors.email}</Text>
@@ -157,6 +160,7 @@ export default function UpdateProfileClient({ route, navigation }) {
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry={true}
+              keyboardType="default"
             />
             {errors.password && (
               <Text style={styles.errorText}>{errors.password}</Text>

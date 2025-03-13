@@ -4,8 +4,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const StepItem = ({ name, iconName, iconColor, onPress, iconOnPress }) => {
   return (
-    <View style={styles.generalContainer}>
-      <View style={styles.stepContainer}>
+    <TouchableOpacity style={styles.generalContainer} onPress={onPress}>
+      <View style={styles.stepContainer} >
         <FontAwesome5
           name={iconName}
           size={22}
@@ -14,10 +14,10 @@ const StepItem = ({ name, iconName, iconColor, onPress, iconOnPress }) => {
         />
         <Text style={styles.stepText}>{name}</Text>
       </View>
-      <TouchableOpacity onPress={onPress}>
+      <View >
         <FontAwesome5 name={iconOnPress} size={20} color="#663ED9" />
-      </TouchableOpacity>
-    </View>
+        </View>
+    </TouchableOpacity>
   );
 };
 

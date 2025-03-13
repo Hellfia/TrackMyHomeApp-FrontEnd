@@ -170,6 +170,7 @@ export default function CreatAccount({ navigation }) {
             onChangeText={setConstructorName}
             autoCapitalize="words"
             autoCorrect={false}
+            keyboardType="default"
           />
           {errors.constructorName && (
             <Text style={styles.errorText}>{errors.constructorName}</Text>
@@ -180,6 +181,7 @@ export default function CreatAccount({ navigation }) {
             placeholder="Siret de l'entreprise"
             value={constructorSiret}
             onChangeText={setConstructorSiret}
+            keyboardType="phone-pad"
           />
           {errors.constructorSiret && (
             <Text style={styles.errorText}>{errors.constructorSiret}</Text>
@@ -191,12 +193,13 @@ export default function CreatAccount({ navigation }) {
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize="none"
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
           <Input
             style={styles.input}
             placeholder="Numéro de téléphone"
-            keyboardType="numeric"
+            keyboardType="phone-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
           />
@@ -210,6 +213,7 @@ export default function CreatAccount({ navigation }) {
             onChangeText={setAddress}
             autoCapitalize="words"
             autoCorrect={false}
+            keyboardType="default"
           />
           {errors.address && (
             <Text style={styles.errorText}>{errors.address}</Text>
@@ -217,7 +221,7 @@ export default function CreatAccount({ navigation }) {
           <Input
             style={styles.input}
             placeholder="Code Postal"
-            keyboardType="numeric"
+            keyboardType="phone-pad"
             value={zipCode}
             onChangeText={setZipCode}
           />
@@ -231,6 +235,7 @@ export default function CreatAccount({ navigation }) {
             onChangeText={setCity}
             autoCapitalize="words"
             autoCorrect={false}
+            keyboardType="default"
           />
           {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
 
@@ -239,7 +244,8 @@ export default function CreatAccount({ navigation }) {
             placeholder="Mot de passe"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={true}
+            keyboardType="default"
           />
           {errors.password && (
             <Text style={styles.errorText}>{errors.password}</Text>

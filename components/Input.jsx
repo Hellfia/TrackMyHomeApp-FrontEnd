@@ -19,7 +19,7 @@ const Input = ({
         value={value}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
-        autoCapitalize="none"
+        autoCapitalize="words"
         autoCorrect={false}
       />
     </View>

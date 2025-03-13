@@ -169,6 +169,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               onChangeText={(value) => setConstructorName(value)}
               autoCapitalize="words"
               autoCorrect={false}
+              keyboardType="default"
             />
             {errors.constructorName && (
               <Text style={styles.errorText}>{errors.constructorName}</Text>
@@ -179,8 +180,8 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Siret de l'entreprise"
               value={constructorSiret}
               onChangeText={(value) => setConstructorSiret(value)}
-              autoCapitalize="none"
               autoCorrect={false}
+              keyboardType="phone-pad"
             />
             {errors.constructorSiret && (
               <Text style={styles.errorText}>{errors.constructorSiret}</Text>
@@ -193,6 +194,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               onChangeText={(value) => setEmail(value)}
               autoCapitalize="none"
               autoCorrect={false}
+              keyboardType="email-address"
             />
 
             {errors.email && (
@@ -203,8 +205,8 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Numéro de téléphone"
               value={phoneNumber}
               onChangeText={(value) => setPhoneNumber(value)}
-              autoCapitalize="none"
               autoCorrect={false}
+              keyboardType="phone-pad"
             />
             {errors.phoneNumber && (
               <Text style={styles.errorText}>{errors.phoneNumber}</Text>
@@ -216,6 +218,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               onChangeText={(value) => setAddress(value)}
               autoCapitalize="words"
               autoCorrect={false}
+              keyboardType="default"
             />
             {errors.address && (
               <Text style={styles.errorText}>{errors.address}</Text>
@@ -225,8 +228,8 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               placeholder="Code Postal"
               value={zipCode}
               onChangeText={(value) => setZipCode(value)}
-              autoCapitalize="none"
               autoCorrect={false}
+              keyboardType="phone-pad"
             />
             {errors.zipCode && (
               <Text style={styles.errorText}>{errors.zipCode}</Text>
@@ -238,6 +241,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               onChangeText={(value) => setCity(value)}
               autoCapitalize="words"
               autoCorrect={false}
+              keyboardType="default"
             />
             {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
 
@@ -249,6 +253,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry={true}
+              keyboardType="default"
             />
             {errors.password && (
               <Text style={styles.errorText}>{errors.password}</Text>

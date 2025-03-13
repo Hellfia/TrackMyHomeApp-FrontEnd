@@ -148,6 +148,8 @@ export default function AddProjects({ navigation }) {
             placeholder="Nom du client"
             value={firstname}
             onChangeText={(value) => setFirstname(value)}
+            keyboardType="default"
+            autoCapitalize="words"
           />
           {errors.firstname && (
             <Text style={styles.errorText}>{errors.firstname}</Text>
@@ -157,6 +159,8 @@ export default function AddProjects({ navigation }) {
             placeholder="Prénom du client"
             value={lastname}
             onChangeText={(value) => setLastname(value)}
+            keyboardType="default"
+            autoCapitalize="words"
           />
           {errors.lastname && (
             <Text style={styles.errorText}>{errors.lastname}</Text>
@@ -166,6 +170,7 @@ export default function AddProjects({ navigation }) {
             placeholder="Numero de téléphone"
             value={phoneNumber}
             onChangeText={(value) => setPhoneNumber(value)}
+            keyboardType="phone-pad"
           />
           {errors.phoneNumber && (
             <Text style={styles.errorText}>{errors.phoneNumber}</Text>
@@ -175,6 +180,8 @@ export default function AddProjects({ navigation }) {
             placeholder="Adresse du chantier"
             value={constructionAdress}
             onChangeText={(value) => setConstructionAdress(value)}
+            keyboardType="default"
+            autoCapitalize="words"
           />
           {errors.constructionAdress && (
             <Text style={styles.errorText}>{errors.constructionAdress}</Text>
@@ -184,6 +191,7 @@ export default function AddProjects({ navigation }) {
             placeholder="Code postal du chantier"
             value={constructionZipCode}
             onChangeText={(value) => setConstructionZipCode(value)}
+            keyboardType="phone-pad"
           />
           {errors.constructionZipCode && (
             <Text style={styles.errorText}>{errors.constructionZipCode}</Text>
@@ -193,6 +201,8 @@ export default function AddProjects({ navigation }) {
             placeholder="Ville du chantier"
             value={constructionCity}
             onChangeText={(value) => setConstructionCity(value)}
+            keyboardType="default"
+            autoCapitalize="words"
           />
           {errors.constructionCity && (
             <Text style={styles.errorText}>{errors.constructionCity}</Text>
@@ -202,6 +212,8 @@ export default function AddProjects({ navigation }) {
             placeholder="Adresse email du client"
             value={email}
             onChangeText={(value) => setEmail(value)}
+            autoCapitalize="words"
+            keyboardType="email-address"
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
@@ -209,6 +221,8 @@ export default function AddProjects({ navigation }) {
             placeholder="Mot de passe provisoire"
             value={password}
             onChangeText={(value) => setPassword(value)}
+            keyboardType="default"
+            secureTextEntry={true}
           />
           {errors.password && (
             <Text style={styles.errorText}>{errors.password}</Text>

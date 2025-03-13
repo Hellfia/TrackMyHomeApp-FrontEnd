@@ -89,11 +89,15 @@ export default function ConnexionScreen({ navigation }) {
               placeholder="Email"
               onChangeText={(value) => setSignInEmail(value)}
               value={signInEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
             <Input
               placeholder="Mot de passe"
               onChangeText={(value) => setSignInPassword(value)}
               value={signInPassword}
+              secureTextEntry={true}
+              keyboardType="default"
             />
           </View>
           <GradientButton text="Se connecter" onPress={handlePressConnexion} />
