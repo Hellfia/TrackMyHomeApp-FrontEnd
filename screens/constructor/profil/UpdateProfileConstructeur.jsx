@@ -86,9 +86,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.result) {
-          navigation.navigate("Profil");
-        }
+          navigation.navigate("Profil"); 
       });
   };
 

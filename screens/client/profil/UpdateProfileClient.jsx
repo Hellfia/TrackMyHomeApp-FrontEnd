@@ -69,9 +69,7 @@ export default function UpdateProfileClient({ route, navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.result) {
           navigation.navigate("Profil");
-        }
       });
   };
 

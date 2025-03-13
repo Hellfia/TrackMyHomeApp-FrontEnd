@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const updateProfileClientSchema = {
+const updateProfileClientSchema = Joi.object({
   firstname: Joi.string().min(2).max(30).optional().messages({
     "string.empty": "Le prénom est obligatoire.",
     "string.min": "Le prénom doit contenir au moins 2 caractères.",
@@ -20,7 +20,8 @@ const updateProfileClientSchema = {
     }),
   password: Joi.string().min(0).required().messages({
     "string.min": "Le mot de passe doit contenir au moins 8 caractères.",
+    "string.empty": "Le mot de passe est obligatoire.",
   }),
-};
+});
 
 export default updateProfileClientSchema;
