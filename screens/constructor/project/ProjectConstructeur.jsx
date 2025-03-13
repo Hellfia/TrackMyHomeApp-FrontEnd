@@ -70,8 +70,8 @@ export default function ProjectConstructeur({ navigation }) {
     ? {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.8,
-        longitudeDelta: 0.8,
+        latitudeDelta: 0.4,
+        longitudeDelta: 0.4,
       }
     : defaultRegion;
 
