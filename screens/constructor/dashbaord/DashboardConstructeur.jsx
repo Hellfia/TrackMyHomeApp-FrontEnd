@@ -26,7 +26,9 @@ export default function DashboardConstructeur({ navigation }) {
     useCallback(() => {
       fetch(`${devUrl}/constructors/${constructeur.token}`)
         .then((response) => response.json())
-        .then((data) => setCraftsmenData(data.constructor.craftsmen.length))
+        .then((data) => {
+          setCraftsmenData(data.constructor.craftsmen.length);
+        })
         .catch(console.error);
     }, [devUrl, constructeur.token])
   );
@@ -37,7 +39,7 @@ export default function DashboardConstructeur({ navigation }) {
         `${devUrl}/projects/${constructeur.constructorId}/${constructeur.token}`
       )
         .then((response) => response.json())
-        .then((data) => setProjectsData(data.data?.length))
+        .then((data) => setProjectsData(data.data?.length || 0))
         .catch(console.error);
     }, [])
   );
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    height: 130,
   },
   noClientText: {
     fontSize: 16,

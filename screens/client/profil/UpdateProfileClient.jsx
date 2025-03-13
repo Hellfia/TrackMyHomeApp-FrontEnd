@@ -13,9 +13,8 @@ import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import InputProfil from "../../../components/InputProfil";
 import ReturnButton from "../../../components/ReturnButton";
-import globalStyles from "../../../styles/globalStyles";
-
 import updateProfileClientSchema from "../../../schemas/UpdateProfilClientSchema";
+import globalStyles from "../../../styles/globalStyles";
 
 export default function UpdateProfileClient({ route, navigation }) {
   const { data } = route.params;
