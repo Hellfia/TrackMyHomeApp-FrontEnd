@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Joi from "joi";
+
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
