@@ -12,10 +12,9 @@ import {
 import { useSelector } from "react-redux";
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
-import InputFiles from "../../../components/InputFiles";
 import ReturnButton from "../../../components/ReturnButton";
-import globalStyles from "../../../styles/globalStyles";
 import creatCraftsman from "../../../schemas/CreatCraftsmanSchema";
+import globalStyles from "../../../styles/globalStyles";
 
 export default function CreatCraftsman({ navigation }) {
   const [craftsmanName, setCraftsmanName] = useState("");
@@ -162,11 +161,6 @@ export default function CreatCraftsman({ navigation }) {
           {errors.phoneNumber && (
             <Text style={styles.errorText}>{errors.phoneNumber}</Text>
           )}
-
-          <Text style={styles.labelLogo}>Ajoutez le logo de l'artisan :</Text>
-          <View style={styles.inputFilesContainer}>
-            <InputFiles />
-          </View>
         </ScrollView>
         <GradientButton text="Valider" onPress={handleValidate} />
       </KeyboardAvoidingView>
