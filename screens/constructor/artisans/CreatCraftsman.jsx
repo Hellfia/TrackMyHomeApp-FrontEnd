@@ -76,7 +76,7 @@ export default function CreatCraftsman({ navigation }) {
 
     const devUrl = process.env.DEV_URL;
 
-    fetch(`${devUrl}/craftsmen`, {
+    fetch(`https://track-my-home-backend.vercel.app/craftsmen`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

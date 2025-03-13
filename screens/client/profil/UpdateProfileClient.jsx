@@ -56,7 +56,7 @@ export default function UpdateProfileClient({ route, navigation }) {
       return;
     }
 
-    fetch(`${devUrl}/clients/${token}`, {
+    fetch(`https://track-my-home-backend.vercel.app/clients/${token}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

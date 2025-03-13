@@ -27,7 +27,7 @@ export default function DashboardClient() {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`${devUrl}/projects/chantier/${client.clientId}/${client.token}`)
+      fetch(`https://track-my-home-backend.vercel.app/projects/chantier/${client.clientId}/${client.token}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.result) {

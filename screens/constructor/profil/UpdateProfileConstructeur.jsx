@@ -70,7 +70,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
       return;
     }
 
-    fetch(`${devUrl}/constructors/${token}`, {
+    fetch(`https://track-my-home-backend.vercel.app/constructors/${token}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

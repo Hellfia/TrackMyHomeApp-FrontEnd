@@ -48,7 +48,7 @@ const CraftsmanContainer = ({
   const devUrl = process.env.DEV_URL;
 
   const handleDelete = () => {
-    fetch(`${devUrl}/craftsmen/${craftsmanName}`, {
+    fetch(`https://track-my-home-backend.vercel.app/craftsmen/${craftsmanName}`, {
       method: "DELETE",
     })
       .then((response) => response.json())

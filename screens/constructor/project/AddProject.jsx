@@ -54,7 +54,7 @@ export default function AddProjects({ navigation }) {
     }
 
     // Si la validation est réussie, on envoie les données
-    fetch(`${devUrl}/projects`, {
+    fetch(`https://track-my-home-backend.vercel.app/projects`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

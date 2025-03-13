@@ -56,7 +56,7 @@ export default function InputPicture({ craftsman }) {
       type: selectedImage.type,
     });
 
-    fetch(`${devUrl}/upload/logo/${craftsman.phoneNumber}`, {
+    fetch(`https://track-my-home-backend.vercel.app/upload/logo/${craftsman.phoneNumber}`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",

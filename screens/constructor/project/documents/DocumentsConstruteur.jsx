@@ -24,7 +24,7 @@ export default function DocumentsConstruteur({ route, navigation }) {
   useFocusEffect(
     useCallback(() => {
       const projectId = data._id;
-      fetch(`${devUrl}/upload/documents/${projectId}`)
+      fetch(`https://track-my-home-backend.vercel.app/upload/documents/${projectId}`)
         .then((res) => res.json())
         .then((dataFetch) => {
           setDocuments(dataFetch.documents);
@@ -37,7 +37,7 @@ export default function DocumentsConstruteur({ route, navigation }) {
 
   const handleDeleteDocument = (id) => {
     const projectId = data._id;
-    fetch(`${devUrl}/upload/documents/${projectId}/${id}`, {
+    fetch(`https://track-my-home-backend.vercel.app/upload/documents/${projectId}/${id}`, {
       method: "DELETE",
     })
       .then((res) => res.json())

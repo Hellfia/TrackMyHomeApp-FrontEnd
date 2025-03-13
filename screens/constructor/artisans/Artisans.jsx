@@ -16,7 +16,7 @@ export default function Artisans({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const token = constructeur.token;
-      fetch(`${devUrl}/craftsmen/${token}`)
+      fetch(`https://track-my-home-backend.vercel.app/craftsmen/${token}`)
         .then((res) => res.json())
         .then((data) => {
           setCraftsman(data.data);

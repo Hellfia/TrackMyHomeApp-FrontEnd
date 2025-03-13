@@ -56,7 +56,7 @@ export default function InputPicture({ step, clientIdProps }) {
       type: selectedImage.type,
     });
 
-    fetch(`${devUrl}/upload/picture/${clientIdProps}/${step._id}`, {
+    fetch(`https://track-my-home-backend.vercel.app/upload/picture/${clientIdProps}/${step._id}`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",

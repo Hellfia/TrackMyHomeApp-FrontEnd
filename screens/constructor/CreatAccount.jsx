@@ -62,7 +62,7 @@ export default function CreatAccount({ navigation }) {
       return; // Stop further execution if validation fails
     }
 
-    fetch(`${devUrl}/constructors/signup`, {
+    fetch(`https://track-my-home-backend.vercel.app/constructors/signup`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

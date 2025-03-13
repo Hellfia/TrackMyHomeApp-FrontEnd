@@ -24,7 +24,7 @@ export default function ConnexionScreen({ navigation }) {
   const devUrl = process.env.DEV_URL;
 
   const handlePressConnexion = () => {
-    fetch(`${devUrl}/signin`, {
+    fetch(`https://track-my-home-backend.vercel.app/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

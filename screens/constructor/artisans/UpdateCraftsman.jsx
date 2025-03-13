@@ -55,7 +55,7 @@ export default function UpdateCraftsman({ route, navigation }) {
     }
 
     // Si la validation est réussie, on envoie les données
-    fetch(`${devUrl}/craftsmen/${craftsman.craftsmanName}`, {
+    fetch(`https://track-my-home-backend.vercel.app/craftsmen/${craftsman.craftsmanName}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

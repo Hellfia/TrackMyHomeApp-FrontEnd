@@ -24,19 +24,19 @@ export default function DashboardConstructeur({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`${devUrl}/constructors/${constructeur.token}`)
+      fetch(`https://track-my-home-backend.vercel.app/constructors/${constructeur.token}`)
         .then((response) => response.json())
         .then((data) => {
           setCraftsmenData(data.constructor.craftsmen.length);
         })
         .catch(console.error);
-    }, [devUrl, constructeur.token])
+    }, [constructeur.token])
   );
 
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `${devUrl}/projects/${constructeur.constructorId}/${constructeur.token}`
+        `https://track-my-home-backend.vercel.app/projects/${constructeur.constructorId}/${constructeur.token}`
       )
         .then((response) => response.json())
         .then((data) => setProjectsData(data.data?.length || 0))
@@ -47,7 +47,7 @@ export default function DashboardConstructeur({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `${devUrl}/projects/clients/${constructeur.constructorId}/${constructeur.token}`
+        `https://track-my-home-backend.vercel.app/projects/clients/${constructeur.constructorId}/${constructeur.token}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -66,7 +66,7 @@ export default function DashboardConstructeur({ navigation }) {
           }
         })
         .catch(console.error);
-    }, [devUrl, constructeur.constructorId])
+    }, [constructeur.constructorId])
   );
 
   const callClient = (phoneNumber) => {

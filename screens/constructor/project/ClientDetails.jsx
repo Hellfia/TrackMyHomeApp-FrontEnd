@@ -42,7 +42,7 @@ export default function ClientDetails({ route, navigation }) {
   const devUrl = process.env.DEV_URL;
 
   const handleDelete = () => {
-    fetch(`${devUrl}/projects/${data._id}`, {
+    fetch(`https://track-my-home-backend.vercel.app/projects/${data._id}`, {
       method: "DELETE",
     })
       .then((response) => response.json())

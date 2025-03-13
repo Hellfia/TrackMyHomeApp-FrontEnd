@@ -31,7 +31,7 @@ export default function ProfilConstructeur({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const token = constructeur.token;
-      fetch(`${devUrl}/constructors/${token}`)
+      fetch(`https://track-my-home-backend.vercel.app/constructors/${token}`)
         .then((res) => res.json())
         .then((data) => {
           setInfoConstructor(data.constructor);

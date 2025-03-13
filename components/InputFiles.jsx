@@ -51,7 +51,7 @@ export default function InputFile() {
       name: result.assets[0].fileName,
       type: result.assets[0].mimeType,
     });
-    fetch(`${devUrl}/upload/${projectId}`, {
+    fetch(`https://track-my-home-backend.vercel.app/upload/${projectId}`, {
       method: "POST",
       body: formData,
     })
@@ -79,7 +79,7 @@ export default function InputFile() {
       name: result.assets[0].name,
       type: result.assets[0].mimeType,
     });
-    fetch(`${devUrl}/upload/${projectId}`, {
+    fetch(`https://track-my-home-backend.vercel.app/upload/${projectId}`, {
       method: "POST",
       body: formData,
     })

@@ -62,7 +62,7 @@ export default function InputProfil() {
       type: selectedImage.type,
     });
 
-    fetch(`${devUrl}/upload/profil/${token}`, {
+    fetch(`https://track-my-home-backend.vercel.app/upload/profil/${token}`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",

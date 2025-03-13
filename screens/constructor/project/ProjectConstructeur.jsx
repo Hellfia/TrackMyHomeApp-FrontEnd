@@ -46,7 +46,7 @@ export default function ProjectConstructeur({ navigation }) {
       const constructorId = constructeur.constructorId;
       const token = constructeur.token;
       setLoading(true);
-      fetch(`${devUrl}/projects/clients/${constructorId}/${token}`)
+      fetch(`https://track-my-home-backend.vercel.app/projects/clients/${constructorId}/${token}`)
         .then((res) => res.json())
         .then((data) => {
           setClients(data.data);

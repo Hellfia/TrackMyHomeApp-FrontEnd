@@ -102,7 +102,7 @@ export default function UpdateDetails({ route, navigation }) {
     const projectId = data._id;
     const stepId = step._id;
 
-    fetch(`${devUrl}/projects/updateStep/${projectId}/${stepId}`, {
+    fetch(`https://track-my-home-backend.vercel.app/projects/updateStep/${projectId}/${stepId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

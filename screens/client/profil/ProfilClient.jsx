@@ -31,7 +31,7 @@ export default function ProfilClient({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const token = client.token;
-      fetch(`${devUrl}/clients/${token}`)
+      fetch(`https://track-my-home-backend.vercel.app/clients/${token}`)
         .then((res) => res.json())
         .then((data) => {
           setInfoClient(data.client);
