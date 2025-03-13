@@ -90,6 +90,7 @@ export default function ConnexionScreen({ navigation }) {
               onChangeText={(value) => setSignInEmail(value)}
               value={signInEmail}
               keyboardType="email-address"
+              autoCapitalize="none"
             />
             <Input
               placeholder="Mot de passe"
