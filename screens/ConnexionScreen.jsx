@@ -70,7 +70,11 @@ export default function ConnexionScreen({ navigation }) {
     <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
       <View style={styles.container}>
         <View style={styles.logoContainer}>
-          <Image source={logo} style={{ width: 100, height: 100 }} />
+          <Image
+            source={logo}
+            style={{ width: 100, height: 100 }}
+            accessibilityLabel="Logo de TrackMyHome"
+          />
         </View>
 
         <Text style={styles.title}>TrackMyHome</Text>

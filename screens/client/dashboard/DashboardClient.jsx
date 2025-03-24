@@ -27,7 +27,9 @@ export default function DashboardClient() {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`https://track-my-home-backend.vercel.app/projects/chantier/${client.clientId}/${client.token}`)
+      fetch(
+        `https://track-my-home-backend.vercel.app/projects/chantier/${client.clientId}/${client.token}`
+      )
         .then((res) => res.json())
         .then((data) => {
           if (data.result) {
@@ -146,7 +148,11 @@ export default function DashboardClient() {
           onPress={() => callConstructor(infoConstructor.phoneNumber)}
         >
           <View style={styles.infoLeftContainer}>
-            <Image source={profileImage} style={styles.profilPicture} />
+            <Image
+              source={profileImage}
+              style={styles.profilPicture}
+              accessibilityLabel="Photo du constructeur"
+            />
             <View style={styles.constructorInfo}>
               <Text style={styles.constructorName}>
                 {infoConstructor.constructorName}

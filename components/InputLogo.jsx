@@ -56,13 +56,16 @@ export default function InputPicture({ craftsman }) {
       type: selectedImage.type,
     });
 
-    fetch(`https://track-my-home-backend.vercel.app/upload/logo/${craftsman.phoneNumber}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: formData,
-    })
+    fetch(
+      `https://track-my-home-backend.vercel.app/upload/logo/${craftsman.phoneNumber}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
@@ -112,7 +115,11 @@ export default function InputPicture({ craftsman }) {
       {imageUri ? (
         // Si une image est disponible, on affiche la preview avec l'option pour supprimer
         <View style={styles.preview}>
-          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.imagePreview}
+            accessibilityLabel="Preview du logo"
+          />
           <View style={styles.infoImage}>
             <Text style={styles.fileText}>{fileName}</Text>
             <TouchableOpacity onPress={removeImage}>

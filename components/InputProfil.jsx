@@ -118,7 +118,11 @@ export default function InputProfil() {
       {imageUri ? (
         // Si une image est disponible, on affiche la preview dans un cercle
         <View style={styles.preview}>
-          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.imagePreview}
+            accessibilityLabel="Preview de la photo de profil"
+          />
           <View style={styles.infoImage}>
             <Text style={styles.fileText}>{fileName}</Text>
             <TouchableOpacity onPress={removeImage}>

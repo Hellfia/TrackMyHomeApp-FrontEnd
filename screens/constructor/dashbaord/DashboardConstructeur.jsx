@@ -24,7 +24,9 @@ export default function DashboardConstructeur({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`https://track-my-home-backend.vercel.app/constructors/${constructeur.token}`)
+      fetch(
+        `https://track-my-home-backend.vercel.app/constructors/${constructeur.token}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setCraftsmenData(data.constructor.craftsmen.length);
@@ -108,6 +110,7 @@ export default function DashboardConstructeur({ navigation }) {
                   <Image
                     source={client.logo ? { uri: client.logo } : avatar}
                     style={styles.avatar}
+                    accessibilityLabel="Photo de profil du client"
                   />
                   <Text style={styles.clientText}>
                     {client.firstname} {client.lastname}

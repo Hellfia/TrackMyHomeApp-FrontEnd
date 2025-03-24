@@ -52,7 +52,11 @@ export default function ProfilClient({ navigation }) {
       <View style={styles.container}>
         <Text style={globalStyles.title}>Mon Profil</Text>
         <View style={styles.iconContainer}>
-          <Image source={profileImage} style={styles.image} />
+          <Image
+            source={profileImage}
+            style={styles.image}
+            accessibilityLabel="Photo de profil de l'utilisateur"
+          />
         </View>
         <View style={styles.infosContainer}>
           <View style={styles.infoContainer}>

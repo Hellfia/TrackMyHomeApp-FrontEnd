@@ -2,13 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
-const PlusButton = ({
-  icon,
-  text,
-  onPress,
-  backgroundColor = "#FE5900",
-  style,
-}) => {
+const PlusButton = ({ icon, onPress, backgroundColor = "#FE5900", style }) => {
   return (
     <TouchableOpacity style={[styles.buttonContainer, style]} onPress={onPress}>
       <View style={[styles.button, { backgroundColor }]}>

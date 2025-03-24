@@ -86,7 +86,12 @@ export default function ClientDetails({ route, navigation }) {
       </View>
 
       <View style={styles.imageContainer}>
-        <Image source={image} style={styles.image} resizeMode="contain" />
+        <Image
+          source={image}
+          style={styles.image}
+          resizeMode="contain"
+          accessibilityLabel="Photo du projet de construction"
+        />
       </View>
       <PurpleButton text="Documents" icon="folder" onPress={handleDocument} />
       <Text style={styles.stepText}>Les étapes de construction</Text>

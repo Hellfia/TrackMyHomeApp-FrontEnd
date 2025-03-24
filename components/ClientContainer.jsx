@@ -14,7 +14,11 @@ const ClientContainer = ({
   const profileImage = profilePicture ? { uri: profilePicture } : avatar;
   return (
     <TouchableOpacity style={styles.generalContainer} onPress={onPress}>
-      <Image source={profileImage} style={styles.avatar} />
+      <Image
+        source={profileImage}
+        style={styles.avatar}
+        accessibilityLabel="Photo de profil de l'utilisateur"
+      />
       <View style={styles.infosContainer}>
         <View style={styles.modifContainer}>
           <Text style={styles.nameClient}>

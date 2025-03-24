@@ -48,9 +48,12 @@ const CraftsmanContainer = ({
   const devUrl = process.env.DEV_URL;
 
   const handleDelete = () => {
-    fetch(`https://track-my-home-backend.vercel.app/craftsmen/${craftsmanName}`, {
-      method: "DELETE",
-    })
+    fetch(
+      `https://track-my-home-backend.vercel.app/craftsmen/${craftsmanName}`,
+      {
+        method: "DELETE",
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
@@ -78,7 +81,11 @@ const CraftsmanContainer = ({
 
   return (
     <View style={styles.generalContainer}>
-      <Image source={profileImage} style={styles.avatar} />
+      <Image
+        source={profileImage}
+        style={styles.avatar}
+        accessibilityLabel="Logo de l'artisan"
+      />
       <View style={styles.infosContainer}>
         <View style={styles.modifContainer}>
           <Text style={styles.nameCraftsman}>{craftsmanName}</Text>

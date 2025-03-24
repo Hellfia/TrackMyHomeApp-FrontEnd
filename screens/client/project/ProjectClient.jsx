@@ -14,7 +14,9 @@ export default function ProjectClient({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`https://track-my-home-backend.vercel.app/projects/chantier/${client.clientId}/${client.token}`)
+      fetch(
+        `https://track-my-home-backend.vercel.app/projects/chantier/${client.clientId}/${client.token}`
+      )
         .then((res) => res.json())
         .then((data) => {
           if (data.result) {
@@ -43,7 +45,12 @@ export default function ProjectClient({ navigation }) {
       </View>
 
       <View style={styles.imageContainer}>
-        <Image source={image} style={styles.image} resizeMode="cover" />
+        <Image
+          source={image}
+          style={styles.image}
+          resizeMode="cover"
+          accessibilityLabel="Photo du chantier en cours"
+        />
       </View>
 
       <Text style={styles.stepText}>Les étapes de construction</Text>

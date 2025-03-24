@@ -55,6 +55,7 @@ export default function UpdateDetailsClient({ route, navigation }) {
             source={{ uri: data.uri }} // Affiche l'image si l'URI est valide
             style={styles.image}
             resizeMode="cover"
+            accessibilityLabel="Photo du chantier pour cette étape"
           />
         </View>
       ) : null}{" "}

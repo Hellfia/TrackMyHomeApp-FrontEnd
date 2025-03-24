@@ -53,7 +53,11 @@ export default function ProfilConstructeur({ navigation }) {
         <View style={styles.container}>
           <Text style={globalStyles.title}>Mon Profil</Text>
           <View style={styles.iconContainer}>
-            <Image source={profileImage} style={styles.image} />
+            <Image
+              source={profileImage}
+              style={styles.image}
+              accessibilityLabel="Ma photo de profil"
+            />
           </View>
 
           <View style={styles.infosContainer}>

@@ -25,7 +25,7 @@ export default function CreatAccount({ navigation }) {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const [errors, setErrors] = useState({}); // Error state to hold validation errors
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
 
   const devUrl = process.env.DEV_URL;
@@ -50,16 +50,16 @@ export default function CreatAccount({ navigation }) {
         acc[curr.path[0]] = curr.message;
         return acc;
       }, {});
-      setErrors(errorDetails); // Set validation errors
+      setErrors(errorDetails);
       return false;
     }
-    setErrors({}); // Clear errors if validation passes
+    setErrors({});
     return true;
   };
 
   const handleSignup = () => {
     if (!validate()) {
-      return; // Stop further execution if validation fails
+      return;
     }
 
     fetch(`https://track-my-home-backend.vercel.app/constructors/signup`, {
@@ -101,7 +101,11 @@ export default function CreatAccount({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={require("../../assets/logo.webp")} style={styles.logo} />
+      <Image
+        source={require("../../assets/logo.webp")}
+        style={styles.logo}
+        accessibilityLabel="Logo de TrackMyHome"
+      />
 
       <Text style={styles.title}>TrackMyHome</Text>
       <Text style={styles.subtitle}>Créer un compte professionnel</Text>
@@ -198,13 +202,13 @@ export default function CreatAccount({ navigation }) {
           {errors.password && (
             <Text style={styles.errorText}>{errors.password}</Text>
           )}
-          <GradientButton
-            text="Créer votre compte"
-            style={styles.button}
-            onPress={handleSignup}
-          />
         </ScrollView>
       </KeyboardAvoidingView>
+      <GradientButton
+        text="Créer votre compte"
+        style={styles.button}
+        onPress={handleSignup}
+      />
 
       <View style={styles.bottomTextContainer}>
         <Text style={styles.bottomText}>Vous avez déjà un compte? </Text>
@@ -238,11 +242,10 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: "#555555",
-    marginTop: 5,
-    marginBottom: 20,
   },
   keyboardContainer: {
     width: "100%",
+    height: "60%",
   },
   form: {
     width: "100%",

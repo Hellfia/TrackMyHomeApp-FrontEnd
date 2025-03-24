@@ -46,7 +46,7 @@ export default function InputPicture({ step, clientIdProps }) {
 
     const selectedImage = result.assets[0];
     setImageUri(selectedImage.uri); // Mise à jour de l'état avec l'URI
-    setFileName(selectedImage.fileName || "image.jpg"); // Ajout du nom du fichier
+    setFileName(selectedImage.fileName || "Preview de l'image"); // Ajout du nom du fichier
 
     // Formulaire pour l'upload
     const formData = new FormData();
@@ -56,13 +56,16 @@ export default function InputPicture({ step, clientIdProps }) {
       type: selectedImage.type,
     });
 
-    fetch(`https://track-my-home-backend.vercel.app/upload/picture/${clientIdProps}/${step._id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: formData,
-    })
+    fetch(
+      `https://track-my-home-backend.vercel.app/upload/picture/${clientIdProps}/${step._id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
@@ -111,7 +114,7 @@ export default function InputPicture({ step, clientIdProps }) {
   useEffect(() => {
     if (step.uri) {
       setImageUri(step.uri);
-      setFileName("image.jpg"); // Tu peux ajuster en fonction du nom du fichier
+      setFileName("Preview de l'image"); // Tu peux ajuster en fonction du nom du fichier
     }
   }, [step.uri]); // Cette logique se lance chaque fois que 'step.uri' change
 
@@ -120,7 +123,11 @@ export default function InputPicture({ step, clientIdProps }) {
       {imageUri ? (
         // Si une image est disponible, on affiche la preview avec l'option pour supprimer
         <View style={styles.preview}>
-          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.imagePreview}
+            accessibilityLabel="Preview de la photo"
+          />
           <View style={styles.infoImage}>
             <Text style={styles.fileText}>{fileName}</Text>
             <TouchableOpacity onPress={removeImage}>
