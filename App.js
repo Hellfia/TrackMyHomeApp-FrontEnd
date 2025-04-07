@@ -30,8 +30,8 @@ import DocumentsConstruteur from "./screens/constructor/project/documents/Docume
 import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
-import MessageConstructeurScreen from "./screens/constructor/MessageConstructeurScreen";
-import MessageClientScreen from "./screens/client/MessageClientScreen";
+import MessageConstructeurScreen from "./screens/constructor/message/MessageConstructeurScreen";
+import MessageClientScreen from "./screens/client/message/MessageClientScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
