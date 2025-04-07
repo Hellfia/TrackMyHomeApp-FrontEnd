@@ -45,7 +45,7 @@ export default function UpdateCraftsman({ route, navigation }) {
     });
 
     if (error) {
-      // Si une erreur est trouvée, on les ajoute dans l'état errors
+      
       const errorDetails = error.details.reduce((acc, curr) => {
         acc[curr.path[0]] = curr.message;
         return acc;
@@ -54,7 +54,6 @@ export default function UpdateCraftsman({ route, navigation }) {
       return;
     }
 
-    // Si la validation est réussie, on envoie les données
     fetch(`https://track-my-home-backend.vercel.app/craftsmen/${craftsman.craftsmanName}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
