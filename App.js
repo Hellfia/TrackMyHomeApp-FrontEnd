@@ -30,6 +30,8 @@ import DocumentsConstruteur from "./screens/constructor/project/documents/Docume
 import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
+import MessageConstructeurScreen from "./screens/constructor/message/MessageConstructeurScreen";
+import MessageClientScreen from "./screens/client/message/MessageClientScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,8 +53,7 @@ function MainTabs() {
   const constructeurToken = useSelector(
     (state) => state.constructeur.value.token
   );
-
-  // Détermine le rôle en fonction des tokens
+  // Détermine le rôle en fonction du token (true si constructeur, false sinon)
   const isConstructeur = !!constructeurToken;
 
   return (
@@ -60,10 +61,12 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-
           switch (route.name) {
             case "Dashboard":
               iconName = "grid-outline";
+              break;
+            case "Message":
+              iconName = "chatbubble-outline";
               break;
             case "Artisans":
               iconName = "book";
@@ -79,7 +82,6 @@ function MainTabs() {
             default:
               iconName = "ellipse-outline";
           }
-
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: "#FE5900",
@@ -89,6 +91,12 @@ function MainTabs() {
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Projet" component={ProjectsScreen} />
+      <Tab.Screen
+        name="Message"
+        component={
+          isConstructeur ? MessageConstructeurScreen : MessageClientScreen
+        }
+      />
       {isConstructeur ? (
         <Tab.Screen name="Artisans" component={Artisans} />
       ) : (

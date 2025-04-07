@@ -1,7 +1,12 @@
 import { StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, View } from "react-native-safe-area-context";
 import globalStyles from "../../../styles/globalStyles";
 
-export default function MessageConstructeurScreen({}) {}
-return <SafeAreaView></SafeAreaView>;
+export default function MessageConstructeurScreen({ navigation }) {
+    return (
+        <SafeAreaView>
+            <View></View>
+        </SafeAreaView>);
+}
+
 const styles = StyleSheet.create({});
