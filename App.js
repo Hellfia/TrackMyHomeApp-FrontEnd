@@ -30,8 +30,7 @@ import DocumentsConstruteur from "./screens/constructor/project/documents/Docume
 import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
-import MessageConstructeurScreen from "./screens/constructor/message/MessageConstructeurScreen";
-import MessageClientScreen from "./screens/client/message/MessageClientScreen";
+import MessageScreen from "./screens/MessageScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -91,12 +90,7 @@ function MainTabs() {
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Projet" component={ProjectsScreen} />
-      <Tab.Screen
-        name="Message"
-        component={
-          isConstructeur ? MessageConstructeurScreen : MessageClientScreen
-        }
-      />
+      <Tab.Screen name="Message" component={MessageScreen} />
       {isConstructeur ? (
         <Tab.Screen name="Artisans" component={Artisans} />
       ) : (
