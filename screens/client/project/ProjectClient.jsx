@@ -9,13 +9,13 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function ProjectClient({ navigation }) {
   const [steps, setSteps] = useState([]);
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
   const client = useSelector((state) => state.client.value);
 
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `https://track-my-home-backend.vercel.app/projects/chantier/${client.clientId}/${client.token}`
+        `${prodURL}/projects/chantier/${client.clientId}/${client.token}`
       )
         .then((res) => res.json())
         .then((data) => {

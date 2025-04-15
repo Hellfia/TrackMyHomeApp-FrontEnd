@@ -37,7 +37,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
 
   const token = constructeur.token;
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   const validate = () => {
     const { error } = updateProfileConstructorSchema.validate(
@@ -70,7 +70,7 @@ export default function UpdateProfileConstructeur({ route, navigation }) {
       return;
     }
 
-    fetch(`https://track-my-home-backend.vercel.app/constructors/${token}`, {
+    fetch(`${prodURL}/constructors/${token}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

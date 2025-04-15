@@ -39,10 +39,10 @@ export default function ClientDetails({ route, navigation }) {
     setIsModalVisible(false);
   };
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   const handleDelete = () => {
-    fetch(`https://track-my-home-backend.vercel.app/projects/${data._id}`, {
+    fetch(`${prodURL}/projects/${data._id}`, {
       method: "DELETE",
     })
       .then((response) => response.json())

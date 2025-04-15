@@ -68,7 +68,7 @@ export default function UpdateDetails({ route, navigation }) {
     }
   };
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   // Fonction de validation du formulaire avec Joi
   const validateForm = () => {
@@ -102,7 +102,7 @@ export default function UpdateDetails({ route, navigation }) {
     const projectId = data._id;
     const stepId = step._id;
 
-    fetch(`https://track-my-home-backend.vercel.app/projects/updateStep/${projectId}/${stepId}`, {
+    fetch(`${prodURL}/projects/updateStep/${projectId}/${stepId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

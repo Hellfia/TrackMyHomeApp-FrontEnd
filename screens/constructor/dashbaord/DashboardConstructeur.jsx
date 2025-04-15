@@ -19,13 +19,13 @@ export default function DashboardConstructeur({ navigation }) {
   const [projectsData, setProjectsData] = useState(0);
   const [clientsData, setClientsData] = useState([]);
   const [craftsmenData, setCraftsmenData] = useState(0);
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
   const constructeur = useSelector((state) => state.constructeur.value);
 
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `https://track-my-home-backend.vercel.app/constructors/${constructeur.token}`
+        `${prodURL}/constructors/${constructeur.token}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -38,7 +38,7 @@ export default function DashboardConstructeur({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `https://track-my-home-backend.vercel.app/projects/${constructeur.constructorId}/${constructeur.token}`
+        `${prodURL}/projects/${constructeur.constructorId}/${constructeur.token}`
       )
         .then((response) => response.json())
         .then((data) => setProjectsData(data.data?.length || 0))
@@ -49,7 +49,7 @@ export default function DashboardConstructeur({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `https://track-my-home-backend.vercel.app/projects/clients/${constructeur.constructorId}/${constructeur.token}`
+        `${prodURL}/projects/clients/${constructeur.constructorId}/${constructeur.token}`
       )
         .then((response) => response.json())
         .then((data) => {

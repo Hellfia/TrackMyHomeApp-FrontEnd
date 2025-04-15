@@ -30,7 +30,7 @@ export default function UpdateProfileClient({ route, navigation }) {
 
   const token = client.token;
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   // Validation des données
   const validate = () => {
@@ -56,7 +56,7 @@ export default function UpdateProfileClient({ route, navigation }) {
       return;
     }
 
-    fetch(`https://track-my-home-backend.vercel.app/clients/${token}`, {
+    fetch(`${prodURL}/clients/${token}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

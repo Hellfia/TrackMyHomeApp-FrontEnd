@@ -28,7 +28,7 @@ export default function CreatAccount({ navigation }) {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   // Function to validate form data
   const validate = () => {
@@ -62,7 +62,7 @@ export default function CreatAccount({ navigation }) {
       return;
     }
 
-    fetch(`https://track-my-home-backend.vercel.app/constructors/signup`, {
+    fetch(`${prodURL}/constructors/signup`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

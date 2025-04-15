@@ -15,7 +15,7 @@ export default function ProfilConstructeur({ navigation }) {
   const constructeur = useSelector((state) => state.constructeur.value);
 
   const [infoConstructor, setInfoConstructor] = useState([]);
-
+  const prodURL = process.env.PROD_URL
   const handleEditProfile = () => {
     navigation.navigate("UpdateProfileConstructeur", {
       data: infoConstructor,
@@ -31,16 +31,18 @@ export default function ProfilConstructeur({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const token = constructeur.token;
-      fetch(`https://track-my-home-backend.vercel.app/constructors/${token}`)
+      fetch(`${prodURL}/constructors/${token}`)
         .then((res) => res.json())
         .then((data) => {
-          setInfoConstructor(data.constructor);
+          setInfoConstructor(data);
         })
         .catch((error) => {
           console.error("Erreur lors de la récupération des données :", error);
         });
     }, [constructeur.token])
   );
+
+  console.log(infoConstructor.data.constructorName);
 
   const profileImage =
     infoConstructor && infoConstructor.profilePicture
@@ -62,25 +64,25 @@ export default function ProfilConstructeur({ navigation }) {
 
           <View style={styles.infosContainer}>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.constructorName}</Text>
+              <Text>{infoConstructor.data.constructorName}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.constructorSiret}</Text>
+              <Text>{infoConstructor.data.constructorSiret}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.email}</Text>
+              <Text>{infoConstructor.data.email}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.phoneNumber}</Text>
+              <Text>{infoConstructor.data.phoneNumber}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.address}</Text>
+              <Text>{infoConstructor.data.address}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.zipCode}</Text>
+              <Text>{infoConstructor.data.zipCode}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.city}</Text>
+              <Text>{infoConstructor.data.city}</Text>
             </View>
 
             <View style={styles.infoContainer}>

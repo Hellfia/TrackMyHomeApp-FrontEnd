@@ -29,7 +29,7 @@ export default function AddProjects({ navigation }) {
   const constructeur = useSelector((state) => state.constructeur.value);
   const constructorId = constructeur.constructorId;
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   const handlePress = () => {
     const { error } = addProject.validate({
@@ -54,7 +54,7 @@ export default function AddProjects({ navigation }) {
     }
 
     // Si la validation est réussie, on envoie les données
-    fetch(`https://track-my-home-backend.vercel.app/projects`, {
+    fetch(`${prodURL}/projects`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

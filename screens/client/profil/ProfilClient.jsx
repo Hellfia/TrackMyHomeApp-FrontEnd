@@ -11,7 +11,7 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function ProfilClient({ navigation }) {
   const dispatch = useDispatch();
-
+  const prodURL = process.env.PROD_URL
   const client = useSelector((state) => state.client.value);
 
   const [infoClient, setInfoClient] = useState([]);
@@ -31,7 +31,7 @@ export default function ProfilClient({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const token = client.token;
-      fetch(`https://track-my-home-backend.vercel.app/clients/${token}`)
+      fetch(`${prodURL}/clients/${token}`)
         .then((res) => res.json())
         .then((data) => {
           setInfoClient(data.client);

@@ -20,15 +20,16 @@ import globalStyles from "../../../styles/globalStyles";
 export default function DashboardClient() {
   const [infoConstructor, setInfoConstructor] = useState([]);
   const [steps, setSteps] = useState([]);
-  const devUrl = process.env.DEV_URL;
+  
   const client = useSelector((state) => state.client.value);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState([]);
-
+  const prodURL = process.env.PROD_URL;
+  
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `https://track-my-home-backend.vercel.app/projects/chantier/${client.clientId}/${client.token}`
+        `${prodURL}/projects/chantier/${client.clientId}/${client.token}`
       )
         .then((res) => res.json())
         .then((data) => {

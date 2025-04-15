@@ -1,23 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
   Button,
+  FlatList,
   Image,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import io from "socket.io-client";
-import { useSelector } from "react-redux";
 import Ionicons from "react-native-vector-icons/Ionicons"; // Pour les icônes, assure-toi d'avoir installé react-native-vector-icons
+import { useSelector } from "react-redux";
+import io from "socket.io-client";
 import ReturnButton from "../../../components/ReturnButton";
-import { useRoute } from "@react-navigation/native";
-import PropTypes from 'prop-types';
 
 export default function MessageConstructeur({ navigation, route }) {
   const projectId = route?.params?.projectId;
@@ -27,7 +26,8 @@ export default function MessageConstructeur({ navigation, route }) {
   const [projects, setProjects] = useState([]);
   const socketRef = useRef(null);
   const flatListRef = useRef(null);
-  const serverUrl = "https://track-my-home-backend.vercel.app";
+
+  const prodURL = process.env.PROD_URL
 
   useEffect(() => {
     if (!projectId) {
@@ -39,7 +39,7 @@ export default function MessageConstructeur({ navigation, route }) {
     console.log("MessageConstructeur mounted with projectId:", projectId);
     // ... rest of your useEffect code ...
     console.log("Connecting to Socket.IO server...");
-    socketRef.current = io("https://track-my-home-backend.vercel.app");
+    socketRef.current = io(prodURL);
 
     socketRef.current.on("connect", () => {
       console.log("Connected to Socket.IO server");
@@ -63,7 +63,9 @@ export default function MessageConstructeur({ navigation, route }) {
 
       const fetchMessages = async () => {
         try {
-          const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`);
+          const response = await fetch(
+            `${prodURL}/messages/${projectId}`
+          );
           const data = await response.json();
           if (data.success) {
             console.log("Fetched messages:", data.messages);
@@ -78,6 +80,10 @@ export default function MessageConstructeur({ navigation, route }) {
           }
         } catch (error) {
           console.error("Error fetching messages:", error);
+          console.log(
+            "Fetching messages from:",
+            `${prodURL}/messages/${projectId}`
+          );
         }
       };
 
@@ -89,7 +95,9 @@ export default function MessageConstructeur({ navigation, route }) {
     // Récupération (simulée) des projets depuis le backend
     const fetchProjects = async () => {
       try {
-        const response = await fetch(`https://track-my-home-backend.vercel.app/projects/${constructeur.constructorId}`);
+        const response = await fetch(
+          `${prodURL}/projects/${constructeur.constructorId}`
+        );
         const data = await response.json();
         console.log("Fetched projects:", data);
         setProjects(data.projects || []);
@@ -111,20 +119,23 @@ export default function MessageConstructeur({ navigation, route }) {
       };
 
       // Ajouter le message à l'état local immédiatement
-      setMessages(prevMessages => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
 
       console.log("Sending message:", newMessage);
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
-        const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sender: constructeur.constructorName || "constructor",
-            content: inputValue,
-          }),
-        });
+        const response = await fetch(
+          `${prodURL}/messages/${projectId}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sender: constructeur.constructorName || "constructor",
+              content: inputValue,
+            }),
+          }
+        );
         const data = await response.json();
         console.log("Message saved to database:", data);
       } catch (error) {
@@ -141,13 +152,17 @@ export default function MessageConstructeur({ navigation, route }) {
       style={[
         styles.messageContainer,
         // Messages envoyés par le constructeur (myMessage) à DROITE
-        item.from === constructeur.constructorName ? styles.otherMessage : styles.myMessage,
+        item.from === constructeur.constructorName
+          ? styles.otherMessage
+          : styles.myMessage,
       ]}
     >
       <Text
         style={[
           styles.messageText,
-          item.from === constructeur.constructorName ? styles.otherMessageText : styles.myMessageText,
+          item.from === constructeur.constructorName
+            ? styles.otherMessageText
+            : styles.myMessageText,
         ]}
       >
         {item.text}
@@ -155,7 +170,9 @@ export default function MessageConstructeur({ navigation, route }) {
       <Text
         style={[
           styles.messageTime,
-          item.from === constructeur.constructorName ? { color: "#666" } : { color: "#FFF" },
+          item.from === constructeur.constructorName
+            ? { color: "#666" }
+            : { color: "#FFF" },
         ]}
       >
         {item.time.slice(0, 5)}
@@ -186,12 +203,13 @@ export default function MessageConstructeur({ navigation, route }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <SafeAreaView style={styles.container}>
-
         {/* Barre supérieure type "header" */}
         <View style={styles.header}>
-          <ReturnButton 
-            style={styles.backButton} 
-            onPress={() => navigation.navigate("MainTabs", { screen: "Message" })} 
+          <ReturnButton
+            style={styles.backButton}
+            onPress={() =>
+              navigation.navigate("MainTabs", { screen: "Message" })
+            }
           />
 
           <View style={styles.userInfo}>

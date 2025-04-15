@@ -11,12 +11,12 @@ export default function Artisans({ navigation }) {
   const constructeur = useSelector((state) => state.constructeur.value);
   const [craftsman, setCraftsman] = useState([]);
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   useFocusEffect(
     useCallback(() => {
       const token = constructeur.token;
-      fetch(`https://track-my-home-backend.vercel.app/craftsmen/${token}`)
+      fetch(`${prodURL}/craftsmen/${token}`)
         .then((res) => res.json())
         .then((data) => {
           setCraftsman(data.data);

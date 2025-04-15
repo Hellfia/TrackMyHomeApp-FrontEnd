@@ -21,8 +21,10 @@ export default function ConnexionScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
+  const prodURL = process.env.PROD_URL
+
   const handlePressConnexion = () => {
-    fetch(`https://track-my-home-backend.vercel.app/signin`, {
+    fetch(`${prodURL}/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -42,8 +44,8 @@ export default function ConnexionScreen({ navigation }) {
                 token: data.token,
                 role: "client",
                 projectId: data.projectId,
-                firstname: data.firstname,  // Doit être présent dans la réponse
-                lastname: data.lastname,    // Doit être présent dans la réponse
+                firstname: data.firstname, // Doit être présent dans la réponse
+                lastname: data.lastname, // Doit être présent dans la réponse
               })
             );
           } else if (data.role === "constructeur") {

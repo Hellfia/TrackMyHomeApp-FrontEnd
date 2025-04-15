@@ -33,7 +33,7 @@ export default function UpdateCraftsman({ route, navigation }) {
   const [phoneNumber, setPhoneNumber] = useState(craftsman.phoneNumber || "");
   const [errors, setErrors] = useState({}); // Pour stocker les erreurs de validation
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL
 
   const handleUpdateProfile = () => {
     const { error } = updateCraftsman.validate({
@@ -54,7 +54,7 @@ export default function UpdateCraftsman({ route, navigation }) {
       return;
     }
 
-    fetch(`https://track-my-home-backend.vercel.app/craftsmen/${craftsman.craftsmanName}`, {
+    fetch(`${prodURL}/craftsmen/${craftsman.craftsmanName}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

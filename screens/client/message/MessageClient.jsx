@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
   FlatList,
-  TextInput,
-  TouchableOpacity,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import io from "socket.io-client";
-import { useSelector } from "react-redux";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useSelector } from "react-redux";
+import io from "socket.io-client";
 import globalStyles from "../../../styles/globalStyles";
 
 export default function MessageClient() {
@@ -30,7 +30,7 @@ export default function MessageClient() {
 
   // Utilise le projectId fourni par le client ou une valeur par défaut pour les tests
   const projectId = client.projectId || "67f5467ad98577e04aa1779c";
-  const serverUrl = "http://192.168.1.191:4000";
+  const prodURL = process.env.PROD_URL
 
   // Identifiant du client (prénom+nom si dispo, sinon "user")
   const myIdentifier =
@@ -41,7 +41,7 @@ export default function MessageClient() {
   // --- Logique Socket.IO inchangée ---
   useEffect(() => {
     console.log("Connecting to Socket.IO server...");
-    socketRef.current = io("https://track-my-home-backend.vercel.app");
+    socketRef.current = io(prodURL);
 
     socketRef.current.on("connect", () => {
       console.log("Connected to Socket.IO server");
@@ -69,7 +69,7 @@ export default function MessageClient() {
       // Récupération des messages existants
       const fetchMessages = async () => {
         try {
-          const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`);
+          const response = await fetch(`${prodURL}/messages/${projectId}`);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -95,7 +95,11 @@ export default function MessageClient() {
       const handleNewMessage = (message) => {
         console.log("New message received in room:", message);
         setMessages((prevMessages) => {
-          if (!prevMessages.some((m) => m.content === message.content && m.date === message.date)) {
+          if (
+            !prevMessages.some(
+              (m) => m.content === message.content && m.date === message.date
+            )
+          ) {
             return [...prevMessages, message];
           }
           return prevMessages;
@@ -147,11 +151,14 @@ export default function MessageClient() {
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
-        const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newMessage),
-        });
+        const response = await fetch(
+          `${prodURL}/messages/${projectId}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newMessage),
+          }
+        );
         const data = await response.json();
         console.log("Message saved to database:", data);
       } catch (error) {
@@ -167,11 +174,23 @@ export default function MessageClient() {
   const renderMessage = ({ item }) => {
     const isMyMessage = item.sender === myIdentifier;
     return (
-      <View style={[styles.messageContainer, isMyMessage ? styles.myMessage : styles.otherMessage]}>
-        <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.otherMessageText]}>
+      <View
+        style={[
+          styles.messageContainer,
+          isMyMessage ? styles.myMessage : styles.otherMessage,
+        ]}
+      >
+        <Text
+          style={[
+            styles.messageText,
+            isMyMessage ? styles.myMessageText : styles.otherMessageText,
+          ]}
+        >
           {item.content}
         </Text>
-        <Text style={isMyMessage ? styles.messageTime : styles.otherMessageTime}>
+        <Text
+          style={isMyMessage ? styles.messageTime : styles.otherMessageTime}
+        >
           {new Date(item.date).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -182,14 +201,19 @@ export default function MessageClient() {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <SafeAreaView style={styles.container}>
         {/* Header affichant le nom de l'interlocuteur */}
         <View style={[styles.header, globalStyles.header]}>
           <View style={styles.userInfo}>
             <Image
               style={styles.profilePicture}
-              source={{ uri: "https://via.placeholder.com/150x150.png?text=Avatar" }}
+              source={{
+                uri: "https://via.placeholder.com/150x150.png?text=Avatar",
+              }}
             />
             <Text style={[styles.userName, globalStyles.title]}>
               {messages.length > 0 && messages[0].sender !== myIdentifier
@@ -216,7 +240,10 @@ export default function MessageClient() {
 
         {/* Barre d'envoi avec icône d'envoi */}
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.plusButton} onPress={() => console.log("Plus icon pressed")}>
+          <TouchableOpacity
+            style={styles.plusButton}
+            onPress={() => console.log("Plus icon pressed")}
+          >
             <Text style={styles.plusSign}>+</Text>
           </TouchableOpacity>
 
