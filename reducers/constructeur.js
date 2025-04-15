@@ -5,6 +5,7 @@ const initialState = {
     token: null,
     role: null,
     projectId: null,
+    constructorName: null,
   },
 };
 
@@ -16,6 +17,7 @@ export const constructeurSlice = createSlice({
       state.value.constructorId = action.payload.constructorId;
       state.value.token = action.payload.token;
       state.value.role = action.payload.role;
+      state.value.constructorName = action.payload.constructorName;
     },
     logout: (state) => {
       state.value.constructorId = null;

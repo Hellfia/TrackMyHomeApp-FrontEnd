@@ -131,7 +131,7 @@ export default function DashboardConstructeur({ navigation }) {
           </Text>
           <Text style={styles.highLight}>{craftsmenData}</Text>
         </TouchableOpacity>
-        -
+        <Text style={{ textAlign: 'center', marginTop: 10 }}>-</Text>
       </View>
     </SafeAreaView>
   );

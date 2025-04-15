@@ -1,235 +1,394 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   SafeAreaView,
   View,
   Text,
   StyleSheet,
-  Image,
   FlatList,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Button,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import io from "socket.io-client";
+import { useSelector } from "react-redux";
+import Ionicons from "react-native-vector-icons/Ionicons"; // Pour les icônes, assure-toi d'avoir installé react-native-vector-icons
+import ReturnButton from "../../../components/ReturnButton";
+import { useRoute } from "@react-navigation/native";
+import PropTypes from 'prop-types';
 
-/**
- * Exemple de données simulant une conversation
- * - from: "user" => message violet (à gauche)
- * - from: "other" => message blanc (à droite)
- * - showTime: pour afficher ou non l'heure sous la bulle
- */
-const initialMessages = [
-  {
-    id: "1",
-    text: "Bonjour, comment allez-vous ?",
-    from: "user",
-    showTime: false,
-  },
-  {
-    id: "2",
-    text: "J'ai de bonnes nouvelles",
-    from: "user",
-    showTime: true,
-    time: "10:22",
-  },
-  {
-    id: "3",
-    text: "Je vais bien, merci !\nDis moi tout ! Je vous écoutes",
-    from: "other",
-    showTime: true,
-    time: "10:22",
-  },
-];
-
-export default function MessageConstructeur() {
-  const [messages, setMessages] = useState(initialMessages);
+export default function MessageConstructeur({ navigation, route }) {
+  const projectId = route?.params?.projectId;
+  const constructeur = useSelector((state) => state.constructeur.value);
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [projects, setProjects] = useState([]);
+  const socketRef = useRef(null);
+  const flatListRef = useRef(null);
+  const serverUrl = "http://192.168.1.191:4000";
 
-  // Rendu individuel d'un message dans la FlatList
-  const renderMessage = ({ item }) => {
-    const isUser = item.from === "user";
-    return (
-      <View
-        style={[
-          styles.messageContainer,
-          isUser ? styles.userContainer : styles.otherContainer,
-        ]}
-      >
-        {/* Bulle de texte */}
-        <View style={[styles.bubble, isUser ? styles.userBubble : styles.otherBubble]}>
-          <Text
-            style={[
-              styles.bubbleText,
-              isUser ? styles.userText : styles.otherText,
-            ]}
-          >
-            {item.text}
-          </Text>
-        </View>
+  useEffect(() => {
+    if (!projectId) {
+      console.warn("No projectId provided, redirecting to ClientRoomsScreen");
+      navigation.replace("ClientRoomsScreen");
+      return;
+    }
 
-        {/* Heure, si nécessaire */}
-        {item.showTime && (
-          <Text style={[styles.timeText, isUser ? styles.userTime : styles.otherTime]}>
-            {item.time}
-          </Text>
-        )}
-      </View>
-    );
+    console.log("MessageConstructeur mounted with projectId:", projectId);
+    // ... rest of your useEffect code ...
+    console.log("Connecting to Socket.IO server...");
+    socketRef.current = io(serverUrl);
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to Socket.IO server");
+    });
+
+    socketRef.current.on("newMessage", (message) => {
+      console.log("New message received:", message);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    return () => {
+      console.log("Disconnecting from Socket.IO server...");
+      if (socketRef.current) socketRef.current.disconnect();
+    };
+  }, [projectId, navigation]);
+
+  useEffect(() => {
+    if (projectId) {
+      console.log(`Fetching messages for projectId: ${projectId}`);
+      setMessages([]); // Clear messages when switching projects
+
+      const fetchMessages = async () => {
+        try {
+          const response = await fetch(`http://192.168.1.191:4000/messages/${projectId}`);
+          const data = await response.json();
+          if (data.success) {
+            console.log("Fetched messages:", data.messages);
+            const formattedMessages = data.messages.map((msg) => ({
+              text: msg.content,
+              from: msg.sender,
+              time: new Date(msg.date).toLocaleTimeString(),
+            }));
+            setMessages(formattedMessages);
+          } else {
+            console.error("Error fetching messages:", data.error);
+          }
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+        }
+      };
+
+      fetchMessages();
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    // Récupération (simulée) des projets depuis le backend
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(`${serverUrl}/projects/${constructeur.constructorId}`);
+        const data = await response.json();
+        console.log("Fetched projects:", data);
+        setProjects(data.projects || []);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, [constructeur.constructorId]);
+
+  const sendMessage = async () => {
+    if (inputValue.trim() && projectId) {
+      const newMessage = {
+        text: inputValue,
+        from: constructeur.constructorName || "constructor",
+        time: new Date().toLocaleTimeString(),
+        projectId: projectId,
+      };
+
+      // Ajouter le message à l'état local immédiatement
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+
+      console.log("Sending message:", newMessage);
+      socketRef.current.emit("sendMessage", newMessage);
+
+      try {
+        const response = await fetch(`${serverUrl}/messages/${projectId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sender: constructeur.constructorName || "constructor",
+            content: inputValue,
+          }),
+        });
+        const data = await response.json();
+        console.log("Message saved to database:", data);
+      } catch (error) {
+        console.error("Error saving message to database:", error);
+      }
+
+      setInputValue(""); // Nettoie le champ
+    }
   };
 
+  // Rendu des bulles de message
+  const renderMessage = ({ item }) => (
+    <View
+      style={[
+        styles.messageContainer,
+        // Messages envoyés par le constructeur (myMessage) à DROITE
+        item.from === constructeur.constructorName ? styles.otherMessage : styles.myMessage,
+      ]}
+    >
+      <Text
+        style={[
+          styles.messageText,
+          item.from === constructeur.constructorName ? styles.otherMessageText : styles.myMessageText,
+        ]}
+      >
+        {item.text}
+      </Text>
+      <Text
+        style={[
+          styles.messageTime,
+          item.from === constructeur.constructorName ? { color: "#666" } : { color: "#FFF" },
+        ]}
+      >
+        {item.time.slice(0, 5)}
+      </Text>
+    </View>
+  );
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
+
+  // Rendu de la liste de projets (toujours présente dans la logique, mais cachée par style)
+  const renderProject = ({ item }) => (
+    <Button
+      title={`Project: ${item.name}`}
+      onPress={() => setCurrentProjectId(item._id)}
+    />
+  );
+
+  // Corrected logic to display the client's name dynamically.
+  const clientName = route.params?.clientName || "Client Inconnu";
+
   return (
-    <SafeAreaView style={styles.container}>
-      {/* En-tête avec photo + nom */}
-      <View style={styles.header}>
-        <Image
-          source={{ uri: "https://via.placeholder.com/150" }} // Remplacez par l'URL ou l'image voulue
-          style={styles.avatar}
-        />
-        <Text style={styles.headerTitle}>Luc DUPONT</Text>
-      </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <SafeAreaView style={styles.container}>
 
-      {/* Liste des messages */}
-      <FlatList
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={styles.messagesList}
-        contentContainerStyle={styles.messagesContainer}
-      />
+        {/* Barre supérieure type "header" */}
+        <View style={styles.header}>
+          <ReturnButton 
+            style={styles.backButton} 
+            onPress={() => navigation.navigate("MainTabs", { screen: "Message" })} 
+          />
 
-      {/* Barre de saisie en bas */}
-      <View style={styles.inputBar}>
-        <TouchableOpacity style={styles.plusButton}>
-          <Text style={styles.plusButtonText}>+</Text>
-        </TouchableOpacity>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Envoyer un message..."
-          placeholderTextColor="#999"
-          value={inputValue}
-          onChangeText={setInputValue}
+          <View style={styles.userInfo}>
+            <Image
+              style={styles.profilePicture}
+              source={{
+                uri: "https://via.placeholder.com/150x150.png?text=Avatar",
+              }}
+            />
+            <Text style={styles.userName}>{clientName}</Text>
+          </View>
+        </View>
+
+        {/* Liste des projets, masquée par style pour coller au screenshot */}
+        <View style={styles.projectList}>
+          <Text style={styles.sectionTitle}>Project</Text>
+          <FlatList
+            data={projects}
+            renderItem={renderProject}
+            keyExtractor={(item) => item._id}
+            horizontal
+          />
+        </View>
+
+        {/* Liste des messages */}
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(_, index) => index.toString()}
+          contentContainerStyle={styles.messagesList}
         />
-      </View>
-    </SafeAreaView>
+
+        {/* Barre d'envoi de message en bas */}
+        <View style={styles.inputContainer}>
+          <TouchableOpacity
+            style={styles.plusButton}
+            onPress={() => console.log("Plus icon pressed")}
+          >
+            <Text style={styles.plusSign}>+</Text>
+          </TouchableOpacity>
+
+          <View style={styles.textInputWrapper}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Envoyer un message..."
+              placeholderTextColor="#999"
+              value={inputValue}
+              onChangeText={setInputValue}
+            />
+          </View>
+
+          <TouchableOpacity onPress={sendMessage} style={styles.sendIconButton}>
+            <Ionicons name="send" size={20} color="#4102F9" />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
+MessageConstructeur.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    replace: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
 const styles = StyleSheet.create({
-  // Conteneur global
+  // --- CONTENEURS GÉNÉRAUX ---
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF",
   },
-
-  // En-tête
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#ccc",
-    backgroundColor: "#FFF",
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#DDD",
   },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  backButton: {
+    padding: 5,
   },
-  headerTitle: {
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
     marginLeft: 10,
+  },
+  profilePicture: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    marginRight: 8,
+  },
+  userName: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
     color: "#000",
   },
 
-  // Liste des messages
+  // --- LISTE DES PROJETS (LOGIQUE INTACTE, MAIS MASQUÉ VISUELLEMENT) ---
+  projectList: {
+    display: "none", // On masque cette partie pour coller au screenshot
+    // si tu souhaites la rendre visible un jour, enlève cette ligne
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+
+  // --- LISTE DES MESSAGES ---
   messagesList: {
-    flex: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    // on laisse un espace en bas pour ne pas que le dernier message soit caché
   },
-  messagesContainer: {
-    padding: 16,
-  },
-
-  // Conteneur d'un message + heure
   messageContainer: {
-    marginBottom: 10,
-    maxWidth: "80%",
+    marginVertical: 5,
+    padding: 10,
+    maxWidth: "70%",
+    borderRadius: 12,
   },
-
-  // Alignement spécifique
-  userContainer: {
+  // message du constructeur => GAUCHE en violet
+  myMessage: {
     alignSelf: "flex-start",
-  },
-  otherContainer: {
-    alignSelf: "flex-end",
-  },
-
-  // Bulle de message
-  bubble: {
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  userBubble: {
     backgroundColor: "#663ED9",
-    borderTopLeftRadius: 2, // coin supérieur gauche plus "carré"
   },
-  otherBubble: {
+  // message de l’autre => DROITE en blanc
+  otherMessage: {
+    alignSelf: "flex-end",
     backgroundColor: "#F2F2F2",
-    borderTopRightRadius: 2, // coin supérieur droit plus "carré"
   },
-  bubbleText: {
+  messageText: {
     fontSize: 16,
-    lineHeight: 22,
   },
-  userText: {
-    color: "#FFFFFF",
+  myMessageText: {
+    color: "#FFF", // texte blanc sur fond violet
   },
-  otherText: {
-    color: "#333333",
+  otherMessageText: {
+    color: "#000", // texte noir sur fond blanc/gris
   },
-
-  // Heure sous la bulle
-  timeText: {
+  messageTime: {
     fontSize: 12,
-    marginTop: 2,
-    color: "#999",
+    color: "#666",
+    marginTop: 4,
+    textAlign: "right", // place l'heure à droite dans la bulle
   },
-  userTime: {
-    textAlign: "left",
-  },
-  otherTime: {
-    textAlign: "right",
+  otherMessageTime: {
+    color: "#FFF", // texte blanc sur fond violet
   },
 
-  // Barre de saisie en bas
-  inputBar: {
+  // --- BARRE D'ENVOI EN BAS ---
+  inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 8,
-    paddingVertical: 12,
-    borderTopWidth: 0.5,
-    borderTopColor: "#ccc",
+    padding: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#DDD",
     backgroundColor: "#FFF",
   },
   plusButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#FF6A00",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#FE5900",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
   },
-  plusButtonText: {
+  plusSign: {
     color: "#FFF",
     fontSize: 24,
-    lineHeight: 24,
+    fontWeight: "bold",
+  },
+  textInputWrapper: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 8,
+    marginRight: 8,
+    justifyContent: "center",
   },
   textInput: {
-    flex: 1,
-    backgroundColor: "#F2F2F2",
-    borderRadius: 20,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     fontSize: 16,
+    color: "#000",
+    height: 40, // Increased height for thicker input
+  },
+  sendIconButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

@@ -21,10 +21,8 @@ export default function ConnexionScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
-  const devUrl = process.env.DEV_URL;
-
   const handlePressConnexion = () => {
-    fetch(`https://track-my-home-backend.vercel.app/signin`, {
+    fetch(`http://192.168.1.191:4000/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -34,6 +32,8 @@ export default function ConnexionScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
+        // Log de toute la réponse pour vérifier les champs firstname et lastname
+        console.log("Response data:", data);
         if (data.result) {
           if (data.role === "client") {
             dispatch(
@@ -42,14 +42,19 @@ export default function ConnexionScreen({ navigation }) {
                 token: data.token,
                 role: "client",
                 projectId: data.projectId,
+                firstname: data.firstname,  // Doit être présent dans la réponse
+                lastname: data.lastname,    // Doit être présent dans la réponse
               })
             );
           } else if (data.role === "constructeur") {
+            console.log("Constructor login response:", data); // Debugging log
+            console.log("Constructor token:", data.token); // Debugging log
             dispatch(
               loginConstructeur({
                 constructorId: data.constructorId,
                 token: data.token,
                 role: "constructeur",
+                constructorName: data.constructorName,
               })
             );
           }
@@ -59,6 +64,9 @@ export default function ConnexionScreen({ navigation }) {
         } else {
           alert("Identifiants incorrects, veuillez réessayer.");
         }
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la connexion:", error);
       });
   };
 
@@ -76,13 +84,10 @@ export default function ConnexionScreen({ navigation }) {
             accessibilityLabel="Logo de TrackMyHome"
           />
         </View>
-
         <Text style={styles.title}>TrackMyHome</Text>
-
         <Text style={styles.subtitle}>
           Suivez l'avancement de votre projet !
         </Text>
-
         <KeyboardAvoidingView
           style={styles.keyboardContainer}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -101,12 +106,10 @@ export default function ConnexionScreen({ navigation }) {
               onChangeText={(value) => setSignInPassword(value)}
               value={signInPassword}
               secureTextEntry={true}
-              keyboardType="default"
             />
           </View>
           <GradientButton text="Se connecter" onPress={handlePressConnexion} />
         </KeyboardAvoidingView>
-
         <Text style={styles.text}>
           Vous êtes un professionnel et vous n'avez pas encore de compte ?{" "}
           <Text style={styles.link} onPress={handleProAccCreation}>
@@ -129,7 +132,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-
   keyboardContainer: {
     width: "100%",
   },

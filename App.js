@@ -31,6 +31,8 @@ import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
 import MessageScreen from "./screens/MessageScreen";
+import ClientRoomsScreen from "./screens/constructor/message/ClientRoomsScreen";
+import MessageConstructeur from "./screens/constructor/message/MessageConstructeur";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,7 +54,6 @@ function MainTabs() {
   const constructeurToken = useSelector(
     (state) => state.constructeur.value.token
   );
-  // Détermine le rôle en fonction du token (true si constructeur, false sinon)
   const isConstructeur = !!constructeurToken;
 
   return (
@@ -114,6 +115,16 @@ function RootNavigator() {
           <Stack.Screen
             name="MainTabs"
             component={MainTabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MessageConstructeur"
+            component={MessageConstructeur}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ClientRoomsScreen"
+            component={ClientRoomsScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
