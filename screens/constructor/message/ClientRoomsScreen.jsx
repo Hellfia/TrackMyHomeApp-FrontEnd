@@ -21,7 +21,7 @@ export default function ClientRoomsScreen() {
     const fetchClientRooms = async () => {
       try {
         const response = await fetch(
-          `http://192.168.1.191:4000/projects/clients/${constructor.constructorId}/${constructor.token}`
+          `https://track-my-home-backend.vercel.app/projects/clients/${constructor.constructorId}/${constructor.token}`
         );
         const data = await response.json();
         console.log("API response:", data);

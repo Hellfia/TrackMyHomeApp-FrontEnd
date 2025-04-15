@@ -41,7 +41,7 @@ export default function MessageClient() {
   // --- Logique Socket.IO inchangée ---
   useEffect(() => {
     console.log("Connecting to Socket.IO server...");
-    socketRef.current = io(serverUrl);
+    socketRef.current = io("https://track-my-home-backend.vercel.app");
 
     socketRef.current.on("connect", () => {
       console.log("Connected to Socket.IO server");
@@ -69,7 +69,7 @@ export default function MessageClient() {
       // Récupération des messages existants
       const fetchMessages = async () => {
         try {
-          const response = await fetch(`${serverUrl}/messages/${projectId}`);
+          const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -147,7 +147,7 @@ export default function MessageClient() {
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
-        const response = await fetch(`${serverUrl}/messages/${projectId}`, {
+        const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newMessage),

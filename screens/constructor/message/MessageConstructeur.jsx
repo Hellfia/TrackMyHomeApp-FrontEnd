@@ -27,7 +27,7 @@ export default function MessageConstructeur({ navigation, route }) {
   const [projects, setProjects] = useState([]);
   const socketRef = useRef(null);
   const flatListRef = useRef(null);
-  const serverUrl = "http://192.168.1.191:4000";
+  const serverUrl = "https://track-my-home-backend.vercel.app";
 
   useEffect(() => {
     if (!projectId) {
@@ -39,7 +39,7 @@ export default function MessageConstructeur({ navigation, route }) {
     console.log("MessageConstructeur mounted with projectId:", projectId);
     // ... rest of your useEffect code ...
     console.log("Connecting to Socket.IO server...");
-    socketRef.current = io(serverUrl);
+    socketRef.current = io("https://track-my-home-backend.vercel.app");
 
     socketRef.current.on("connect", () => {
       console.log("Connected to Socket.IO server");
@@ -63,7 +63,7 @@ export default function MessageConstructeur({ navigation, route }) {
 
       const fetchMessages = async () => {
         try {
-          const response = await fetch(`http://192.168.1.191:4000/messages/${projectId}`);
+          const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`);
           const data = await response.json();
           if (data.success) {
             console.log("Fetched messages:", data.messages);
@@ -89,7 +89,7 @@ export default function MessageConstructeur({ navigation, route }) {
     // Récupération (simulée) des projets depuis le backend
     const fetchProjects = async () => {
       try {
-        const response = await fetch(`${serverUrl}/projects/${constructeur.constructorId}`);
+        const response = await fetch(`https://track-my-home-backend.vercel.app/projects/${constructeur.constructorId}`);
         const data = await response.json();
         console.log("Fetched projects:", data);
         setProjects(data.projects || []);
@@ -117,7 +117,7 @@ export default function MessageConstructeur({ navigation, route }) {
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
-        const response = await fetch(`${serverUrl}/messages/${projectId}`, {
+        const response = await fetch(`https://track-my-home-backend.vercel.app/messages/${projectId}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
