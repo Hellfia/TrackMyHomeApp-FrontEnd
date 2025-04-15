@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons"; // Assurez-vous que react-native-vector-icons est installé
+import { useSelector } from "react-redux";
 
 // Moved the separator component outside the parent component.
 const Separator = () => <View style={styles.separator} />;
@@ -15,13 +23,18 @@ export default function ClientRoomsScreen() {
 
   // Add detailed logging to verify data fetching and navigation.
   useEffect(() => {
-    console.log("Fetching client rooms for constructor ID:", constructor.constructorId);
+    console.log(
+      "Fetching client rooms for constructor ID:",
+      constructor.constructorId
+    );
     console.log("Using token:", constructor.token);
+
+    const devUrl = process.env.DEV_URL;
 
     const fetchClientRooms = async () => {
       try {
         const response = await fetch(
-          `http://192.168.1.191:4000/projects/clients/${constructor.constructorId}/${constructor.token}`
+          `https://track-my-home-backend.vercel.app/projects/clients/${constructor.constructorId}/${constructor.token}`
         );
         const data = await response.json();
         console.log("API response:", data);
@@ -31,8 +44,14 @@ export default function ClientRoomsScreen() {
             console.log("Processing project:", project);
             return {
               roomId: project._id,
-              client: { name: `${project.client?.firstname || "Unknown"} ${project.client?.lastname || "Client"}` },
-              lastMessage: project.messages?.[project.messages.length - 1]?.content || "No messages yet",
+              client: {
+                name: `${project.client?.firstname || "Unknown"} ${
+                  project.client?.lastname || "Client"
+                }`,
+              },
+              lastMessage:
+                project.messages?.[project.messages.length - 1]?.content ||
+                "No messages yet",
             };
           });
           console.log("Mapped rooms:", rooms);
@@ -51,11 +70,14 @@ export default function ClientRoomsScreen() {
   const handleRoomPress = (room) => {
     console.log("Selected room:", room);
     if (room && room.roomId) {
-      console.log("Navigating to MessageConstructeur with projectId:", room.roomId);
+      console.log(
+        "Navigating to MessageConstructeur with projectId:",
+        room.roomId
+      );
       navigation.navigate("MessageConstructeur", {
         projectId: room.roomId,
         clientName: room.client.name,
-        screen: "MessageConstructeur"
+        screen: "MessageConstructeur",
       });
     } else {
       console.error("Error: Invalid room data", room);
@@ -64,7 +86,10 @@ export default function ClientRoomsScreen() {
 
   // Updated the renderRoom function to pass the entire room object to handleRoomPress.
   const renderRoom = ({ item }) => (
-    <TouchableOpacity style={styles.roomContainer} onPress={() => handleRoomPress(item)}>
+    <TouchableOpacity
+      style={styles.roomContainer}
+      onPress={() => handleRoomPress(item)}
+    >
       <Text style={styles.roomName}>{item.client.name}</Text>
       <Text style={styles.roomDetails}>Last message: {item.lastMessage}</Text>
     </TouchableOpacity>
@@ -81,7 +106,12 @@ export default function ClientRoomsScreen() {
       <View style={styles.headerContainer}>
         <Text style={styles.title}>Client Rooms</Text>
         <View style={styles.searchContainer}>
-          <Icon name="search-outline" size={20} color="#FE5900" style={styles.searchIcon} />
+          <Icon
+            name="search-outline"
+            size={20}
+            color="#FE5900"
+            style={styles.searchIcon}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Rechercher..."
