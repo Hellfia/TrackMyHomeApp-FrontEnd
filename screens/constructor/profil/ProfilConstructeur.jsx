@@ -15,12 +15,14 @@ export default function ProfilConstructeur({ navigation }) {
   const constructeur = useSelector((state) => state.constructeur.value);
 
   const [infoConstructor, setInfoConstructor] = useState([]);
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
   const handleEditProfile = () => {
     navigation.navigate("UpdateProfileConstructeur", {
       data: infoConstructor,
     });
   };
+
+  console.log("info", infoConstructor);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -34,7 +36,7 @@ export default function ProfilConstructeur({ navigation }) {
       fetch(`${prodURL}/constructors/${token}`)
         .then((res) => res.json())
         .then((data) => {
-          setInfoConstructor(data);
+          setInfoConstructor(data.data);
         })
         .catch((error) => {
           console.error("Erreur lors de la récupération des données :", error);
@@ -42,7 +44,7 @@ export default function ProfilConstructeur({ navigation }) {
     }, [constructeur.token])
   );
 
-  console.log(infoConstructor.data.constructorName);
+  console.log(infoConstructor);
 
   const profileImage =
     infoConstructor && infoConstructor.profilePicture
@@ -64,25 +66,25 @@ export default function ProfilConstructeur({ navigation }) {
 
           <View style={styles.infosContainer}>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.data.constructorName}</Text>
+              <Text>{infoConstructor.constructorName}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.data.constructorSiret}</Text>
+              <Text>{infoConstructor.constructorSiret}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.data.email}</Text>
+              <Text>{infoConstructor.email}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.data.phoneNumber}</Text>
+              <Text>{infoConstructor.phoneNumber}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.data.address}</Text>
+              <Text>{infoConstructor.address}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.data.zipCode}</Text>
+              <Text>{infoConstructor.zipCode}</Text>
             </View>
             <View style={styles.infoContainer}>
-              <Text>{infoConstructor.data.city}</Text>
+              <Text>{infoConstructor.city}</Text>
             </View>
 
             <View style={styles.infoContainer}>

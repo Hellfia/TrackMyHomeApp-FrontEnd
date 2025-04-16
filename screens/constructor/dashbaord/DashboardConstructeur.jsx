@@ -19,17 +19,15 @@ export default function DashboardConstructeur({ navigation }) {
   const [projectsData, setProjectsData] = useState(0);
   const [clientsData, setClientsData] = useState([]);
   const [craftsmenData, setCraftsmenData] = useState(0);
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
   const constructeur = useSelector((state) => state.constructeur.value);
 
   useFocusEffect(
     useCallback(() => {
-      fetch(
-        `${prodURL}/constructors/${constructeur.token}`
-      )
+      fetch(`${prodURL}/constructors/${constructeur.token}`)
         .then((response) => response.json())
         .then((data) => {
-          setCraftsmenData(data.constructor.craftsmen.length);
+          setCraftsmenData(data.data.craftsmen.length);
         })
         .catch(console.error);
     }, [constructeur.token])
@@ -131,7 +129,7 @@ export default function DashboardConstructeur({ navigation }) {
           </Text>
           <Text style={styles.highLight}>{craftsmenData}</Text>
         </TouchableOpacity>
-        <Text style={{ textAlign: 'center', marginTop: 10 }}>-</Text>
+        <Text style={{ textAlign: "center", marginTop: 10 }}>-</Text>
       </View>
     </SafeAreaView>
   );
