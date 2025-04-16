@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
 import {
   FlatList,
   SafeAreaView,
@@ -23,39 +23,42 @@ export default function ClientRoomsScreen() {
 
   const prodURL = process.env.PROD_URL;
 
-  useEffect(() => {
-    const fetchClientRooms = async () => {
-      try {
-        const response = await fetch(
-          `${prodURL}/projects/clients/${constructor.constructorId}/${constructor.token}`
-        );
-        const data = await response.json();
+  // Utilisation de `useFocusEffect` pour charger les données lors du focus de l'écran
+  useFocusEffect(
+    useCallback(() => {
+      const fetchClientRooms = async () => {
+        try {
+          const response = await fetch(
+            `${prodURL}/projects/clients/${constructor.constructorId}/${constructor.token}`
+          );
+          const data = await response.json();
 
-        if (data.result && Array.isArray(data.data)) {
-          const rooms = data.data.map((project) => {
-            return {
-              roomId: project._id,
-              client: {
-                name: `${project.client?.firstname || "Unknown"} ${
-                  project.client?.lastname || "Client"
-                }`,
-              },
-              lastMessage:
-                project.messages?.[project.messages.length - 1]?.content ||
-                "Commencez une conversation avec votre client.",
-            };
-          });
-          setClientRooms(rooms);
-        } else {
-          console.error("Invalid API response structure:", data);
+          if (data.result && Array.isArray(data.data)) {
+            const rooms = data.data.map((project) => {
+              return {
+                roomId: project._id,
+                client: {
+                  name: `${project.client?.firstname || "Unknown"} ${
+                    project.client?.lastname || "Client"
+                  }`,
+                },
+                lastMessage:
+                  project.messages?.[project.messages.length - 1]?.content ||
+                  "Commencez une conversation avec votre client.",
+              };
+            });
+            setClientRooms(rooms);
+          } else {
+            console.error("Invalid API response structure:", data);
+          }
+        } catch (error) {
+          console.error("Error fetching client rooms:", error);
         }
-      } catch (error) {
-        console.error("Error fetching client rooms:", error);
-      }
-    };
+      };
 
-    fetchClientRooms();
-  }, [constructor.constructorId, constructor.token]);
+      fetchClientRooms();
+    }, [constructor.constructorId, constructor.token])
+  );
 
   const handleRoomPress = (room) => {
     if (room && room.roomId) {
@@ -69,7 +72,6 @@ export default function ClientRoomsScreen() {
     }
   };
 
-  // Updated the renderRoom function to pass the entire room object to handleRoomPress.
   const renderRoom = ({ item }) => (
     <TouchableOpacity
       style={styles.roomContainer}
@@ -87,7 +89,6 @@ export default function ClientRoomsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header centré dans une zone de largeur réduite */}
       <View style={styles.headerContainer}>
         <Text style={styles.title}>Client Rooms</Text>
         <View style={styles.searchContainer}>
@@ -106,7 +107,6 @@ export default function ClientRoomsScreen() {
           />
         </View>
       </View>
-      {/* FlatList occupe toute la largeur de l'écran */}
       <FlatList
         data={filteredRooms}
         renderItem={renderRoom}
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   title: {
     color: "#362173",
     fontSize: 24,
-    fontWeight: 600,
+    fontWeight: "600",
     textAlign: "center",
     marginTop: 10,
     paddingHorizontal: 40,
@@ -158,7 +158,6 @@ const styles = StyleSheet.create({
     color: "#333",
     paddingVertical: 0,
   },
-  // La FlatList occupe toute la largeur
   flatList: {
     width: "100%",
   },
