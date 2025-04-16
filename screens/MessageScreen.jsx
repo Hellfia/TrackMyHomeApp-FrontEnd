@@ -1,15 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { SafeAreaView, StyleSheet } from "react-native";
-import ClientRoomsScreen from "./constructor/message/ClientRoomsScreen";
-import MessageClient from "./client/message/MessageClient";
+import { useSelector } from "react-redux";
 import Oups from "../components/Oups";
+import MessageClient from "./client/message/MessageClient";
+import ClientRoomsScreen from "./constructor/message/ClientRoomsScreen";
 
 export default function MessageScreen() {
   const constructeur = useSelector((state) => state.constructeur.value);
   const client = useSelector((state) => state.client.value);
-
-  console.log("Rendering MessageScreen");
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,7 +25,7 @@ export default function MessageScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 16, // Add padding to avoid the notch
-    backgroundColor: "#FFF", // Optional background color
+    paddingTop: 16,
+    backgroundColor: "#FFF",
   },
 });

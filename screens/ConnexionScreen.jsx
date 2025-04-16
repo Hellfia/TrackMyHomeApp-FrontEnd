@@ -21,7 +21,7 @@ export default function ConnexionScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
 
   const handlePressConnexion = () => {
     fetch(`${prodURL}/signin`, {
@@ -34,8 +34,6 @@ export default function ConnexionScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        // Log de toute la réponse pour vérifier les champs firstname et lastname
-        console.log("Response data:", data);
         if (data.result) {
           if (data.role === "client") {
             dispatch(
@@ -44,13 +42,11 @@ export default function ConnexionScreen({ navigation }) {
                 token: data.token,
                 role: "client",
                 projectId: data.projectId,
-                firstname: data.firstname, // Doit être présent dans la réponse
-                lastname: data.lastname, // Doit être présent dans la réponse
+                firstname: data.firstname,
+                lastname: data.lastname,
               })
             );
           } else if (data.role === "constructeur") {
-            console.log("Constructor login response:", data); // Debugging log
-            console.log("Constructor token:", data.token); // Debugging log
             dispatch(
               loginConstructeur({
                 constructorId: data.constructorId,

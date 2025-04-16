@@ -20,7 +20,6 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function MessageClient() {
   const client = useSelector((state) => state.client.value);
-  console.log("Client data:", client);
   const navigation = useNavigation();
 
   const [messages, setMessages] = useState([]);
@@ -30,7 +29,7 @@ export default function MessageClient() {
 
   // Utilise le projectId fourni par le client ou une valeur par défaut pour les tests
   const projectId = client.projectId || "67f5467ad98577e04aa1779c";
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
 
   // Identifiant du client (prénom+nom si dispo, sinon "user")
   const myIdentifier =
@@ -75,7 +74,6 @@ export default function MessageClient() {
           }
           const data = await response.json();
           if (data.success) {
-            console.log("Fetched messages:", data.messages);
             const formattedMessages = data.messages.map((msg) => ({
               content: msg.content,
               sender: msg.sender,
@@ -93,7 +91,6 @@ export default function MessageClient() {
       fetchMessages();
 
       const handleNewMessage = (message) => {
-        console.log("New message received in room:", message);
         setMessages((prevMessages) => {
           if (
             !prevMessages.some(
@@ -109,7 +106,6 @@ export default function MessageClient() {
       socketRef.current.on("newMessage", handleNewMessage);
 
       return () => {
-        console.log(`Leaving project room: ${projectId}`);
         socketRef.current.off("newMessage", handleNewMessage);
       };
     }
@@ -121,7 +117,6 @@ export default function MessageClient() {
     }
   }, [messages]);
 
-  // Updated useEffect to ensure the conversation scrolls to the bottom when the screen is focused.
   useFocusEffect(
     React.useCallback(() => {
       if (messages.length > 0) {
@@ -130,47 +125,38 @@ export default function MessageClient() {
     }, [messages])
   );
 
-  // Scroll to the top of the conversation when the screen is mounted
   useEffect(() => {
     if (messages.length > 0) {
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     }
   }, []);
 
-  // Close the keyboard after sending a message
   const sendMessage = async () => {
     if (inputValue.trim()) {
       const newMessage = {
         content: inputValue,
         sender: myIdentifier,
-        date: new Date().toISOString(),
+        date: new Date().toLocaleTimeString(),
       };
-
-      console.log("Sending message:", newMessage);
       setMessages((prev) => [...prev, newMessage]);
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
-        const response = await fetch(
-          `${prodURL}/messages/${projectId}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newMessage),
-          }
-        );
+        const response = await fetch(`${prodURL}/messages/${projectId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newMessage),
+        });
         const data = await response.json();
-        console.log("Message saved to database:", data);
       } catch (error) {
         console.error("Error saving message to database:", error);
       }
 
       setInputValue("");
-      Keyboard.dismiss(); // Close the keyboard
+      Keyboard.dismiss();
     }
   };
 
-  // Rendu visuel d'un message
   const renderMessage = ({ item }) => {
     const isMyMessage = item.sender === myIdentifier;
     return (
@@ -240,13 +226,6 @@ export default function MessageClient() {
 
         {/* Barre d'envoi avec icône d'envoi */}
         <View style={styles.inputContainer}>
-          <TouchableOpacity
-            style={styles.plusButton}
-            onPress={() => console.log("Plus icon pressed")}
-          >
-            <Text style={styles.plusSign}>+</Text>
-          </TouchableOpacity>
-
           <View style={styles.textInputWrapper}>
             <TextInput
               style={styles.textInput}
@@ -258,7 +237,7 @@ export default function MessageClient() {
           </View>
 
           <TouchableOpacity onPress={sendMessage} style={styles.sendIconButton}>
-            <Ionicons name="send" size={20} color="#4102F9" />
+            <Ionicons name="send" size={20} color="#362173" />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -276,9 +255,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8, // Reduced horizontal padding
-    paddingTop: 4, // Further reduced top padding
-    paddingBottom: 4, // Further reduced bottom padding
+    paddingHorizontal: 8,
+    paddingTop: 4,
+    paddingBottom: 4,
     borderBottomWidth: 1,
     borderBottomColor: "#DDD",
   },
@@ -287,16 +266,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 0,
-    paddingVertical: 4, // Further reduced vertical padding
-  },
-  profilePicture: {
-    width: 36, // Slightly reduced size of the profile picture
-    height: 36,
-    borderRadius: 18,
-    marginBottom: 2, // Further reduced margin between the picture and the name
+    paddingVertical: 4,
   },
   userName: {
-    fontSize: 14, // Slightly reduced font size for the name
+    fontSize: 14,
     fontWeight: "bold",
     color: "#000",
     textAlign: "center",
@@ -311,13 +284,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  // Conteneur global de la liste de messages
   messagesList: {
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
 
-  // Bulle de base
   messageContainer: {
     marginVertical: 6,
     paddingVertical: 10,
@@ -325,50 +296,44 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
   },
 
-  // Bulle envoyée par le client => A droite, couleur blanche
   myMessage: {
     alignSelf: "flex-end",
-    backgroundColor: "#663ED9", // Changed to white for the right bubble
+    backgroundColor: "#663ED9",
     borderTopLeftRadius: 18,
     borderBottomLeftRadius: 18,
     borderTopRightRadius: 18,
     borderBottomRightRadius: 6,
   },
   myMessageText: {
-    color: "#fff", // Adjusted text color for better contrast on white background
+    color: "#fff",
   },
 
-  // Bulle reçue => A gauche, couleur gris clair
   otherMessage: {
     alignSelf: "flex-start",
     backgroundColor: "#F2F2F2",
-    // Forme symétrique opposée
     borderTopLeftRadius: 6,
     borderBottomLeftRadius: 18,
     borderTopRightRadius: 18,
     borderBottomRightRadius: 18,
   },
   otherMessageText: {
-    color: "#000", // Ensured text color remains readable
+    color: "#000",
   },
 
-  // Heure dans la bulle
   messageTime: {
     fontSize: 13,
     marginTop: 4,
     textAlign: "right",
-    color: "rgba(255, 255, 255, 0.75)", // Sur fond violet, c'est lisible
+    color: "rgba(255, 255, 255, 0.75)",
   },
 
-  // Updated the style for the time in the left bubbles to be gray for better readability.
   otherMessageTime: {
     fontSize: 13,
     marginTop: 4,
     textAlign: "right",
-    color: "#808080", // Gray color for better readability in left bubbles
+    color: "#808080",
   },
 
-  // Barre d'envoi
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -376,15 +341,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#DDD",
     backgroundColor: "#FFF",
-  },
-  plusButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#FE5900",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
   },
   plusSign: {
     color: "#FFF",

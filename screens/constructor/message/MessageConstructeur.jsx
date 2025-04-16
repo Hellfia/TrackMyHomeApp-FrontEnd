@@ -1,9 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Button,
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -13,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons"; // Pour les icônes, assure-toi d'avoir installé react-native-vector-icons
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
 import ReturnButton from "../../../components/ReturnButton";
@@ -27,7 +25,7 @@ export default function MessageConstructeur({ navigation, route }) {
   const socketRef = useRef(null);
   const flatListRef = useRef(null);
 
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
 
   useEffect(() => {
     if (!projectId) {
@@ -36,9 +34,6 @@ export default function MessageConstructeur({ navigation, route }) {
       return;
     }
 
-    console.log("MessageConstructeur mounted with projectId:", projectId);
-    // ... rest of your useEffect code ...
-    console.log("Connecting to Socket.IO server...");
     socketRef.current = io(prodURL);
 
     socketRef.current.on("connect", () => {
@@ -58,17 +53,13 @@ export default function MessageConstructeur({ navigation, route }) {
 
   useEffect(() => {
     if (projectId) {
-      console.log(`Fetching messages for projectId: ${projectId}`);
-      setMessages([]); // Clear messages when switching projects
+      setMessages([]);
 
       const fetchMessages = async () => {
         try {
-          const response = await fetch(
-            `${prodURL}/messages/${projectId}`
-          );
+          const response = await fetch(`${prodURL}/messages/${projectId}`);
           const data = await response.json();
           if (data.success) {
-            console.log("Fetched messages:", data.messages);
             const formattedMessages = data.messages.map((msg) => ({
               text: msg.content,
               from: msg.sender,
@@ -80,10 +71,6 @@ export default function MessageConstructeur({ navigation, route }) {
           }
         } catch (error) {
           console.error("Error fetching messages:", error);
-          console.log(
-            "Fetching messages from:",
-            `${prodURL}/messages/${projectId}`
-          );
         }
       };
 
@@ -92,14 +79,12 @@ export default function MessageConstructeur({ navigation, route }) {
   }, [projectId]);
 
   useEffect(() => {
-    // Récupération (simulée) des projets depuis le backend
     const fetchProjects = async () => {
       try {
         const response = await fetch(
           `${prodURL}/projects/${constructeur.constructorId}`
         );
         const data = await response.json();
-        console.log("Fetched projects:", data);
         setProjects(data.projects || []);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -113,36 +98,29 @@ export default function MessageConstructeur({ navigation, route }) {
     if (inputValue.trim() && projectId) {
       const newMessage = {
         text: inputValue,
-        from: constructeur.constructorName || "constructor",
-        time: new Date().toLocaleTimeString(),
+        from: constructeur.constructorName,
+        date: new Date().toLocaleTimeString(),
         projectId: projectId,
       };
 
-      // Ajouter le message à l'état local immédiatement
       setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-      console.log("Sending message:", newMessage);
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
-        const response = await fetch(
-          `${prodURL}/messages/${projectId}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              sender: constructeur.constructorName || "constructor",
-              content: inputValue,
-            }),
-          }
-        );
-        const data = await response.json();
-        console.log("Message saved to database:", data);
+        await fetch(`${prodURL}/messages/${projectId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sender: constructeur.constructorName,
+            content: inputValue,
+          }),
+        });
       } catch (error) {
         console.error("Error saving message to database:", error);
       }
 
-      setInputValue(""); // Nettoie le champ
+      setInputValue("");
     }
   };
 
@@ -151,7 +129,6 @@ export default function MessageConstructeur({ navigation, route }) {
     <View
       style={[
         styles.messageContainer,
-        // Messages envoyés par le constructeur (myMessage) à DROITE
         item.from === constructeur.constructorName
           ? styles.otherMessage
           : styles.myMessage,
@@ -175,27 +152,18 @@ export default function MessageConstructeur({ navigation, route }) {
             : { color: "#FFF" },
         ]}
       >
-        {item.time.slice(0, 5)}
+        {item.date ? item.date.slice(0, 5) : ""}
       </Text>
     </View>
   );
 
   useEffect(() => {
     if (messages.length > 0) {
-      flatListRef.current.scrollToEnd({ animated: true });
+      flatListRef.current?.scrollToEnd({ animated: true });
     }
   }, [messages]);
 
-  // Rendu de la liste de projets (toujours présente dans la logique, mais cachée par style)
-  const renderProject = ({ item }) => (
-    <Button
-      title={`Project: ${item.name}`}
-      onPress={() => setCurrentProjectId(item._id)}
-    />
-  );
-
-  // Corrected logic to display the client's name dynamically.
-  const clientName = route.params?.clientName || "Client Inconnu";
+  const clientName = route.params?.clientName;
 
   return (
     <KeyboardAvoidingView
@@ -205,33 +173,17 @@ export default function MessageConstructeur({ navigation, route }) {
       <SafeAreaView style={styles.container}>
         {/* Barre supérieure type "header" */}
         <View style={styles.header}>
-          <ReturnButton
-            style={styles.backButton}
-            onPress={() =>
-              navigation.navigate("MainTabs", { screen: "Message" })
-            }
-          />
+          <View style={styles.backButton}>
+            <ReturnButton
+              onPress={() =>
+                navigation.navigate("MainTabs", { screen: "Message" })
+              }
+            />
+          </View>
 
           <View style={styles.userInfo}>
-            <Image
-              style={styles.profilePicture}
-              source={{
-                uri: "https://via.placeholder.com/150x150.png?text=Avatar",
-              }}
-            />
             <Text style={styles.userName}>{clientName}</Text>
           </View>
-        </View>
-
-        {/* Liste des projets, masquée par style pour coller au screenshot */}
-        <View style={styles.projectList}>
-          <Text style={styles.sectionTitle}>Project</Text>
-          <FlatList
-            data={projects}
-            renderItem={renderProject}
-            keyExtractor={(item) => item._id}
-            horizontal
-          />
         </View>
 
         {/* Liste des messages */}
@@ -245,13 +197,6 @@ export default function MessageConstructeur({ navigation, route }) {
 
         {/* Barre d'envoi de message en bas */}
         <View style={styles.inputContainer}>
-          <TouchableOpacity
-            style={styles.plusButton}
-            onPress={() => console.log("Plus icon pressed")}
-          >
-            <Text style={styles.plusSign}>+</Text>
-          </TouchableOpacity>
-
           <View style={styles.textInputWrapper}>
             <TextInput
               style={styles.textInput}
@@ -263,7 +208,7 @@ export default function MessageConstructeur({ navigation, route }) {
           </View>
 
           <TouchableOpacity onPress={sendMessage} style={styles.sendIconButton}>
-            <Ionicons name="send" size={20} color="#4102F9" />
+            <Ionicons name="send" size={20} color="#362173" />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -279,7 +224,6 @@ MessageConstructeur.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  // --- CONTENEURS GÉNÉRAUX ---
   container: {
     flex: 1,
     backgroundColor: "#FFF",
@@ -287,19 +231,16 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    paddingBottom: 5,
+    paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#DDD",
   },
-  backButton: {
-    padding: 5,
-  },
+
   userInfo: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 10,
+    textAlign: "center",
   },
   profilePicture: {
     width: 36,
@@ -311,24 +252,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#000",
+    textAlign: "center",
+    marginBottom: 10,
+    flex: 1,
   },
 
   // --- LISTE DES PROJETS (LOGIQUE INTACTE, MAIS MASQUÉ VISUELLEMENT) ---
   projectList: {
-    display: "none", // On masque cette partie pour coller au screenshot
-    // si tu souhaites la rendre visible un jour, enlève cette ligne
+    display: "none",
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
   },
+  backButton: {
+    position: "absolute",
+    top: 0,
+    left: 15,
+  },
 
-  // --- LISTE DES MESSAGES ---
   messagesList: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 25,
     paddingBottom: 16,
-    // on laisse un espace en bas pour ne pas que le dernier message soit caché
   },
   messageContainer: {
     marginVertical: 5,
@@ -336,7 +282,6 @@ const styles = StyleSheet.create({
     maxWidth: "70%",
     borderRadius: 12,
   },
-  // message du constructeur => GAUCHE en violet
   myMessage: {
     alignSelf: "flex-start",
     backgroundColor: "#663ED9",
@@ -373,15 +318,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#DDD",
     backgroundColor: "#FFF",
-  },
-  plusButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#FE5900",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
   },
   plusSign: {
     color: "#FFF",

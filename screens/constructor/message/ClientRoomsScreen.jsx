@@ -9,39 +9,30 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons"; // Assurez-vous que react-native-vector-icons est installé
+import Icon from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 
-// Moved the separator component outside the parent component.
 const Separator = () => <View style={styles.separator} />;
 
 export default function ClientRoomsScreen() {
   const [clientRooms, setClientRooms] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const navigation = useNavigation();
+
   const constructor = useSelector((state) => state.constructeur.value);
 
-  // Add detailed logging to verify data fetching and navigation.
+  const prodURL = process.env.PROD_URL;
+
   useEffect(() => {
-    console.log(
-      "Fetching client rooms for constructor ID:",
-      constructor.constructorId
-    );
-    console.log("Using token:", constructor.token);
-
-    const prodURL = process.env.PROD_URL
-
     const fetchClientRooms = async () => {
       try {
         const response = await fetch(
           `${prodURL}/projects/clients/${constructor.constructorId}/${constructor.token}`
         );
         const data = await response.json();
-        console.log("API response:", data);
 
         if (data.result && Array.isArray(data.data)) {
           const rooms = data.data.map((project) => {
-            console.log("Processing project:", project);
             return {
               roomId: project._id,
               client: {
@@ -51,10 +42,9 @@ export default function ClientRoomsScreen() {
               },
               lastMessage:
                 project.messages?.[project.messages.length - 1]?.content ||
-                "No messages yet",
+                "Commencez une conversation avec votre client.",
             };
           });
-          console.log("Mapped rooms:", rooms);
           setClientRooms(rooms);
         } else {
           console.error("Invalid API response structure:", data);
@@ -68,12 +58,7 @@ export default function ClientRoomsScreen() {
   }, [constructor.constructorId, constructor.token]);
 
   const handleRoomPress = (room) => {
-    console.log("Selected room:", room);
     if (room && room.roomId) {
-      console.log(
-        "Navigating to MessageConstructeur with projectId:",
-        room.roomId
-      );
       navigation.navigate("MessageConstructeur", {
         projectId: room.roomId,
         clientName: room.client.name,
@@ -91,7 +76,7 @@ export default function ClientRoomsScreen() {
       onPress={() => handleRoomPress(item)}
     >
       <Text style={styles.roomName}>{item.client.name}</Text>
-      <Text style={styles.roomDetails}>Last message: {item.lastMessage}</Text>
+      <Text style={styles.roomDetails}>{item.lastMessage}</Text>
     </TouchableOpacity>
   );
 
@@ -137,32 +122,31 @@ export default function ClientRoomsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9F9F9",
-    paddingTop: 20,
   },
-  // Le header est centré dans une zone de largeur "90%"
   headerContainer: {
     width: "90%",
     alignSelf: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 20,
   },
   title: {
+    color: "#362173",
     fontSize: 24,
-    fontWeight: "700",
-    color: "#4102F9",
-    marginBottom: 10,
+    fontWeight: 600,
     textAlign: "center",
+    marginTop: 10,
+    paddingHorizontal: 40,
+    paddingVertical: 15,
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFF",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "#FE5900",
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 10,
-    height: 40,
+    height: 50,
     width: "100%",
   },
   searchIcon: {
@@ -182,19 +166,20 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   roomContainer: {
-    backgroundColor: "#FFF",
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: "#4102F9",
+    borderLeftColor: "#362173",
+    marginVertical: 2,
+    height: 110,
   },
   roomName: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#4102F9",
+    color: "#362173",
   },
   roomDetails: {
     fontSize: 16,
-    color: "#666",
+    color: "#2D3747",
     marginTop: 4,
   },
   separator: {

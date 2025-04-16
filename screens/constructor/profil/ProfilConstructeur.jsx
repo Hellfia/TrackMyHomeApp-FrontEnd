@@ -22,8 +22,6 @@ export default function ProfilConstructeur({ navigation }) {
     });
   };
 
-  console.log("info", infoConstructor);
-
   const handleLogout = () => {
     dispatch(logout());
   };
@@ -43,8 +41,6 @@ export default function ProfilConstructeur({ navigation }) {
         });
     }, [constructeur.token])
   );
-
-  console.log(infoConstructor);
 
   const profileImage =
     infoConstructor && infoConstructor.profilePicture
