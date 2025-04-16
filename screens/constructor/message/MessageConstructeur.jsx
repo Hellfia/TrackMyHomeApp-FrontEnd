@@ -33,23 +33,27 @@ export default function MessageConstructeur({ navigation, route }) {
       navigation.replace("ClientRoomsScreen");
       return;
     }
-
+  
     socketRef.current = io(prodURL);
-
+  
     socketRef.current.on("connect", () => {
       console.log("Connected to Socket.IO server");
+      // Ajout de l'émission pour rejoindre la room du projet
+      socketRef.current.emit("joinProject", projectId);
+      console.log(`Joined project room: ${projectId}`);
     });
-
+  
     socketRef.current.on("newMessage", (message) => {
       console.log("New message received:", message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-
+  
     return () => {
       console.log("Disconnecting from Socket.IO server...");
       if (socketRef.current) socketRef.current.disconnect();
     };
   }, [projectId, navigation]);
+  
 
   useEffect(() => {
     if (projectId) {
