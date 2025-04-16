@@ -23,7 +23,6 @@ export default function ClientRoomsScreen() {
 
   const prodURL = process.env.PROD_URL;
 
-  // Utilisation de `useFocusEffect` pour charger les données lors du focus de l'écran
   useFocusEffect(
     useCallback(() => {
       const fetchClientRooms = async () => {

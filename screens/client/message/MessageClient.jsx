@@ -1,8 +1,7 @@
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -20,46 +19,36 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function MessageClient() {
   const client = useSelector((state) => state.client.value);
-  console.log("Client data:", client);
-  const navigation = useNavigation();
 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const socketRef = useRef(null);
   const flatListRef = useRef(null);
 
-  // Use provided projectId from state or a default for testing
   const projectId = client.projectId;
   const prodURL = process.env.PROD_URL;
 
-  // Use client’s firstname/lastname if available, otherwise fallback
   const myIdentifier =
     client.firstname && client.lastname
       ? `${client.firstname} ${client.lastname}`
       : "User";
 
-  // Initialize socket connection and join the project room
   useEffect(() => {
     socketRef.current = io(prodURL);
 
     socketRef.current.on("connect", () => {
-      console.log("Connected to Socket.IO server");
       socketRef.current.emit("joinProject", projectId);
-      console.log(`Joined project room: ${projectId}`);
     });
 
     socketRef.current.on("newMessage", (message) => {
-      console.log("New message received:", message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
     return () => {
-      console.log("Disconnecting from Socket.IO server...");
       if (socketRef.current) socketRef.current.disconnect();
     };
   }, [prodURL, projectId]);
 
-  // Fetch existing messages and format to use the same keys
   useEffect(() => {
     if (projectId) {
       setMessages([]);
@@ -71,7 +60,6 @@ export default function MessageClient() {
           }
           const data = await response.json();
           if (data.success) {
-            // Format messages to use the same structure as in MessageConstructeur
             const formattedMessages = data.messages.map((msg) => ({
               text: msg.content,
               from: msg.sender,
@@ -91,7 +79,6 @@ export default function MessageClient() {
     }
   }, [prodURL, projectId]);
 
-  // Ensure the FlatList scrolls to the end when messages update
   useEffect(() => {
     if (messages.length > 0) {
       flatListRef.current?.scrollToEnd({ animated: true });
@@ -106,7 +93,6 @@ export default function MessageClient() {
     }, [messages])
   );
 
-  // Send message using the same structure as MessageConstructeur
   const sendMessage = async () => {
     if (inputValue.trim() && projectId) {
       const newMessage = {
@@ -135,7 +121,6 @@ export default function MessageClient() {
     }
   };
 
-  // Render a message bubble and apply style based on sender identity
   const renderMessage = ({ item }) => {
     const isMyMessage = item.from === myIdentifier;
     return (
@@ -179,14 +164,15 @@ export default function MessageClient() {
         </View>
 
         <FlatList
-  ref={flatListRef}
-  data={messages}
-  renderItem={renderMessage}
-  keyExtractor={(_, index) => index.toString()}
-  contentContainerStyle={styles.messagesList}
-  onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
-/>
-
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(_, index) => index.toString()}
+          contentContainerStyle={styles.messagesList}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: false })
+          }
+        />
 
         <View style={styles.inputContainer}>
           <View style={styles.textInputWrapper}>

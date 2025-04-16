@@ -21,7 +21,6 @@ export default function MessageConstructeur({ navigation, route }) {
   const constructeur = useSelector((state) => state.constructeur.value);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [projects, setProjects] = useState([]);
   const socketRef = useRef(null);
   const flatListRef = useRef(null);
 
@@ -37,19 +36,14 @@ export default function MessageConstructeur({ navigation, route }) {
     socketRef.current = io(prodURL);
 
     socketRef.current.on("connect", () => {
-      console.log("Connected to Socket.IO server");
-      // Ajout de l'émission pour rejoindre la room du projet
       socketRef.current.emit("joinProject", projectId);
-      console.log(`Joined project room: ${projectId}`);
     });
 
     socketRef.current.on("newMessage", (message) => {
-      console.log("New message received:", message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
     return () => {
-      console.log("Disconnecting from Socket.IO server...");
       if (socketRef.current) socketRef.current.disconnect();
     };
   }, [projectId, navigation]);
@@ -110,7 +104,6 @@ export default function MessageConstructeur({ navigation, route }) {
     }
   };
 
-  // Rendu des bulles de message
   const renderMessage = ({ item }) => (
     <View
       style={[
@@ -245,22 +238,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flex: 1,
   },
-
-  // --- LISTE DES PROJETS (LOGIQUE INTACTE, MAIS MASQUÉ VISUELLEMENT) ---
-  projectList: {
-    display: "none",
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
   backButton: {
     position: "absolute",
     top: 0,
     left: 15,
   },
-
   messagesList: {
     paddingHorizontal: 25,
     paddingBottom: 16,
@@ -275,7 +257,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     backgroundColor: "#663ED9",
   },
-  // message de l’autre => DROITE en blanc
+
   otherMessage: {
     alignSelf: "flex-end",
     backgroundColor: "#F2F2F2",
@@ -284,22 +266,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   myMessageText: {
-    color: "#FFF", // texte blanc sur fond violet
+    color: "#FFF",
   },
   otherMessageText: {
-    color: "#000", // texte noir sur fond blanc/gris
+    color: "#000",
   },
   messageTime: {
     fontSize: 12,
     color: "#666",
     marginTop: 4,
-    textAlign: "right", // place l'heure à droite dans la bulle
+    textAlign: "right",
   },
   otherMessageTime: {
-    color: "#FFF", // texte blanc sur fond violet
+    color: "#FFF",
   },
 
-  // --- BARRE D'ENVOI EN BAS ---
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -325,7 +306,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     fontSize: 16,
     color: "#000",
-    height: 40, // Increased height for thicker input
+    height: 40,
   },
   sendIconButton: {
     width: 36,
