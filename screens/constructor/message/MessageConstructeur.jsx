@@ -33,27 +33,26 @@ export default function MessageConstructeur({ navigation, route }) {
       navigation.replace("ClientRoomsScreen");
       return;
     }
-  
+
     socketRef.current = io(prodURL);
-  
+
     socketRef.current.on("connect", () => {
       console.log("Connected to Socket.IO server");
       // Ajout de l'émission pour rejoindre la room du projet
       socketRef.current.emit("joinProject", projectId);
       console.log(`Joined project room: ${projectId}`);
     });
-  
+
     socketRef.current.on("newMessage", (message) => {
       console.log("New message received:", message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-  
+
     return () => {
       console.log("Disconnecting from Socket.IO server...");
       if (socketRef.current) socketRef.current.disconnect();
     };
   }, [projectId, navigation]);
-  
 
   useEffect(() => {
     if (projectId) {
@@ -67,7 +66,7 @@ export default function MessageConstructeur({ navigation, route }) {
             const formattedMessages = data.messages.map((msg) => ({
               text: msg.content,
               from: msg.sender,
-              time: new Date(msg.date).toLocaleTimeString(),
+              date: new Date(msg.date).toLocaleTimeString(),
             }));
             setMessages(formattedMessages);
           } else {
@@ -82,22 +81,6 @@ export default function MessageConstructeur({ navigation, route }) {
     }
   }, [projectId]);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch(
-          `${prodURL}/projects/${constructeur.constructorId}`
-        );
-        const data = await response.json();
-        setProjects(data.projects || []);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-
-    fetchProjects();
-  }, [constructeur.constructorId]);
-
   const sendMessage = async () => {
     if (inputValue.trim() && projectId) {
       const newMessage = {
@@ -106,8 +89,6 @@ export default function MessageConstructeur({ navigation, route }) {
         date: new Date().toLocaleTimeString(),
         projectId: projectId,
       };
-
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
 
       socketRef.current.emit("sendMessage", newMessage);
 
@@ -118,6 +99,7 @@ export default function MessageConstructeur({ navigation, route }) {
           body: JSON.stringify({
             sender: constructeur.constructorName,
             content: inputValue,
+            date: new Date().toLocaleTimeString(),
           }),
         });
       } catch (error) {
