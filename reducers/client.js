@@ -8,6 +8,7 @@ const initialState = {
     clientId: null,
     firstname: null,
     lastname: null,
+    profilPicture: null,
   },
 };
 
@@ -22,6 +23,7 @@ export const clientSlice = createSlice({
       state.value.projectId = action.payload.projectId;
       state.value.firstname = action.payload.firstname;
       state.value.lastname = action.payload.lastname;
+      state.value.profilPicture = action.payload.profilPicture;
     },
     logout: (state) => {
       state.value = initialState.value;

@@ -44,6 +44,7 @@ export default function ConnexionScreen({ navigation }) {
                 projectId: data.projectId,
                 firstname: data.firstname,
                 lastname: data.lastname,
+                profilPicture: data.profilPicture,
               })
             );
           } else if (data.role === "constructeur") {
@@ -53,6 +54,7 @@ export default function ConnexionScreen({ navigation }) {
                 token: data.token,
                 role: "constructeur",
                 constructorName: data.constructorName,
+                profilPicture: data.profilPicture,
               })
             );
           }

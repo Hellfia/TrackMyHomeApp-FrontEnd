@@ -20,6 +20,7 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function MessageClient() {
   const client = useSelector((state) => state.client.value);
+  console.log("Client data:", client);
   const navigation = useNavigation();
 
   const [messages, setMessages] = useState([]);
@@ -28,7 +29,7 @@ export default function MessageClient() {
   const flatListRef = useRef(null);
 
   // Use provided projectId from state or a default for testing
-  const projectId = client.projectId || "67f5467ad98577e04aa1779c";
+  const projectId = client.projectId;
   const prodURL = process.env.PROD_URL;
 
   // Use client’s firstname/lastname if available, otherwise fallback
@@ -169,12 +170,6 @@ export default function MessageClient() {
       <SafeAreaView style={styles.container}>
         <View style={[styles.header, globalStyles.header]}>
           <View style={styles.userInfo}>
-            <Image
-              style={styles.profilePicture}
-              source={{
-                uri: "https://via.placeholder.com/150x150.png?text=Avatar",
-              }}
-            />
             <Text style={[styles.userName, globalStyles.title]}>
               {messages.length > 0 && messages[0].from !== myIdentifier
                 ? messages[0].from
