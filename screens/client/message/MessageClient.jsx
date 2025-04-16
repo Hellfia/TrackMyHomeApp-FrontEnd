@@ -114,7 +114,6 @@ export default function MessageClient() {
         date: new Date().toLocaleTimeString(),
         projectId: projectId,
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
