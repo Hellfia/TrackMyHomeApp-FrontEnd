@@ -179,12 +179,14 @@ export default function MessageClient() {
         </View>
 
         <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(_, index) => index.toString()}
-          contentContainerStyle={styles.messagesList}
-        />
+  ref={flatListRef}
+  data={messages}
+  renderItem={renderMessage}
+  keyExtractor={(_, index) => index.toString()}
+  contentContainerStyle={styles.messagesList}
+  onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+/>
+
 
         <View style={styles.inputContainer}>
           <View style={styles.textInputWrapper}>

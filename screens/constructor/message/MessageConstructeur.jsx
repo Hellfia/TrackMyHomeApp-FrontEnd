@@ -179,6 +179,9 @@ export default function MessageConstructeur({ navigation, route }) {
           renderItem={renderMessage}
           keyExtractor={(_, index) => index.toString()}
           contentContainerStyle={styles.messagesList}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: false })
+          }
         />
 
         {/* Barre d'envoi de message en bas */}
