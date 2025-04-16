@@ -27,19 +27,18 @@ export default function MessageClient() {
   const socketRef = useRef(null);
   const flatListRef = useRef(null);
 
-  // Utilise le projectId fourni par le client ou une valeur par défaut pour les tests
+  // Use provided projectId from state or a default for testing
   const projectId = client.projectId || "67f5467ad98577e04aa1779c";
   const prodURL = process.env.PROD_URL;
 
-  // Identifiant du client (prénom+nom si dispo, sinon "user")
+  // Use client’s firstname/lastname if available, otherwise fallback
   const myIdentifier =
     client.firstname && client.lastname
       ? `${client.firstname} ${client.lastname}`
-      : "user";
+      : "User";
 
-  // --- Logique Socket.IO inchangée ---
+  // Initialize socket connection and join the project room
   useEffect(() => {
-    console.log("Connecting to Socket.IO server...");
     socketRef.current = io(prodURL);
 
     socketRef.current.on("connect", () => {
@@ -57,15 +56,12 @@ export default function MessageClient() {
       console.log("Disconnecting from Socket.IO server...");
       if (socketRef.current) socketRef.current.disconnect();
     };
-  }, []);
+  }, [prodURL, projectId]);
 
+  // Fetch existing messages and format to use the same keys
   useEffect(() => {
     if (projectId) {
-      console.log(`Joining project room: ${projectId}`);
-      socketRef.current.emit("joinProject", projectId);
-      setMessages([]); // Efface les messages quand on change de projet
-
-      // Récupération des messages existants
+      setMessages([]);
       const fetchMessages = async () => {
         try {
           const response = await fetch(`${prodURL}/messages/${projectId}`);
@@ -74,10 +70,12 @@ export default function MessageClient() {
           }
           const data = await response.json();
           if (data.success) {
+            // Format messages to use the same structure as in MessageConstructeur
             const formattedMessages = data.messages.map((msg) => ({
-              content: msg.content,
-              sender: msg.sender,
-              date: new Date(msg.date).toISOString(),
+              text: msg.content,
+              from: msg.sender,
+              date: new Date(msg.date).toLocaleTimeString(),
+              projectId: projectId,
             }));
             setMessages(formattedMessages);
           } else {
@@ -89,31 +87,13 @@ export default function MessageClient() {
       };
 
       fetchMessages();
-
-      const handleNewMessage = (message) => {
-        setMessages((prevMessages) => {
-          if (
-            !prevMessages.some(
-              (m) => m.content === message.content && m.date === message.date
-            )
-          ) {
-            return [...prevMessages, message];
-          }
-          return prevMessages;
-        });
-      };
-
-      socketRef.current.on("newMessage", handleNewMessage);
-
-      return () => {
-        socketRef.current.off("newMessage", handleNewMessage);
-      };
     }
-  }, [projectId]);
+  }, [prodURL, projectId]);
 
+  // Ensure the FlatList scrolls to the end when messages update
   useEffect(() => {
     if (messages.length > 0) {
-      flatListRef.current.scrollToEnd({ animated: true });
+      flatListRef.current?.scrollToEnd({ animated: true });
     }
   }, [messages]);
 
@@ -125,29 +105,27 @@ export default function MessageClient() {
     }, [messages])
   );
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    }
-  }, []);
-
+  // Send message using the same structure as MessageConstructeur
   const sendMessage = async () => {
-    if (inputValue.trim()) {
+    if (inputValue.trim() && projectId) {
       const newMessage = {
-        content: inputValue,
-        sender: myIdentifier,
+        text: inputValue,
+        from: myIdentifier,
         date: new Date().toLocaleTimeString(),
+        projectId: projectId,
       };
-      setMessages((prev) => [...prev, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       socketRef.current.emit("sendMessage", newMessage);
 
       try {
-        const response = await fetch(`${prodURL}/messages/${projectId}`, {
+        await fetch(`${prodURL}/messages/${projectId}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newMessage),
+          body: JSON.stringify({
+            sender: myIdentifier,
+            content: inputValue,
+          }),
         });
-        const data = await response.json();
       } catch (error) {
         console.error("Error saving message to database:", error);
       }
@@ -157,8 +135,9 @@ export default function MessageClient() {
     }
   };
 
+  // Render a message bubble and apply style based on sender identity
   const renderMessage = ({ item }) => {
-    const isMyMessage = item.sender === myIdentifier;
+    const isMyMessage = item.from === myIdentifier;
     return (
       <View
         style={[
@@ -172,15 +151,12 @@ export default function MessageClient() {
             isMyMessage ? styles.myMessageText : styles.otherMessageText,
           ]}
         >
-          {item.content}
+          {item.text}
         </Text>
         <Text
           style={isMyMessage ? styles.messageTime : styles.otherMessageTime}
         >
-          {new Date(item.date).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {item.date ? item.date.slice(0, 5) : ""}
         </Text>
       </View>
     );
@@ -192,7 +168,6 @@ export default function MessageClient() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <SafeAreaView style={styles.container}>
-        {/* Header affichant le nom de l'interlocuteur */}
         <View style={[styles.header, globalStyles.header]}>
           <View style={styles.userInfo}>
             <Image
@@ -202,20 +177,13 @@ export default function MessageClient() {
               }}
             />
             <Text style={[styles.userName, globalStyles.title]}>
-              {messages.length > 0 && messages[0].sender !== myIdentifier
-                ? messages[0].sender
+              {messages.length > 0 && messages[0].from !== myIdentifier
+                ? messages[0].from
                 : "Interlocuteur inconnu"}
             </Text>
           </View>
         </View>
 
-        {/* Section Projet masquée */}
-        <View style={styles.projectList}>
-          <Text style={styles.sectionTitle}>Project</Text>
-          {/* Liste des projets si besoin */}
-        </View>
-
-        {/* Liste des messages */}
         <FlatList
           ref={flatListRef}
           data={messages}
@@ -224,7 +192,6 @@ export default function MessageClient() {
           contentContainerStyle={styles.messagesList}
         />
 
-        {/* Barre d'envoi avec icône d'envoi */}
         <View style={styles.inputContainer}>
           <View style={styles.textInputWrapper}>
             <TextInput
@@ -245,7 +212,6 @@ export default function MessageClient() {
   );
 }
 
-// --- Styles modernisés ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -265,8 +231,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 0,
     paddingVertical: 4,
+  },
+  profilePicture: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   userName: {
     fontSize: 14,
@@ -274,28 +244,17 @@ const styles = StyleSheet.create({
     color: "#000",
     textAlign: "center",
   },
-
-  projectList: {
-    display: "none",
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-
   messagesList: {
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
-
   messageContainer: {
     marginVertical: 6,
     paddingVertical: 10,
     paddingHorizontal: 14,
     maxWidth: "80%",
+    borderRadius: 12,
   },
-
   myMessage: {
     alignSelf: "flex-end",
     backgroundColor: "#663ED9",
@@ -305,9 +264,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
   },
   myMessageText: {
-    color: "#fff",
+    color: "#FFF",
   },
-
   otherMessage: {
     alignSelf: "flex-start",
     backgroundColor: "#F2F2F2",
@@ -319,21 +277,18 @@ const styles = StyleSheet.create({
   otherMessageText: {
     color: "#000",
   },
-
   messageTime: {
     fontSize: 13,
     marginTop: 4,
     textAlign: "right",
     color: "rgba(255, 255, 255, 0.75)",
   },
-
   otherMessageTime: {
     fontSize: 13,
     marginTop: 4,
     textAlign: "right",
     color: "#808080",
   },
-
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -341,11 +296,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#DDD",
     backgroundColor: "#FFF",
-  },
-  plusSign: {
-    color: "#FFF",
-    fontSize: 24,
-    fontWeight: "bold",
   },
   textInputWrapper: {
     flex: 1,
