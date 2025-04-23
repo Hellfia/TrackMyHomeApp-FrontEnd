@@ -169,16 +169,17 @@ export default function MessageConstructeur({ navigation, route }) {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#8E44AD", "#372173"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+       colors={["#8E44AD", "#372173"]}
+       start={{ x: 0, y: 0 }}
+       end={{ x: 0, y: 1 }}
+       locations={[0, 0.3]}
         style={styles.headerGradient}
       >
-        <View style={styles.safeTopArea} style={{ height: insets.top }} />
+        <View style={[styles.safeTopArea, { height: insets.top }]} />
                 
         <View style={styles.header}>
           <View style={styles.headerInner}>
-            <ReturnButton onPress={() => navigation.goBack()} />
+            <ReturnButton onPress={() => navigation.goBack()} top={-6} left={0} />
             <View style={styles.headerCenter}>
               <Ionicons name="person" size={24} color="#FFF" />
               <Text style={styles.headerText}>{clientName}</Text>
@@ -202,14 +203,16 @@ export default function MessageConstructeur({ navigation, route }) {
             contentContainerStyle={styles.messagesList}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+           
           />
         </View>
 
         {/* FOOTER INPUT */}
         <LinearGradient
-          colors={["#372173", "#8E44AD"]}
+          colors={["#8E44AD", "#372173"]}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          end={{ x: 0, y: 1 }}
+          locations={[0, 0.4]}
           style={styles.footerGradient}
         >
           <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 10) }]}>
@@ -244,7 +247,7 @@ MessageConstructeur.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  flex: { flex: 1, backgroundColor: "#372173" },
   container: {
     flex: 1,
   },
@@ -338,7 +341,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: HORIZONTAL_PADDING,
-    paddingTop: 10,
+    paddingTop: 13,
   },
   inputWrapper: {
     flex: 1,
@@ -346,13 +349,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: INPUT_HEIGHT - 8,
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
   },
   input: { 
     fontSize: 16, 
     color: '#000', 
     padding: 0, 
-    flex: 1 
+    flex: 1, 
   },
   sendButton: {
     marginLeft: 12,

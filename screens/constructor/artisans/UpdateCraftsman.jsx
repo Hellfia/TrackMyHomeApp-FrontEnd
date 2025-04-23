@@ -35,6 +35,8 @@ export default function UpdateCraftsman({ route, navigation }) {
 
   const prodURL = process.env.PROD_URL
 
+
+
   const handleUpdateProfile = () => {
     const { error } = updateCraftsman.validate({
       craftsmanCompagny,
@@ -72,6 +74,10 @@ export default function UpdateCraftsman({ route, navigation }) {
         }
       });
   };
+
+  const handlePressDelete = () => {
+    
+  }
 
   return (
     <SafeAreaView style={styles.container}>

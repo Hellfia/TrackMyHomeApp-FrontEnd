@@ -9,6 +9,8 @@ import {
   StyleSheet,
   Dimensions,
   Image,
+  Linking,
+
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector } from "react-redux";
@@ -23,6 +25,14 @@ export default function Artisans({ navigation }) {
   const [craftsmen, setCraftsmen] = useState([]);
 
   const prodURL = process.env.PROD_URL;
+
+   const callArtisan = (phoneNumber) => {
+      if (phoneNumber && phoneNumber !== "Non renseigné") {
+        Linking.openURL(`tel:${phoneNumber}`);
+      } else {
+        alert("Numéro de téléphone non renseigné");
+      }
+    };
 
   useFocusEffect(
     useCallback(() => {
@@ -59,8 +69,7 @@ export default function Artisans({ navigation }) {
 
       <TouchableOpacity
         style={styles.phoneButton}
-        onPress={() =>
-          navigation.navigate("CallCraftsman", { phone: item.phoneNumber })
+        onPress={() => callArtisan(item.phoneNumber)
         }
       >
         <FontAwesome5 name="phone-alt" size={16} color="#f67360" />
