@@ -1,11 +1,13 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const ReturnButton = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      <FontAwesome5 name="chevron-left" size={32} color="#362173" />
+      <View style={styles.circle}>
+        <FontAwesome5 name="chevron-left" size={20} color="#fff" />
+      </View>
     </TouchableOpacity>
   );
 };
@@ -13,9 +15,23 @@ const ReturnButton = ({ onPress }) => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 11,
+    top: 4,
     left: 0,
-    zIndex: 1,
+    paddingLeft: 10,
+    zIndex: 10,
+  },
+  circle: {
+    backgroundColor: "#836BAE",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
   },
 });
 

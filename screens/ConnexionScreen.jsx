@@ -1,62 +1,90 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
+  Animated,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
   View,
+  ScrollView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
-import logo from "../assets/logo.webp";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+
+import logo from "../assets/logo.png";
 import GradientButton from "../components/GradientButton";
 import Input from "../components/Input";
+import emailIcon from "../assets/email.png";
+import lockIcon from "../assets/verrou.png";
 import { loginClient } from "../reducers/client";
 import { loginConstructeur } from "../reducers/constructeur";
 
 export default function ConnexionScreen({ navigation }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
-
   const dispatch = useDispatch();
-
   const prodURL = process.env.PROD_URL;
+
+  const logoScale = useRef(new Animated.Value(1)).current;
+  const logoTranslateY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", () => {
+      Animated.parallel([
+        Animated.timing(logoScale, {
+          toValue: 0.6,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoTranslateY, {
+          toValue: -30,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      Animated.parallel([
+        Animated.timing(logoScale, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoTranslateY, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const handlePressConnexion = () => {
     fetch(`${prodURL}/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: signInEmail,
-        password: signInPassword,
-      }),
+      body: JSON.stringify({ email: signInEmail, password: signInPassword }),
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (data.result) {
+          const payload = {
+            token: data.token,
+            profilPicture: data.profilPicture,
+          };
           if (data.role === "client") {
-            dispatch(
-              loginClient({
-                clientId: data.clientId,
-                token: data.token,
-                role: "client",
-                projectId: data.projectId,
-                firstname: data.firstname,
-                lastname: data.lastname,
-                profilPicture: data.profilPicture,
-              })
-            );
-          } else if (data.role === "constructeur") {
-            dispatch(
-              loginConstructeur({
-                constructorId: data.constructorId,
-                token: data.token,
-                role: "constructeur",
-                constructorName: data.constructorName,
-                profilPicture: data.profilPicture,
-              })
-            );
+            dispatch(loginClient({ ...payload, ...data }));
+          } else {
+            dispatch(loginConstructeur({ ...payload, ...data }));
           }
           setSignInEmail("");
           setSignInPassword("");
@@ -65,101 +93,138 @@ export default function ConnexionScreen({ navigation }) {
           alert("Identifiants incorrects, veuillez réessayer.");
         }
       })
-      .catch((error) => {
-        console.error("Erreur lors de la connexion:", error);
-      });
-  };
-
-  const handleProAccCreation = () => {
-    navigation.navigate("ProAccCreation");
+      .catch(err => console.error("Erreur:", err));
   };
 
   return (
-    <SafeAreaView style={styles.safeContainer} edges={["top", "left", "right"]}>
-      <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Image
+<LinearGradient colors={["#8E44AD", "#753A9C", "#372173"]} style={{ flex: 1 }}>
+  <SafeAreaView style={{ flex: 1 }} edges={["bottom", "left", "right"]}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      style={{ flex: 1 }}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.topSection}>
+          <Animated.Image
             source={logo}
-            style={{ width: 100, height: 100 }}
-            accessibilityLabel="Logo de TrackMyHome"
+            style={[
+              styles.logo,
+              {
+                transform: [
+                  { scale: logoScale },
+                  { translateY: logoTranslateY },
+                ],
+              },
+            ]}
           />
-        </View>
-        <Text style={styles.title}>TrackMyHome</Text>
-        <Text style={styles.subtitle}>
-          Suivez l'avancement de votre projet !
-        </Text>
-        <KeyboardAvoidingView
-          style={styles.keyboardContainer}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          keyboardVerticalOffset={80}
-        >
-          <View style={styles.inputContainer}>
-            <Input
-              placeholder="Email"
-              onChangeText={(value) => setSignInEmail(value)}
-              value={signInEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <Input
-              placeholder="Mot de passe"
-              onChangeText={(value) => setSignInPassword(value)}
-              value={signInPassword}
-              secureTextEntry={true}
-            />
-          </View>
-          <GradientButton text="Se connecter" onPress={handlePressConnexion} />
-        </KeyboardAvoidingView>
-        <Text style={styles.text}>
-          Vous êtes un professionnel et vous n'avez pas encore de compte ?{" "}
-          <Text style={styles.link} onPress={handleProAccCreation}>
-            Cliquez-ici !
+          <Text style={styles.title}>
+            <Text style={styles.trackMy}>TrackMy</Text>
+            <Text style={styles.home}>Home</Text>
           </Text>
-        </Text>
-      </View>
-    </SafeAreaView>
+          <Text style={styles.subtitle}>
+            Suivez l'avancement de votre projet !
+          </Text>
+        </View>
+
+        <View style={styles.form}>
+          <Input
+            placeholder="Email"
+            placeholderTextColor="#fff"
+            icon={emailIcon}
+            onChangeText={setSignInEmail}
+            value={signInEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <Input
+            placeholder="Mot de passe"
+            placeholderTextColor="#fff"
+            icon={lockIcon}
+            onChangeText={setSignInPassword}
+            value={signInPassword}
+            secureTextEntry
+          />
+          <GradientButton text="Se connecter" onPress={handlePressConnexion} />
+          <Text style={styles.text}>
+            Pas encore de compte pro ?{" "}
+            <Text style={styles.link} onPress={() => navigation.navigate("ProAccCreation")}>
+              Créer un compte !
+            </Text>
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  </SafeAreaView>
+</LinearGradient>
+
   );
 }
 
 const styles = StyleSheet.create({
-  safeContainer: {
+  gradient: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
-  container: {
+  safeArea: {
     flex: 1,
-    alignItems: "center",
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  keyboardContainer: {
-    width: "100%",
+    paddingHorizontal: 30,
+    paddingBottom: 40,
+    paddingTop: 10,
   },
   logoContainer: {
-    marginBottom: 20,
+    marginBottom: 10,
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    shadowColor: "#fff",
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 7,
+    marginBottom: 10,
+    resizeMode: "contain",
   },
   title: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 8,
+    color: "#fff",
+    textAlign: "center",
+  },
+  trackMy: {
+    color: "#FFFFFF",
+  },
+  home: {
+    color: "#F99A5E",
   },
   subtitle: {
     fontSize: 16,
-    color: "#666666",
-    marginBottom: 40,
+    color: "#fff",
+    marginBottom: 20,
+    textAlign: "center",
   },
-  inputContainer: {
+  form: {
     width: "100%",
-    marginBottom: 0,
   },
   text: {
+    marginTop: 30,
     fontSize: 14,
-    color: "#000000",
+    color: "#fff",
     textAlign: "center",
   },
   link: {
-    color: "#8A2BE2",
+    color: "#F99A5E",
     textDecorationLine: "underline",
+  },
+  topSection: {
+    alignItems: "center",
+    marginBottom: 20,
   },
 });

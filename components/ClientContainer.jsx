@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import avatar from "../assets/avatar.png";
 
 const ClientContainer = ({
@@ -10,59 +10,77 @@ const ClientContainer = ({
   city,
   profilePicture,
   onPress,
+  variant = "orange",
+  style,
 }) => {
   const profileImage = profilePicture ? { uri: profilePicture } : avatar;
+
   return (
-    <TouchableOpacity style={styles.generalContainer} onPress={onPress}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.card,
+        variant === "violet" ? styles.violetShadow : styles.orangeShadow,
+      ]}
+    >
       <Image
         source={profileImage}
         style={styles.avatar}
         accessibilityLabel="Photo de profil de l'utilisateur"
       />
-      <View style={styles.infosContainer}>
-        <View style={styles.modifContainer}>
-          <Text style={styles.nameClient}>
-            {firstname} {lastname}
-          </Text>
-        </View>
-        <Text style={styles.addressClient}>{address}</Text>
-        <Text>
-          {zip} {city}
-        </Text>
-      </View>
+      <Text style={styles.name}>
+        {firstname} {lastname}
+      </Text>
+      <Text style={styles.address} numberOfLines={1}>{address}</Text>
+      <Text style={styles.city}>{zip} {city}</Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  generalContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#663ED9",
-    borderRadius: 8,
+  card: {
     backgroundColor: "#fff",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    borderRadius: 16,
     padding: 12,
-    marginHorizontal: 20,
-    marginVertical: 5,
+    alignItems: "center",
+    elevation: 4,
+    width: 170,
+    height: 160,
   },
-  infosContainer: {
-    marginLeft: 20,
+  orangeShadow: {
+    shadowColor: "#FF5900",
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+  },
+  violetShadow: {
+    shadowColor: "#673ED9",
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
   },
   avatar: {
     width: 60,
     height: 60,
-    borderRadius: 10,
+    borderRadius: 30,
+    marginBottom: 8,
   },
-  nameClient: {
-    fontWeight: "500",
-    color: "#663ED9",
+  name: {
+    fontWeight: "700",
+    fontSize: 14,
+    color: "#673ED9",
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  address: {
+    fontSize: 12,
+    color: "#444",
+    textAlign: "center",
+  },
+  city: {
+    fontSize: 12,
+    color: "#444",
+    textAlign: "center",
   },
 });
 

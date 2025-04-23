@@ -1,17 +1,19 @@
 import React from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View, Image } from "react-native";
 
 const Input = ({
   placeholder,
   value,
   onChangeText,
-  placeholderTextColor,
+  placeholderTextColor = "#fff",
   keyboardType,
   secureTextEntry = false,
   autoCapitalize,
+  icon, // 👈 nouvelle prop
 }) => {
   return (
     <View style={styles.inputContainer}>
+      {icon && <Image source={icon} style={styles.icon} />}
       <TextInput
         secureTextEntry={secureTextEntry}
         style={styles.inputText}
@@ -29,25 +31,32 @@ const Input = ({
 
 const styles = StyleSheet.create({
   inputContainer: {
+    flexDirection: "row", // 👈 pour aligner icône + input
+    alignItems: "center",
     width: "100%",
-    borderWidth: 1,
-    borderColor: "#663ED9",
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    shadowColor: "#000",
+    borderWidth: 1.5,
+    borderColor: "#fff",
+    borderRadius: 12,
+    backgroundColor: "#372173",
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    padding: 14,
+    paddingHorizontal: 14,
+    height: 54,
+    marginBottom: 16, // ✅ c’est bien
     fontSize: 16,
-    marginBottom: 16,
   },
-
+  icon: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+    tintColor: "#fff", // optionnel si tu veux qu’elles soient blanches
+  },
   inputText: {
-    color: "#050315",
+    flex: 1, // ← indispensable !
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: "bold",
   },
 });
 

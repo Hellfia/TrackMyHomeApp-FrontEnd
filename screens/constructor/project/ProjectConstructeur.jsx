@@ -5,17 +5,17 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
-  ScrollView,
   StyleSheet,
   Text,
   View,
+  FlatList
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import ClientContainer from "../../../components/ClientContainer";
 import PlusButton from "../../../components/PlusButton";
-import globalStyles from "../../../styles/globalStyles";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function ProjectConstructeur({ navigation }) {
   const [location, setLocation] = useState(null);
@@ -106,127 +106,199 @@ const prodURL = process.env.PROD_URL;
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={globalStyles.title}>Mes chantiers</Text>
-      {errorMsg ? (
-        <Text style={styles.errorText}>{errorMsg}</Text>
-      ) : (
-        <View style={styles.mapContainer}>
-          {loading ? (
-            <ActivityIndicator size="large" color="#663ED9" />
-          ) : (
-            <MapView style={styles.map} region={region}>
-              {location && (
-                <Marker
-                  coordinate={{
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                  }}
-                  title="Ma position"
-                />
-              )}
-              {clients?.map(
-                (client, index) =>
-                  client.client?.constructionLat &&
-                  client.client?.constructionLong && (
-                    <Marker
-                      key={client._id || `marker-${index}`}
-                      coordinate={{
-                        latitude: parseFloat(client.client.constructionLat),
-                        longitude: parseFloat(client.client.constructionLong),
-                      }}
-                      pinColor="purple"
-                      onPress={() =>
-                        handleMarkerPress(
-                          client.client.firstname,
-                          client.client.lastname,
-                          parseFloat(client.client.constructionLat),
-                          parseFloat(client.client.constructionLong)
-                        )
-                      }
-                    />
-                  )
-              )}
-            </MapView>
-          )}
-        </View>
-      )}
-      <View style={styles.clientsContainer}>
-        <Text style={[globalStyles.subTitle, styles.subTitleText]}>
-          Mes clients
-        </Text>
-        <ScrollView>
-          {clients?.length > 0 ? (
-            clients
-              .filter((clientItem) => clientItem.client !== null)
-              .map((clientItem) => (
-                <ClientContainer
-                  key={clientItem._id}
-                  firstname={clientItem.client.firstname}
-                  lastname={clientItem.client.lastname}
-                  address={clientItem.client.constructionAdress}
-                  zip={clientItem.client.constructionZipCode}
-                  city={clientItem.client.constructionCity}
-                  profilePicture={clientItem.client.profilePicture}
-                  onPress={() =>
-                    navigation.navigate("ClientDetails", {
-                      data: clientItem,
-                    })
-                  }
-                />
-              ))
-          ) : (
-            <View style={styles.clientNotFound}>
-              <Text style={styles.clientNotFoundText}>
-                Ajoutez votre premier client !
-              </Text>
-            </View>
-          )}
-        </ScrollView>
+    <LinearGradient
+    colors={["#8E44AD", "#372173"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        locations={[0, 0.1]} // 👈 le foncé commence dès 40% du dégradé
+    style={styles.gradientHeader}
+  >
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.headerContent}>
+        <Text style={styles.headerTitle}>Mes chantiers</Text>
       </View>
+  
+      <View style={styles.mainContainer}>
+        {errorMsg ? (
+          <Text style={styles.errorText}>{errorMsg}</Text>
+        ) : (
+          <View style={styles.mapWrapper}>
+  <View style={styles.mapContainer}>
+    {loading ? (
+      <ActivityIndicator size="large" color="#663ED9" />
+    ) : (
+      <MapView style={styles.map} region={region}>
+        {location && (
+          <Marker
+            coordinate={{
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            }}
+            title="Ma position"
+          />
+        )}
+        {clients?.map(
+          (client, index) =>
+            client.client?.constructionLat &&
+            client.client?.constructionLong && (
+              <Marker
+                key={client._id || `marker-${index}`}
+                coordinate={{
+                  latitude: parseFloat(client.client.constructionLat),
+                  longitude: parseFloat(client.client.constructionLong),
+                }}
+                pinColor="purple"
+                onPress={() =>
+                  handleMarkerPress(
+                    client.client.firstname,
+                    client.client.lastname,
+                    parseFloat(client.client.constructionLat),
+                    parseFloat(client.client.constructionLong)
+                  )
+                }
+              />
+            )
+        )}
+      </MapView>
+    )}
+  </View>
+</View>
+          )}
 
-      <PlusButton style={styles.plusButton} onPress={handlePress} icon="plus" />
+            <View style={styles.clientsHeader}>
+              <Text style={styles.clientsTitle}>Mes clients</Text>
+          </View>
+  <FlatList
+  data={clients.filter((c) => c.client !== null)}
+  keyExtractor={(item) => item._id}
+  numColumns={2}
+  columnWrapperStyle={styles.clientRow}
+  contentContainerStyle={styles.clientList}
+  renderItem={({ item, index }) => (
+    <View style={styles.cardWrapper}>
+      <ClientContainer
+        firstname={item.client.firstname}
+        lastname={item.client.lastname}
+        address={item.client.constructionAdress}
+        zip={item.client.constructionZipCode}
+        city={item.client.constructionCity}
+        profilePicture={item.client.profilePicture}
+        style={{ width: 150, height: 180 }}
+        onPress={() =>
+          navigation.navigate("ClientDetails", {
+            data: item,
+          })
+        }
+      />
+    </View>
+  )}
+  
+  ListEmptyComponent={
+    <View style={styles.clientNotFound}>
+      <Text style={styles.clientNotFoundText}>
+        Ajoutez votre premier client !
+      </Text>
+    </View>
+  }
+/>
+<PlusButton
+  icon="plus"
+  onPress={handlePress}
+            style={{
+              top: 260,
+              left: 330,
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+  }}
+/>
+      </View>
     </SafeAreaView>
+  </LinearGradient>
+  
   );
 }
 
+
 const styles = StyleSheet.create({
+  gradientHeader: {
+    flex: 1,
+  },
+  headerContent: {
+    paddingTop: 10,
+    paddingBottom: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+  },
+  headerTitle: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "700",
+  },
   container: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
   },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginTop: -20,
+    paddingTop: 10,
+  },
+  mapWrapper: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
   mapContainer: {
-    width: "90%",
-    height: 250,
-    borderRadius: 20,
+    height: 220,
+    borderRadius: 16,
     overflow: "hidden",
-    marginTop: 40,
-    marginBottom: 15,
+    marginBottom: 20,
   },
   map: {
-    flex: 1,
+    width: "100%",
+    height: "100%",
+
   },
   errorText: {
     textAlign: "center",
     color: "red",
     marginTop: 20,
   },
-  clientsContainer: {
-    width: "100%",
-    flex: 1,
-    marginBottom: 10,
+  cardWrapper: {
+    width: "47%",
+  },
+  clientsHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 25,
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  clientsTitle: {
+    marginBottom: 5,
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#000",
+  },
+  clientRow: {
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  
+  clientList: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   subTitleText: {
     textAlign: "left",
     paddingLeft: 25,
     marginBottom: 7,
-  },
-  plusButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    zIndex: 10,
   },
   clientNotFound: {
     flex: 1,
@@ -242,7 +314,6 @@ const styles = StyleSheet.create({
     borderColor: "#663ED9",
     borderRadius: 8,
     backgroundColor: "#fff",
-    borderRadius: 8,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,

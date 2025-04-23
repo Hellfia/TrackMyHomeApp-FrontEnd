@@ -33,6 +33,8 @@ import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import MessageScreen from "./screens/MessageScreen";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
+import { StatusBar } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -87,6 +89,21 @@ function MainTabs() {
         tabBarActiveTintColor: "#FE5900",
         tabBarInactiveTintColor: "#663ED9",
         headerShown: false,
+
+        // 💅 Custom TabBar Style
+        tabBarStyle: {
+          position: "absolute",
+          height: 80,
+          backgroundColor: "#fff",
+          borderRadius: 24,
+          borderTopWidth: 0,
+          elevation: 8, // Android shadow
+          shadowColor: "#673ED9",
+          shadowOffset: { width: 0, height: 5 },
+          shadowOpacity: 0.35,
+          shadowRadius: 10,
+          paddingHorizontal: 10,
+        },
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
@@ -198,14 +215,17 @@ function RootNavigator() {
 
 export default function App() {
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <SafeAreaProvider>
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
-        </SafeAreaProvider>
-      </PersistGate>
-    </Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <SafeAreaProvider>
+            <StatusBar hidden />
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </PersistGate>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }

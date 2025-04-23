@@ -1,318 +1,366 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  FlatList,
+  StyleSheet,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  Alert,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
+import { LinearGradient } from "expo-linear-gradient";
 import ReturnButton from "../../../components/ReturnButton";
 
-export default function MessageConstructeur({ navigation, route }) {
-  const projectId = route?.params?.projectId;
-  const constructeur = useSelector((state) => state.constructeur.value);
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-  const socketRef = useRef(null);
-  const flatListRef = useRef(null);
+const { width } = Dimensions.get("window");
+const HEADER_HEIGHT = 56;
+const INPUT_HEIGHT = 50;
+const HORIZONTAL_PADDING = 24;
 
+export default function MessageConstructeur({ navigation, route }) {
+  const insets = useSafeAreaInsets();
+  // Add defensive checks for route and route.params
+  const projectId = route?.params?.projectId;
+  const clientName = route?.params?.clientName || "Client";
+  const constructeur = useSelector((state) => state.constructeur.value);
   const prodURL = process.env.PROD_URL;
 
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const socket = useRef();
+  const flatListRef = useRef();
+
+  // Check if projectId exists early and redirect if needed
   useEffect(() => {
     if (!projectId) {
-      console.warn("No projectId provided, redirecting to ClientRoomsScreen");
-      navigation.replace("ClientRoomsScreen");
+      // Use a timeout to avoid navigation during render
+      setTimeout(() => {
+        navigation.replace("ClientRoomsScreen");
+      }, 0);
       return;
     }
+  }, []);
 
-    socketRef.current = io(prodURL);
-
-    socketRef.current.on("connect", () => {
-      socketRef.current.emit("joinProject", projectId);
-    });
-
-    socketRef.current.on("newMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    return () => {
-      if (socketRef.current) socketRef.current.disconnect();
-    };
-  }, [projectId, navigation]);
-
+  // Socket initialization - only if projectId exists
   useEffect(() => {
-    if (projectId) {
-      setMessages([]);
-
-      const fetchMessages = async () => {
-        try {
-          const response = await fetch(`${prodURL}/messages/${projectId}`);
-          const data = await response.json();
-          if (data.success) {
-            const formattedMessages = data.messages.map((msg) => ({
-              text: msg.content,
-              from: msg.sender,
-              date: new Date(msg.date).toLocaleTimeString(),
-            }));
-            setMessages(formattedMessages);
-          } else {
-            console.error("Error fetching messages:", data.error);
-          }
-        } catch (error) {
-          console.error("Error fetching messages:", error);
+    if (!projectId) return;
+    
+    try {
+      socket.current = io(prodURL);
+      socket.current.emit("joinProject", projectId);
+      socket.current.on("newMessage", (msg) => setMessages((prev) => [...prev, msg]));
+      
+      return () => {
+        if (socket.current) {
+          socket.current.disconnect();
         }
       };
-
-      fetchMessages();
+    } catch (e) {
+      console.error("Socket connection error:", e);
     }
   }, [projectId]);
 
-  const sendMessage = async () => {
-    if (inputValue.trim() && projectId) {
-      const newMessage = {
-        text: inputValue,
-        from: constructeur.constructorName,
-        date: new Date().toLocaleTimeString(),
-        projectId: projectId,
-      };
-
-      socketRef.current.emit("sendMessage", newMessage);
-
+  // Load history - only if projectId exists
+  useEffect(() => {
+    if (!projectId) return;
+    
+    (async () => {
       try {
-        await fetch(`${prodURL}/messages/${projectId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sender: constructeur.constructorName,
-            content: inputValue,
-            date: new Date().toLocaleTimeString(),
-          }),
-        });
-      } catch (error) {
-        console.error("Error saving message to database:", error);
+        const res = await fetch(`${prodURL}/messages/${projectId}`);
+        const json = await res.json();
+        if (json.success) {
+          const formatted = json.messages.map((m) => ({
+            text: m.content,
+            from: m.sender,
+            date: new Date(m.date).toLocaleTimeString(),
+          }));
+          setMessages(formatted);
+          setTimeout(() => {
+            if (flatListRef.current) {
+              flatListRef.current.scrollToEnd({ animated: false });
+            }
+          }, 100);
+        }
+      } catch (e) {
+        console.error("Error fetching messages:", e);
       }
+    })();
+  }, [projectId]);
 
-      setInputValue("");
+  // Auto-scroll on new messages or keyboard
+  useEffect(() => {
+    if (messages.length && flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current.scrollToEnd({ animated: true });
+      }, 100);
+    }
+    
+    const show = Keyboard.addListener("keyboardDidShow", () => {
+      setTimeout(() => {
+        if (flatListRef.current) {
+          flatListRef.current.scrollToEnd({ animated: true });
+        }
+      }, 100);
+    });
+    
+    return () => show.remove();
+  }, [messages]);
+
+  const handleSend = async () => {
+    const text = input.trim();
+    if (!text || !projectId || !socket.current) return;
+    
+    const msg = { 
+      text, 
+      from: constructeur?.constructorName || "Utilisateur", 
+      date: new Date().toLocaleTimeString(), 
+      projectId 
+    };
+    
+    try {
+      socket.current.emit("sendMessage", msg);
+      setMessages((prev) => [...prev, msg]);
+      setInput("");
+      
+      await fetch(`${prodURL}/messages/${projectId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sender: msg.from, content: msg.text, date: msg.date }),
+      });
+    } catch (e) {
+      console.error("Error sending message:", e);
     }
   };
 
-  const renderMessage = ({ item }) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.from === constructeur.constructorName
-          ? styles.otherMessage
-          : styles.myMessage,
-      ]}
-    >
-      <Text
-        style={[
-          styles.messageText,
-          item.from === constructeur.constructorName
-            ? styles.otherMessageText
-            : styles.myMessageText,
-        ]}
-      >
-        {item.text}
-      </Text>
-      <Text
-        style={[
-          styles.messageTime,
-          item.from === constructeur.constructorName
-            ? { color: "#666" }
-            : { color: "#FFF" },
-        ]}
-      >
-        {item.date ? item.date.slice(0, 5) : ""}
-      </Text>
-    </View>
-  );
+  const renderMessage = ({ item }) => {
+    const isMe = item.from === constructeur?.constructorName;
+    return (
+      <View style={[styles.bubble, isMe ? styles.bubbleMe : styles.bubbleOther]}>  
+        <Text style={[styles.bubbleText, isMe ? styles.bubbleTextMe : styles.bubbleTextOther]}>{item.text}</Text>
+        <Text style={[styles.bubbleTime, isMe ? styles.bubbleTimeMe : styles.bubbleTimeOther]}>
+          {item.date.slice(0,5)}
+        </Text>
+      </View>
+    );
+  };
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }
-  }, [messages]);
-
-  const clientName = route.params?.clientName;
+  // If no projectId, render a minimal loading state
+  if (!projectId) {
+    return (
+      <LinearGradient
+        colors={["#8E44AD", "#372173"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.container, styles.centerContent]}
+      >
+        <Text style={styles.loadingText}>Chargement...</Text>
+      </LinearGradient>
+    );
+  }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <SafeAreaView style={styles.container}>
-        {/* Barre supérieure type "header" */}
+    <View style={styles.container}>
+      <LinearGradient
+        colors={["#8E44AD", "#372173"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerGradient}
+      >
+        <View style={styles.safeTopArea} style={{ height: insets.top }} />
+                
         <View style={styles.header}>
-          <View style={styles.backButton}>
-            <ReturnButton
-              onPress={() =>
-                navigation.navigate("MainTabs", { screen: "Message" })
-              }
-            />
-          </View>
-
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>{clientName}</Text>
+          <View style={styles.headerInner}>
+            <ReturnButton onPress={() => navigation.goBack()} />
+            <View style={styles.headerCenter}>
+              <Ionicons name="person" size={24} color="#FFF" />
+              <Text style={styles.headerText}>{clientName}</Text>
+            </View>
           </View>
         </View>
+      </LinearGradient>
 
-        {/* Liste des messages */}
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(_, index) => index.toString()}
-          contentContainerStyle={styles.messagesList}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: false })
-          }
-        />
-
-        {/* Barre d'envoi de message en bas */}
-        <View style={styles.inputContainer}>
-          <View style={styles.textInputWrapper}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Envoyer un message..."
-              placeholderTextColor="#999"
-              value={inputValue}
-              onChangeText={setInputValue}
-            />
-          </View>
-
-          <TouchableOpacity onPress={sendMessage} style={styles.sendIconButton}>
-            <Ionicons name="send" size={20} color="#362173" />
-          </TouchableOpacity>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}
+      >
+        {/* CHAT */}
+        <View style={styles.content}>  
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(_, i) => i.toString()}
+            contentContainerStyle={styles.messagesList}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          />
         </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+
+        {/* FOOTER INPUT */}
+        <LinearGradient
+          colors={["#372173", "#8E44AD"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.footerGradient}
+        >
+          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Écris un message..."
+                placeholderTextColor="#BA8ECD"
+                value={input}
+                onChangeText={setInput}
+                multiline
+                textAlignVertical="center"
+              />
+            </View>
+            <TouchableOpacity 
+              style={styles.sendButton} 
+              onPress={handleSend}
+              disabled={!input.trim()}
+            >
+              <Ionicons name="send" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 MessageConstructeur.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-    replace: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PropTypes.object.isRequired,
+  route: PropTypes.object, // Made optional to avoid crashes
 };
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   container: {
     flex: 1,
-    backgroundColor: "#FFF",
+  },
+  headerGradient: {
+    width: '100%',
+  },
+  footerGradient: {
+    width: '100%',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  safeTopArea: {
+    backgroundColor: 'transparent',
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#DDD",
+    paddingTop: 8,
+    paddingBottom: 12,
+    minHeight: HEADER_HEIGHT,
   },
-
-  userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10,
-    textAlign: "center",
+  headerInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: HORIZONTAL_PADDING,
   },
-  profilePicture: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    marginRight: 8,
+  headerCenter: { 
+    flex: 1, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    marginLeft: -20, // Compense la largeur du bouton de retour pour un vrai centrage
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000",
-    textAlign: "center",
-    marginBottom: 10,
+  headerText: { 
+    color: '#fff', 
+    fontSize: 18, 
+    fontWeight: '600', 
+    marginLeft: 8 
+  },
+  content: {
     flex: 1,
-  },
-  backButton: {
-    position: "absolute",
-    top: 0,
-    left: 15,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    overflow: 'hidden',
   },
   messagesList: {
-    paddingHorizontal: 25,
-    paddingBottom: 16,
+    paddingHorizontal: HORIZONTAL_PADDING,
+    paddingVertical: 16,
   },
-  messageContainer: {
-    marginVertical: 5,
-    padding: 10,
-    maxWidth: "70%",
-    borderRadius: 12,
+  bubble: { 
+    marginVertical: 6, 
+    padding: 10, 
+    borderRadius: 12, 
+    maxWidth: '75%' 
   },
-  myMessage: {
-    alignSelf: "flex-start",
-    backgroundColor: "#663ED9",
+  bubbleMe: { 
+    alignSelf: 'flex-end', 
+    backgroundColor: '#6F41B6' 
   },
-
-  otherMessage: {
-    alignSelf: "flex-end",
-    backgroundColor: "#F2F2F2",
+  bubbleOther: { 
+    alignSelf: 'flex-start', 
+    backgroundColor: '#DACFF5' 
   },
-  messageText: {
-    fontSize: 16,
+  bubbleText: { 
+    fontSize: 16 
   },
-  myMessageText: {
-    color: "#FFF",
+  bubbleTextMe: { 
+    color: '#fff' 
   },
-  otherMessageText: {
-    color: "#000",
+  bubbleTextOther: { 
+    color: '#000' 
   },
-  messageTime: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 4,
-    textAlign: "right",
+  bubbleTime: { 
+    fontSize: 12, 
+    marginTop: 4, 
+    textAlign: 'right'
   },
-  otherMessageTime: {
-    color: "#FFF",
+  bubbleTimeMe: {
+    color: 'rgba(255, 255, 255, 0.7)',
   },
-
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#DDD",
-    backgroundColor: "#FFF",
+  bubbleTimeOther: {
+    color: '#666',
   },
-  plusSign: {
-    color: "#FFF",
-    fontSize: 24,
-    fontWeight: "bold",
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: HORIZONTAL_PADDING,
+    paddingTop: 10,
   },
-  textInputWrapper: {
+  inputWrapper: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    marginRight: 8,
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    height: INPUT_HEIGHT - 8,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
   },
-  textInput: {
-    paddingHorizontal: 8,
-    fontSize: 16,
-    color: "#000",
+  input: { 
+    fontSize: 16, 
+    color: '#000', 
+    padding: 0, 
+    flex: 1 
+  },
+  sendButton: {
+    marginLeft: 12,
+    width: 40,
     height: 40,
-  },
-  sendIconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
+    borderRadius: 20,
+    backgroundColor: '#FE5900',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

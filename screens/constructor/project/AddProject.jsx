@@ -1,5 +1,7 @@
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
+  Animated,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -7,12 +9,12 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
+import { LinearGradient } from "expo-linear-gradient";
 import GradientButton from "../../../components/GradientButton";
 import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
-import globalStyles from "../../../styles/globalStyles";
 import addProject from "../../../schemas/AddProjectSchema";
 
 export default function AddProjects({ navigation }) {
@@ -24,12 +26,37 @@ export default function AddProjects({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [errors, setErrors] = useState({}); // Pour stocker les erreurs de validation
+  const [errors, setErrors] = useState({});
 
   const constructeur = useSelector((state) => state.constructeur.value);
   const constructorId = constructeur.constructorId;
+  const prodURL = process.env.PROD_URL;
+  const insets = useSafeAreaInsets();
 
-  const prodURL = process.env.PROD_URL
+  const buttonTranslateY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", () => {
+      Animated.timing(buttonTranslateY, {
+        toValue: -40,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      Animated.timing(buttonTranslateY, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const handlePress = () => {
     const { error } = addProject.validate({
@@ -44,7 +71,6 @@ export default function AddProjects({ navigation }) {
     });
 
     if (error) {
-      // Si une erreur est trouvée, on les ajoute dans l'état errors
       const errorDetails = error.details.reduce((acc, curr) => {
         acc[curr.path[0]] = curr.message;
         return acc;
@@ -53,161 +79,127 @@ export default function AddProjects({ navigation }) {
       return;
     }
 
-    // Si la validation est réussie, on envoie les données
     fetch(`${prodURL}/projects`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        firstname: firstname,
-        lastname: lastname,
-        phoneNumber: phoneNumber,
-        constructionAdress: constructionAdress,
-        constructionZipCode: constructionZipCode,
-        constructionCity: constructionCity,
-        email: email,
-        password: password,
+        firstname,
+        lastname,
+        phoneNumber,
+        constructionAdress,
+        constructionZipCode,
+        constructionCity,
+        email,
+        password,
         constructeurId: constructorId,
         token: constructeur.token,
       }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        setFirstname(""),
-          setLastname(""),
-          setConstructionAdress(""),
-          setConstructionZipCode(""),
-          setConstructionCity(""),
-          setEmail(""),
-          setPassword(""),
-          setPhoneNumber("");
+      .then((res) => res.json())
+      .then(() => {
+        setFirstname("");
+        setLastname("");
+        setConstructionAdress("");
+        setConstructionZipCode("");
+        setConstructionCity("");
+        setEmail("");
+        setPassword("");
+        setPhoneNumber("");
         navigation.navigate("MainTabs");
       });
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={globalStyles.header}>
-        <ReturnButton onPress={() => navigation.goBack()} />
-        <Text style={globalStyles.title}>Créer un nouveau chantier</Text>
-      </View>
-      <KeyboardAvoidingView
-        style={styles.keyboardContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView style={styles.form}>
-          <Input
-            placeholder="Nom du client"
-            value={firstname}
-            onChangeText={(value) => setFirstname(value)}
-            keyboardType="default"
-            autoCapitalize="sentences"
-          />
-          {errors.firstname && (
-            <Text style={styles.errorText}>{errors.firstname}</Text>
-          )}
+    <LinearGradient colors={["#8E44AD", "#753A9C", "#372173"]} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }} edges={["bottom", "left", "right"]}>
+        <View style={[styles.header, { marginTop: insets.top + 10 }]}>
+          <ReturnButton onPress={() => navigation.goBack()} />
+          <View style={styles.titleWrapper}>
+            <Text style={styles.headerTitle}>Créer un nouveau</Text>
+            <Text style={styles.headerTitle}>chantier</Text>
+          </View>
+        </View>
 
-          <Input
-            placeholder="Prénom du client"
-            value={lastname}
-            onChangeText={(value) => setLastname(value)}
-            keyboardType="default"
-            autoCapitalize="sentences"
-          />
-          {errors.lastname && (
-            <Text style={styles.errorText}>{errors.lastname}</Text>
-          )}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.form}>
+              <Input placeholder="Nom du client" value={firstname} onChangeText={setFirstname} />
+              {errors.firstname && <Text style={styles.errorText}>{errors.firstname}</Text>}
 
-          <Input
-            placeholder="Numero de téléphone"
-            value={phoneNumber}
-            onChangeText={(value) => setPhoneNumber(value)}
-            keyboardType="phone-pad"
-          />
-          {errors.phoneNumber && (
-            <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-          )}
+              <Input placeholder="Prénom du client" value={lastname} onChangeText={setLastname} />
+              {errors.lastname && <Text style={styles.errorText}>{errors.lastname}</Text>}
 
-          <Input
-            placeholder="Adresse du chantier"
-            value={constructionAdress}
-            onChangeText={(value) => setConstructionAdress(value)}
-            keyboardType="default"
-            autoCapitalize="sentences"
-          />
-          {errors.constructionAdress && (
-            <Text style={styles.errorText}>{errors.constructionAdress}</Text>
-          )}
+              <Input placeholder="Numéro de téléphone" value={phoneNumber} onChangeText={setPhoneNumber} keyboardType="phone-pad" />
+              {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
 
-          <Input
-            placeholder="Code postal du chantier"
-            value={constructionZipCode}
-            onChangeText={(value) => setConstructionZipCode(value)}
-            keyboardType="phone-pad"
-          />
-          {errors.constructionZipCode && (
-            <Text style={styles.errorText}>{errors.constructionZipCode}</Text>
-          )}
+              <Input placeholder="Adresse du chantier" value={constructionAdress} onChangeText={setConstructionAdress} />
+              {errors.constructionAdress && <Text style={styles.errorText}>{errors.constructionAdress}</Text>}
 
-          <Input
-            placeholder="Ville du chantier"
-            value={constructionCity}
-            onChangeText={(value) => setConstructionCity(value)}
-            keyboardType="default"
-            autoCapitalize="sentences"
-          />
-          {errors.constructionCity && (
-            <Text style={styles.errorText}>{errors.constructionCity}</Text>
-          )}
+              <Input placeholder="Code postal" value={constructionZipCode} onChangeText={setConstructionZipCode} keyboardType="numeric" />
+              {errors.constructionZipCode && <Text style={styles.errorText}>{errors.constructionZipCode}</Text>}
 
-          <Input
-            placeholder="Adresse email du client"
-            value={email}
-            onChangeText={(value) => setEmail(value)}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+              <Input placeholder="Ville" value={constructionCity} onChangeText={setConstructionCity} />
+              {errors.constructionCity && <Text style={styles.errorText}>{errors.constructionCity}</Text>}
 
-          <Input
-            placeholder="Mot de passe provisoire"
-            value={password}
-            onChangeText={(value) => setPassword(value)}
-            keyboardType="default"
-            secureTextEntry={true}
-          />
-          {errors.password && (
-            <Text style={styles.errorText}>{errors.password}</Text>
-          )}
-        </ScrollView>
+              <Input placeholder="Adresse email du client" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-        <GradientButton text="Valider" onPress={handlePress} />
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+              <Input placeholder="Mot de passe provisoire" value={password} onChangeText={setPassword} secureTextEntry />
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            </View>
+          </ScrollView>
+
+          <Animated.View style={[styles.buttonWrapper, { transform: [{ translateY: buttonTranslateY }] }]}>
+            <GradientButton text="Valider" onPress={handlePress} />
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
+  header: {
+    position: "relative",
     alignItems: "center",
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    marginBottom: 20,
   },
-  keyboardContainer: {
-    width: "100%",
+  titleWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 40,
+  },
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
+  },
+  scrollContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 80,
+    flexGrow: 1,
   },
   form: {
     width: "100%",
-    marginTop: 40,
-    marginBottom: 10,
   },
   errorText: {
-    width: "100%",
-    color: "red",
+    color: "#FF6B6B",
     fontSize: 12,
-    marginTop: -10,
     marginBottom: 10,
     marginLeft: 10,
+  },
+  buttonWrapper: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });
