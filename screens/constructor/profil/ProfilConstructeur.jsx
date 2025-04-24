@@ -1,57 +1,66 @@
-import { useFocusEffect } from "@react-navigation/native";
+// ProfilConstructeur.js
 import React, { useCallback, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import { LinearGradient } from "expo-linear-gradient";
+
 import avatar from "../../../assets/avatar.png";
 import GradientButton from "../../../components/GradientButton";
 import PurpleButton from "../../../components/PurpleButton";
 import { logout } from "../../../reducers/constructeur";
-import globalStyles from "../../../styles/globalStyles";
+import { scale, rfs } from "../../../utils/scale";
 
 export default function ProfilConstructeur({ navigation }) {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
-
-  const constructeur = useSelector((state) => state.constructeur.value);
-
-  const [infoConstructor, setInfoConstructor] = useState([]);
   const prodURL = process.env.PROD_URL;
-  const handleEditProfile = () => {
-    navigation.navigate("UpdateProfileConstructeur", {
-      data: infoConstructor,
-    });
-  };
+  const constructeur = useSelector((s) => s.constructeur.value);
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
-
-  const devUrl = process.env.DEV_URL;
+  const [info, setInfo] = useState({});
 
   useFocusEffect(
     useCallback(() => {
-      const token = constructeur.token;
-      fetch(`${prodURL}/constructors/${token}`)
+      fetch(`${prodURL}/constructors/${constructeur.token}`)
         .then((res) => res.json())
-        .then((data) => {
-          setInfoConstructor(data.data);
-        })
-        .catch((error) => {
-          console.error("Erreur lors de la récupération des données :", error);
-        });
+        .then((d) => setInfo(d.data || {}))
+        .catch(console.error);
     }, [constructeur.token])
   );
 
-  const profileImage =
-    infoConstructor && infoConstructor.profilePicture
-      ? { uri: infoConstructor.profilePicture }
-      : avatar;
+  const profileImage = info.profilePicture
+    ? { uri: info.profilePicture }
+    : avatar;
 
   return (
-    <SafeAreaView edges={["top", "left", "right"]}>
-      <ScrollView>
-        <View style={styles.container}>
-          <Text style={globalStyles.title}>Mon Profil</Text>
+    <LinearGradient
+      colors={["#8E44AD", "#372173"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      locations={[0, 0.1]}
+      style={[styles.pageContainer, { paddingTop: insets.top }]}
+    >
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Mon Profil</Text>
+      </View>
+
+      {/* Content */}
+      <View style={styles.contentWrapper}>
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.sectionWrapper}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Avatar overlapping header */}
           <View style={styles.iconContainer}>
             <Image
               source={profileImage}
@@ -60,84 +69,113 @@ export default function ProfilConstructeur({ navigation }) {
             />
           </View>
 
+          {/* Infos */}
           <View style={styles.infosContainer}>
-            <View style={styles.infoContainer}>
-              <Text>{infoConstructor.constructorName}</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{info.constructorName ?? ""}</Text>
             </View>
-            <View style={styles.infoContainer}>
-              <Text>{infoConstructor.constructorSiret}</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{info.email ?? ""}</Text>
             </View>
-            <View style={styles.infoContainer}>
-              <Text>{infoConstructor.email}</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{info.phoneNumber ?? ""}</Text>
             </View>
-            <View style={styles.infoContainer}>
-              <Text>{infoConstructor.phoneNumber}</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{info.address ?? ""}</Text>
             </View>
-            <View style={styles.infoContainer}>
-              <Text>{infoConstructor.address}</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{info.zipCode ?? ""}</Text>
             </View>
-            <View style={styles.infoContainer}>
-              <Text>{infoConstructor.zipCode}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-              <Text>{infoConstructor.city}</Text>
-            </View>
-
-            <View style={styles.infoContainer}>
-              <Text>*******</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{info.city ?? ""}</Text>
             </View>
           </View>
 
+          {/* Actions */}
           <GradientButton
             text="Modifier mon profil"
-            onPress={() => handleEditProfile()}
+            onPress={() =>
+              navigation.navigate("UpdateProfileConstructeur", { data: info })
+            }
           />
           <PurpleButton
-            onPress={() => handleLogout()}
             text="Se déconnecter"
-            backgroundColor="#DB0000"
             icon="door-open"
+            backgroundColor="#FE5900"
+            onPress={() => dispatch(logout())}
+            style={{ marginTop: scale(12) }}
           />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+  pageContainer: {
+    flex: 1,
+  },
+  header: {
+    alignItems: "center",
+    paddingVertical: scale(50),
+  },
+  headerTitle: {
+    position: "absolute",
+    top: scale(10),
+    alignSelf: "center",
+    fontSize: rfs(24),
+    color: "#fff",
+    fontWeight: "bold",
+    zIndex: 3,
+  },
+  contentWrapper: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: scale(28),
+    borderTopRightRadius: scale(28),
+    paddingTop: scale(20),
+    paddingBottom: scale(30),
+    // autorise le débordement pour que l'avatar chevauche
+    overflow: "visible",
+  },
+  sectionWrapper: {
+    paddingHorizontal: scale(24),
   },
   iconContainer: {
     alignItems: "center",
-    marginTop: 20,
-    marginBottom: 20,
+    // remonte l'avatar de moitié de sa hauteur pour chevaucher le header
+    marginTop: -scale(70),
+    marginBottom: scale(20),
+    zIndex: 2,
   },
   image: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: scale(140),
+    height: scale(140),
+    borderRadius: scale(70),
     borderWidth: 2,
     borderColor: "#663ED9",
   },
   infosContainer: {
-    flexDirection: "column",
-    marginBottom: 8,
+    marginBottom: scale(10),
   },
-  infoContainer: {
+  infoRow: {
     width: "100%",
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#663ED9",
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    borderRadius: 8,
+    borderRadius: scale(8),
+    padding: scale(12),
+    marginBottom: scale(12),
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    padding: 16,
-    fontSize: 16,
-    marginBottom: 16,
+    shadowRadius: scale(4),
+    elevation: scale(2),
+  },
+  infoText: {
+    fontSize: rfs(14),
+    color: "#333",
   },
 });

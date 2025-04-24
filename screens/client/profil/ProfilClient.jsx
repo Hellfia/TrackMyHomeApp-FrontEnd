@@ -1,6 +1,7 @@
+// ProfilClient.js
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import avatar from "../../../assets/avatar.png";
@@ -11,10 +12,11 @@ import globalStyles from "../../../styles/globalStyles";
 
 export default function ProfilClient({ navigation }) {
   const dispatch = useDispatch();
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
   const client = useSelector((state) => state.client.value);
 
-  const [infoClient, setInfoClient] = useState([]);
+  // 1️⃣ Initialisation comme objet, pas tableau
+  const [infoClient, setInfoClient] = useState({});
 
   const handleEditProfile = () => {
     navigation.navigate("UpdateProfileClient", {
@@ -26,76 +28,84 @@ export default function ProfilClient({ navigation }) {
     dispatch(logout());
   };
 
-  const devUrl = process.env.DEV_URL;
-
   useFocusEffect(
     useCallback(() => {
       const token = client.token;
       fetch(`${prodURL}/clients/${token}`)
         .then((res) => res.json())
         .then((data) => {
-          setInfoClient(data.client);
+          console.log("dataClient:", data);
+          if (data.client) {
+            setInfoClient(data.client);
+          } else {
+            Alert.alert("Erreur", "Données du client introuvables");
+          }
         })
         .catch((error) => {
-          console.error("Erreur lors de la récupération des données :", error);
+          console.error("Erreur récupération profil :", error);
+          Alert.alert("Erreur réseau", error.message);
         });
     }, [client.token])
   );
 
+  // 2️⃣ Optional chaining + fallback
   const profileImage =
-    infoClient && infoClient.profilePicture
+    infoClient.profilePicture?.length > 0
       ? { uri: infoClient.profilePicture }
       : avatar;
 
   return (
-    <SafeAreaView edges={["top", "left", "right"]}>
-      <View style={styles.container}>
-        <Text style={globalStyles.title}>Mon Profil</Text>
-        <View style={styles.iconContainer}>
-          <Image
-            source={profileImage}
-            style={styles.image}
-            accessibilityLabel="Photo de profil de l'utilisateur"
-          />
-        </View>
-        <View style={styles.infosContainer}>
-          <View style={styles.infoContainer}>
-            <Text>{infoClient.firstname}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text>{infoClient.lastname}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text>{infoClient.email}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text>*******</Text>
-          </View>
-        </View>
+    <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
+      <Text style={globalStyles.title}>Mon Profil</Text>
 
-        <GradientButton
-          text="Modifier mon profil"
-          onPress={() => handleEditProfile()}
-        />
-        <PurpleButton
-          onPress={() => handleLogout()}
-          text="Se déconnecter"
-          backgroundColor="#DB0000"
-          icon="door-open"
+      <View style={styles.iconContainer}>
+        <Image
+          source={profileImage}
+          style={styles.image}
+          accessibilityLabel="Photo de profil"
         />
       </View>
+
+      <View style={styles.infosContainer}>
+        <View style={styles.infoContainer}>
+          <Text>{infoClient.firstname ?? ""}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text>{infoClient.lastname ?? ""}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text>{infoClient.email ?? ""}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text>*******</Text>
+        </View>
+      </View>
+
+      <GradientButton
+        text="Modifier mon profil"
+        onPress={handleEditProfile}
+        style={styles.button}
+      />
+
+      <PurpleButton
+        onPress={handleLogout}
+        text="Se déconnecter"
+        backgroundColor="#DB0000"
+        icon="door-open"
+        style={styles.button}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
   },
   iconContainer: {
     alignItems: "center",
-    marginTop: 20,
-    marginBottom: 30,
+    marginVertical: 20,
   },
   image: {
     width: 140,
@@ -105,22 +115,23 @@ const styles = StyleSheet.create({
     borderColor: "#663ED9",
   },
   infosContainer: {
-    flexDirection: "column",
-    marginBottom: 8,
+    marginBottom: 24,
   },
   infoContainer: {
     width: "100%",
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#663ED9",
     borderRadius: 8,
-    backgroundColor: "#fff",
-    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    // omet le fontSize ici, Text hérite de ses propres styles
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    padding: 16,
-    fontSize: 16,
-    marginBottom: 16,
+  },
+  button: {
+    marginTop: 12,
   },
 });
