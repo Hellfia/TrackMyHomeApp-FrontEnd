@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const updateCraftsman = Joi.object({
-  craftsmanCompagny: Joi.string().min(1).optional().messages({
+  craftsmanName: Joi.string().min(1).optional().messages({
     "string.empty": "Le nom de l'artisan est obligatoire.",
     "string.min": "Le nom de l'artisan doit comporter au moins 1 caractères.",
   }),

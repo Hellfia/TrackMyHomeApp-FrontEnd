@@ -1,29 +1,29 @@
 // DashboardConstructeur.js
 import { FontAwesome5 } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useState, useEffect } from "react";
+import * as Calendar from "expo-calendar";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Image,
+  Keyboard,
   Linking,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
   TextInput,
-  Platform,
-  Keyboard,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  ScrollView,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import { LinearGradient } from "expo-linear-gradient";
-import * as Calendar from "expo-calendar";
-import GradientButton from "../../../components/GradientButton";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import avatar from "../../../assets/avatar.png";
+import GradientButton from "../../../components/GradientButton";
 import PlusButton from "../../../components/PlusButton";
-import { scale, rfs, wp, hp } from "../../../utils/scale";
+import { hp, rfs, scale } from "../../../utils/scale";
 
 const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
   const [tempDate, setTempDate] = useState(date);
@@ -533,8 +533,12 @@ const styles = StyleSheet.create({
     marginBottom: scale(10),
   },
   taskContainer: {
+    height: hp(15),
     marginBottom: scale(20),
     gap: scale(5),
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   taskCard: {
     padding: scale(12),

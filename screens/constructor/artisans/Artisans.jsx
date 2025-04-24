@@ -1,22 +1,21 @@
 // Artisans.js
+import { FontAwesome5 } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useState } from "react";
 import {
-  SafeAreaView,
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
   Dimensions,
+  FlatList,
   Image,
   Linking,
-
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 import PlusButton from "../../../components/PlusButton";
 
 export default function Artisans({ navigation }) {
@@ -26,13 +25,13 @@ export default function Artisans({ navigation }) {
 
   const prodURL = process.env.PROD_URL;
 
-   const callArtisan = (phoneNumber) => {
-      if (phoneNumber && phoneNumber !== "Non renseigné") {
-        Linking.openURL(`tel:${phoneNumber}`);
-      } else {
-        alert("Numéro de téléphone non renseigné");
-      }
-    };
+  const callArtisan = (phoneNumber) => {
+    if (phoneNumber && phoneNumber !== "Non renseigné") {
+      Linking.openURL(`tel:${phoneNumber}`);
+    } else {
+      alert("Numéro de téléphone non renseigné");
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -57,9 +56,9 @@ export default function Artisans({ navigation }) {
 
       <View style={styles.cardIconWrapper}>
         <Image
-            source={require('../../../assets/artisan.png')}
-            style={styles.artisanAvatar}
-            accessibilityLabel="Photo de l'artisan"
+          source={require("../../../assets/artisan.png")}
+          style={styles.artisanAvatar}
+          accessibilityLabel="Photo de l'artisan"
         />
       </View>
 
@@ -69,8 +68,7 @@ export default function Artisans({ navigation }) {
 
       <TouchableOpacity
         style={styles.phoneButton}
-        onPress={() => callArtisan(item.phoneNumber)
-        }
+        onPress={() => callArtisan(item.phoneNumber)}
       >
         <FontAwesome5 name="phone-alt" size={16} color="#f67360" />
       </TouchableOpacity>
@@ -79,10 +77,10 @@ export default function Artisans({ navigation }) {
 
   return (
     <LinearGradient
-    colors={["#8E44AD", "#372173"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 0, y: 1 }}
-    locations={[0, 0.1]}
+      colors={["#8E44AD", "#372173"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      locations={[0, 0.1]}
       style={[styles.container, { paddingTop: insets.top }]}
     >
       <SafeAreaView style={styles.safeArea}>
@@ -97,8 +95,8 @@ export default function Artisans({ navigation }) {
             onPress={() => navigation.navigate("CreateCraftsman")}
             icon="plus"
             style={{
-             top: 10,
-              left: 340,
+              top: 10,
+              left: 150,
               width: 40,
               height: 40,
               borderRadius: 20,
@@ -178,7 +176,7 @@ const styles = StyleSheet.create({
     position: "relative",
     shadowColor: "#673ED9",
     shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.20,
+    shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 5,
   },
@@ -205,13 +203,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#663ED9",
     marginBottom: 4,
-     textAlign: "center",
+    textAlign: "center",
   },
   artisanAvatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    resizeMode: "contain", 
+    resizeMode: "contain",
   },
   phoneButton: {
     width: 36,
