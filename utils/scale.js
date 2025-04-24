@@ -1,14 +1,42 @@
-import { Dimensions, PixelRatio } from "react-native";
+// utils/scale.js
+import { Dimensions } from "react-native";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const BASE_WIDTH = 375; // largeur de référence (iPhone 6/7/8)
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+// Largeur de référence (design maquette)
+const BASE_WIDTH = 375;
 
-// facteur d’échelle global
-const scale = SCREEN_WIDTH / BASE_WIDTH;
+/**
+ * Scale horizontal basé sur la largeur de l'écran
+ * @param {number} size px dans la maquette
+ * @returns {number} px adapté à l'écran
+ */
+export function scale(size) {
+  return (SCREEN_WIDTH / BASE_WIDTH) * size;
+}
 
-// normalize une taille (px) pour l’écran courant
-export function normalize(size) {
-  const newSize = size * scale;
-  // arrondir pour éviter le flou sur les bords
-  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+/**
+ * Taille de police responsive
+ * @param {number} fontSize px dans la maquette
+ * @returns {number} taille de police adaptée
+ */
+export function rfs(fontSize) {
+  return Math.round((SCREEN_WIDTH / BASE_WIDTH) * fontSize);
+}
+
+/**
+ * Pourcentage de la largeur d'écran
+ * @param {number} percent ex : 45
+ * @returns {number} px correspondant
+ */
+export function wp(percent) {
+  return (SCREEN_WIDTH * percent) / 100;
+}
+
+/**
+ * Pourcentage de la hauteur d'écran
+ * @param {number} percent ex : 30
+ * @returns {number} px correspondant
+ */
+export function hp(percent) {
+  return (SCREEN_HEIGHT * percent) / 100;
 }

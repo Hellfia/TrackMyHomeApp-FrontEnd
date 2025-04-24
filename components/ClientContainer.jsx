@@ -6,9 +6,18 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import avatar from '../assets/avatar.png';
-import { normalize } from '../utils/scale';
+import { wp, hp, rfs } from '../utils/scale';
 
-export default function ClientContainer({ firstname, lastname, address, zip, city, profilePicture, onPress, variant = 'orange' }) {
+export default function ClientContainer({
+  firstname,
+  lastname,
+  address,
+  zip,
+  city,
+  profilePicture,
+  onPress,
+  variant = 'orange',
+}) {
   const profileImage = profilePicture ? { uri: profilePicture } : avatar;
 
   return (
@@ -16,7 +25,7 @@ export default function ClientContainer({ firstname, lastname, address, zip, cit
       onPress={onPress}
       style={[
         styles.card,
-        variant === 'violet' ? styles.violetShadow : styles.orangeShadow
+        variant === 'violet' ? styles.violetShadow : styles.orangeShadow,
       ]}
     >
       <Image
@@ -25,13 +34,13 @@ export default function ClientContainer({ firstname, lastname, address, zip, cit
         accessibilityLabel="Photo de profil de l'utilisateur"
       />
 
-      <Text style={styles.name} numberOfLines={1}>
+      <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
         {firstname} {lastname}
       </Text>
-      <Text style={styles.address} numberOfLines={1}>
+      <Text style={styles.address} numberOfLines={1} ellipsizeMode="tail">
         {address}
       </Text>
-      <Text style={styles.city}>
+      <Text style={styles.city} numberOfLines={1} ellipsizeMode="tail">
         {zip} {city}
       </Text>
     </TouchableOpacity>
@@ -40,47 +49,47 @@ export default function ClientContainer({ firstname, lastname, address, zip, cit
 
 const styles = StyleSheet.create({
   card: {
-    width: normalize(170),
-    height: normalize(160),
+    width: wp(45),         // 45% de la largeur de l'écran
+    aspectRatio: 170 / 160,
     backgroundColor: '#fff',
-    borderRadius: normalize(16),
-    padding: normalize(12),
+    borderRadius: wp(4),   // 4% de la largeur
+    padding: wp(3),        // 3% de la largeur
     alignItems: 'center',
     elevation: 4,
   },
   avatar: {
-    width: normalize(60),
-    height: normalize(60),
-    borderRadius: normalize(30),
-    marginBottom: normalize(8),
+    width: wp(20),         // 20% de la largeur de l'écran
+    aspectRatio: 1,        // image carrée
+    borderRadius: wp(10),  // cercle complet
+    marginBottom: hp(1),   // 1% de la hauteur de l'écran
   },
   name: {
     fontWeight: '700',
-    fontSize: normalize(14),
+    fontSize: rfs(13),     // taille responsive
     color: '#673ED9',
     textAlign: 'center',
-    marginBottom: normalize(4),
+    marginBottom: hp(0.5), // 0.5% de la hauteur
   },
   address: {
-    fontSize: normalize(12),
+    fontSize: rfs(11),     // taille responsive
     color: '#444',
     textAlign: 'center',
   },
   city: {
-    fontSize: normalize(12),
+    fontSize: rfs(11),     // taille responsive
     color: '#444',
     textAlign: 'center',
   },
   orangeShadow: {
     shadowColor: '#FF5900',
-    shadowOffset: { width: normalize(2), height: normalize(4) },
+    shadowOffset: { width: wp(0.5), height: hp(0.5) },
     shadowOpacity: 0.15,
-    shadowRadius: normalize(5),
+    shadowRadius: wp(1),    // 1% de la largeur
   },
   violetShadow: {
     shadowColor: '#673ED9',
-    shadowOffset: { width: normalize(2), height: normalize(4) },
+    shadowOffset: { width: wp(0.5), height: hp(0.5) },
     shadowOpacity: 0.15,
-    shadowRadius: normalize(5),
+    shadowRadius: wp(1),
   },
 });

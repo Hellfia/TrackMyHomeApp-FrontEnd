@@ -8,11 +8,11 @@ const PlusButton = ({ icon, onPress, style }) => {
     <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
       <View style={styles.shadowWrapper}>
         <LinearGradient
-          colors={["#F8D5C0","#fb9b6b", "#f67360"]}
+          colors={["#F8D5C0", "#fb9b6b", "#f67360"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          locations={[0, 0.5, 0.9]} // 👈 le foncé commence dès 40% du dégradé
-          style={[styles.gradientButton, style]} // 👈 style appliqué ici
+          locations={[0, 0.5, 0.9]}
+          style={[styles.gradientButton, style]}
         >
           {icon && (
             <FontAwesome5
@@ -28,25 +28,24 @@ const PlusButton = ({ icon, onPress, style }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   buttonContainer: {
-    position: "absolute",
     justifyContent: "center",
     alignItems: "center",
   },
   shadowWrapper: {
     borderRadius: 30,
     shadowColor: "#fb9b6b",
-    shadowOffset: { width: 2, height: 2},
+    shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 2,
-    elevation: 10, // ← indispensable sur Android
+    elevation: 10,
   },
   gradientButton: {
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
+    // padding removed to allow icon to be perfectly centered via external style width/height
   },
   icon: {
     alignSelf: "center",
