@@ -1,22 +1,21 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
 import maison from "../../../assets/maison-test.jpg";
 import StepItem from "../../../components/StepItem";
-import globalStyles from "../../../styles/globalStyles";
 
 export default function ProjectClient({ navigation }) {
+  const insets = useSafeAreaInsets();
   const [steps, setSteps] = useState([]);
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
   const client = useSelector((state) => state.client.value);
 
   useFocusEffect(
     useCallback(() => {
-      fetch(
-        `${prodURL}/projects/chantier/${client.clientId}/${client.token}`
-      )
+      fetch(`${prodURL}/projects/chantier/${client.clientId}/${client.token}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.result) {
@@ -27,76 +26,106 @@ export default function ProjectClient({ navigation }) {
     }, [client.clientId])
   );
 
-  // Trouver la dernière étape validée dans steps qui a le statut validée
+  // Dernière étape validée
   const lastValidatedStep = steps
+    .slice()
     .reverse()
     .find((step) => step.status === "Terminé");
-
-  // Si on a une étape validée , on prend l'URI de la derniere, sinon on prend le logo par défaut
-  const image =
-    lastValidatedStep && lastValidatedStep.uri
-      ? { uri: lastValidatedStep.uri }
-      : maison;
+  const image = lastValidatedStep?.uri
+    ? { uri: lastValidatedStep.uri }
+    : maison;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={globalStyles.header}>
-        <Text style={globalStyles.title}>Mon projet</Text>
+    <LinearGradient
+      colors={["#8E44AD", "#372173"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      locations={[0, 0.1]}
+      style={styles.pageContainer}
+    >
+      {/* Header Gradient */}
+      <View style={[styles.header, { paddingTop: insets.top }]}>
+        <Text style={styles.headerTitle}>Mon projet</Text>
       </View>
 
-      <View style={styles.imageContainer}>
-        <Image
-          source={image}
-          style={styles.image}
-          resizeMode="cover"
-          accessibilityLabel="Photo du chantier en cours"
-        />
-      </View>
+      {/* Contenu blanc arrondi */}
+      <View style={styles.content}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 50 }}
+        >
+          <View style={styles.imageContainer}>
+            <Image
+              source={image}
+              style={styles.image}
+              resizeMode="cover"
+              accessibilityLabel="Photo du chantier en cours"
+            />
+          </View>
 
-      <Text style={styles.stepText}>Les étapes de construction</Text>
-      <ScrollView>
-        <View style={styles.subContainer}>
-          {steps.reverse().map((step, index) => {
-            let iconName = "";
-            let iconColor = "";
+          <Text style={styles.stepText}>Les étapes de construction</Text>
+          <View style={styles.subContainer}>
+            {steps
+              .slice()
+              .reverse()
+              .map((step, index) => {
+                let iconName = "";
+                let iconColor = "";
 
-            // Déterminer l'icône et la couleur en fonction du statut
-            if (step.status === "À venir") {
-              iconName = "ban";
-              iconColor = "#FF0000";
-            } else if (step.status === "Terminé") {
-              iconName = "check";
-              iconColor = "#28DB52";
-            } else if (step.status === "En cours") {
-              iconName = "spinner";
-              iconColor = "#FFA500";
-            }
-
-            return (
-              <StepItem
-                key={index}
-                name={step.name}
-                iconName={iconName}
-                iconColor={iconColor}
-                iconOnPress="eye"
-                onPress={() =>
-                  navigation.navigate("UpdateDetailsClient", {
-                    data: step,
-                  })
+                if (step.status === "À venir") {
+                  iconName = "ban";
+                  iconColor = "#FF0000";
+                } else if (step.status === "Terminé") {
+                  iconName = "check";
+                  iconColor = "#28DB52";
+                } else if (step.status === "En cours") {
+                  iconName = "spinner";
+                  iconColor = "#FFA500";
                 }
-              />
-            );
-          })}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+                return (
+                  <StepItem
+                    key={index}
+                    name={step.name}
+                    iconName={iconName}
+                    iconColor={iconColor}
+                    iconOnPress="eye"
+                    onPress={() =>
+                      navigation.navigate("UpdateDetailsClient", {
+                        data: step,
+                      })
+                    }
+                  />
+                );
+              })}
+          </View>
+        </ScrollView>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     flex: 1,
+  },
+  header: {
     alignItems: "center",
+    justifyContent: "center",
+  },
+  headerTitle: {
+    marginTop: 5,
+    fontSize: 24,
+    color: "#fff",
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingTop: 20,
     paddingHorizontal: 20,
   },
   imageContainer: {
@@ -110,34 +139,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  purpleButton: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 15,
-  },
   stepText: {
     marginBottom: 15,
     textAlign: "center",
     fontSize: 18,
     fontWeight: "600",
     color: "#362173",
-  },
-  stepsContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  stepItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 12,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
-  },
-  purpleButton: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginVertical: 15,
   },
 });

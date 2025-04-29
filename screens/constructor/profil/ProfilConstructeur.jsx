@@ -152,8 +152,8 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   image: {
-    width: scale(140),
-    height: scale(140),
+    width: scale(120),
+    height: scale(120),
     borderRadius: scale(70),
     borderWidth: 2,
     borderColor: "#663ED9",

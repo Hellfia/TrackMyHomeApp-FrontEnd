@@ -95,7 +95,6 @@ export default function Artisans({ navigation }) {
             onPress={() => navigation.navigate("CreateCraftsman")}
             icon="plus"
             style={{
-              top: 10,
               left: 150,
               width: 40,
               height: 40,
@@ -152,14 +151,13 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: "#fff",
-    marginTop: 12,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    paddingTop: 20,
+    paddingTop: 10,
     paddingHorizontal: HORIZONTAL_PADDING,
   },
   list: {
-    marginTop: 50,
+    marginTop: 20,
     paddingBottom: 40,
   },
   row: {

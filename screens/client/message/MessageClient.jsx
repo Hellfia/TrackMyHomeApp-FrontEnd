@@ -1,303 +1,307 @@
-import { useFocusEffect } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  View,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
-import globalStyles from "../../../styles/globalStyles";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+
+const HEADER_HEIGHT = 60;
 
 export default function MessageClient() {
+  const tabBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
   const client = useSelector((state) => state.client.value);
+  const projectId = client.projectId;
+  const prodURL = process.env.PROD_URL;
 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const socketRef = useRef(null);
   const flatListRef = useRef(null);
 
-  const projectId = client.projectId;
-  const prodURL = process.env.PROD_URL;
-
   const myIdentifier =
     client.firstname && client.lastname
       ? `${client.firstname} ${client.lastname}`
-      : "User";
+      : "Interlocuteur inconnu";
 
+  // Socket connection & incoming messages
   useEffect(() => {
-    socketRef.current = io(prodURL);
+    if (!projectId) return;
+    const socket = io(prodURL);
+    socketRef.current = socket;
+    socket.emit("joinProject", projectId);
 
-    socketRef.current.on("connect", () => {
-      socketRef.current.emit("joinProject", projectId);
-    });
-
-    socketRef.current.on("newMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
+    const onMessage = (msg) => setMessages((prev) => [...prev, msg]);
+    socket.on("newMessage", onMessage);
 
     return () => {
-      if (socketRef.current) socketRef.current.disconnect();
+      socket.off("newMessage", onMessage);
+      socket.disconnect();
     };
-  }, [prodURL, projectId]);
+  }, [projectId, prodURL]);
 
+  // Load chat history once
   useEffect(() => {
-    if (projectId) {
-      setMessages([]);
-      const fetchMessages = async () => {
-        try {
-          const response = await fetch(`${prodURL}/messages/${projectId}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          if (data.success) {
-            const formattedMessages = data.messages.map((msg) => ({
-              text: msg.content,
-              from: msg.sender,
-              date: new Date(msg.date).toLocaleTimeString(),
-              projectId: projectId,
-            }));
-            setMessages(formattedMessages);
-          } else {
-            console.error("Error fetching messages:", data.error);
-          }
-        } catch (error) {
-          console.error("Error fetching messages:", error);
+    if (!projectId) return;
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch(`${prodURL}/messages/${projectId}`);
+        const json = await res.json();
+        if (active && json.success) {
+          const formatted = json.messages.map((m) => ({
+            text: m.content,
+            from: m.sender,
+            date: new Date(m.date).toLocaleTimeString(),
+          }));
+          setMessages(formatted);
         }
-      };
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [projectId, prodURL]);
 
-      fetchMessages();
-    }
-  }, [prodURL, projectId]);
-
+  // Auto-scroll on new message or keyboard open
   useEffect(() => {
-    if (messages.length > 0) {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }
+    const scrollToEnd = () =>
+      flatListRef.current?.scrollToEnd({ animated: false });
+    if (messages.length) scrollToEnd();
+
+    const sub = Keyboard.addListener("keyboardDidShow", scrollToEnd);
+    return () => sub.remove();
   }, [messages]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (messages.length > 0) {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }
-    }, [messages])
-  );
-
+  // Send message: emit only, no local setMessages to avoid echo
   const sendMessage = async () => {
-    if (inputValue.trim() && projectId) {
-      const newMessage = {
-        text: inputValue,
-        from: myIdentifier,
-        date: new Date().toLocaleTimeString(),
-        projectId: projectId,
-      };
-      socketRef.current.emit("sendMessage", newMessage);
+    const text = inputValue.trim();
+    if (!text || !projectId) return;
 
-      try {
-        await fetch(`${prodURL}/messages/${projectId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sender: myIdentifier,
-            content: inputValue,
-          }),
-        });
-      } catch (error) {
-        console.error("Error saving message to database:", error);
-      }
+    const msg = {
+      text,
+      from: myIdentifier,
+      date: new Date().toLocaleTimeString(),
+      projectId,
+    };
 
-      setInputValue("");
-      Keyboard.dismiss();
+    socketRef.current.emit("sendMessage", msg);
+    setInputValue("");
+    Keyboard.dismiss();
+
+    try {
+      await fetch(`${prodURL}/messages/${projectId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: msg.from,
+          content: msg.text,
+          date: msg.date,
+        }),
+      });
+    } catch (e) {
+      console.error(e);
     }
   };
 
   const renderMessage = ({ item }) => {
-    const isMyMessage = item.from === myIdentifier;
+    const isMe = item.from === myIdentifier;
     return (
       <View
-        style={[
-          styles.messageContainer,
-          isMyMessage ? styles.myMessage : styles.otherMessage,
-        ]}
+        style={[styles.bubble, isMe ? styles.bubbleMe : styles.bubbleOther]}
       >
         <Text
           style={[
-            styles.messageText,
-            isMyMessage ? styles.myMessageText : styles.otherMessageText,
+            styles.bubbleText,
+            isMe ? styles.bubbleTextMe : styles.bubbleTextOther,
           ]}
         >
           {item.text}
         </Text>
-        <Text
-          style={isMyMessage ? styles.messageTime : styles.otherMessageTime}
-        >
-          {item.date ? item.date.slice(0, 5) : ""}
+        <Text style={isMe ? styles.bubbleTimeMe : styles.bubbleTimeOther}>
+          {item.date.slice(0, 5)}
         </Text>
       </View>
     );
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <SafeAreaView style={styles.container}>
-        <View style={[styles.header, globalStyles.header]}>
-          <View style={styles.userInfo}>
-            <Text style={[styles.userName, globalStyles.title]}>
-              {messages.length > 0 && messages[0].from !== myIdentifier
-                ? messages[0].from
-                : "Interlocuteur inconnu"}
-            </Text>
-          </View>
-        </View>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={["#8E44AD", "#372173"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        locations={[0, 0.1]}
+        style={StyleSheet.absoluteFill}
+      />
 
+      {/* Header */}
+      <View style={[styles.header, { marginTop: insets.top }]}>
+        <Text style={styles.headerTitle}>
+          {client.constructorName || myIdentifier}
+        </Text>
+      </View>
+
+      {/* Content */}
+      <View style={styles.content}>
         <FlatList
           ref={flatListRef}
           data={messages}
           renderItem={renderMessage}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={(_, i) => i.toString()}
           contentContainerStyle={styles.messagesList}
+          showsVerticalScrollIndicator={false}
+          // Ces deux props permettent de scroll initialement tout en bas
           onContentSizeChange={() =>
             flatListRef.current?.scrollToEnd({ animated: false })
           }
+          onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
         />
 
-        <View style={styles.inputContainer}>
-          <View style={styles.textInputWrapper}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Envoyer un message..."
-              placeholderTextColor="#999"
-              value={inputValue}
-              onChangeText={setInputValue}
-            />
-          </View>
-
-          <TouchableOpacity onPress={sendMessage} style={styles.sendIconButton}>
-            <Ionicons name="send" size={20} color="#362173" />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+        {/* Input Area */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={tabBarHeight}
+          style={styles.footerWrapper}
+        >
+          <LinearGradient
+            colors={["#8E44AD", "#372173"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            locations={[0, 0.4]}
+            style={styles.footerGradient}
+          >
+            <View style={[styles.footer, { marginBottom: tabBarHeight }]}>
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Écris un message..."
+                  placeholderTextColor="#BA8ECD"
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  multiline
+                  textAlignVertical="center"
+                />
+              </View>
+              <TouchableOpacity
+                style={styles.sendButton}
+                onPress={sendMessage}
+                disabled={!inputValue.trim()}
+              >
+                <Ionicons name="send" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </KeyboardAvoidingView>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFF",
-  },
+  container: { flex: 1 },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8,
-    paddingTop: 4,
-    paddingBottom: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#DDD",
-  },
-  userInfo: {
-    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 4,
   },
-  profilePicture: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  headerTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
   },
-  userName: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#000",
-    textAlign: "center",
+  content: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    overflow: "hidden",
+    marginTop: 5,
   },
   messagesList: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    padding: 16,
   },
-  messageContainer: {
+  bubble: {
     marginVertical: 6,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    maxWidth: "80%",
+    padding: 12,
     borderRadius: 12,
+    maxWidth: "80%",
   },
-  myMessage: {
+  bubbleMe: {
     alignSelf: "flex-end",
     backgroundColor: "#663ED9",
-    borderTopLeftRadius: 18,
-    borderBottomLeftRadius: 18,
-    borderTopRightRadius: 18,
-    borderBottomRightRadius: 6,
   },
-  myMessageText: {
-    color: "#FFF",
-  },
-  otherMessage: {
+  bubbleOther: {
     alignSelf: "flex-start",
     backgroundColor: "#F2F2F2",
-    borderTopLeftRadius: 6,
-    borderBottomLeftRadius: 18,
-    borderTopRightRadius: 18,
-    borderBottomRightRadius: 18,
   },
-  otherMessageText: {
+  bubbleText: {
+    fontSize: 16,
+  },
+  bubbleTextMe: {
+    color: "#fff",
+  },
+  bubbleTextOther: {
     color: "#000",
   },
-  messageTime: {
-    fontSize: 13,
+  bubbleTimeMe: {
+    fontSize: 12,
     marginTop: 4,
     textAlign: "right",
-    color: "rgba(255, 255, 255, 0.75)",
+    color: "rgba(255,255,255,0.7)",
   },
-  otherMessageTime: {
-    fontSize: 13,
+  bubbleTimeOther: {
+    fontSize: 12,
     marginTop: 4,
     textAlign: "right",
-    color: "#808080",
+    color: "#666",
   },
-  inputContainer: {
+  footerWrapper: {
+    backgroundColor: "#fff",
+  },
+  footerGradient: {
+    width: "100%",
+  },
+  footer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 8,
     borderTopWidth: 1,
-    borderTopColor: "#DDD",
-    backgroundColor: "#FFF",
-  },
-  textInputWrapper: {
-    flex: 1,
-    borderWidth: 1,
     borderColor: "#DDD",
-    borderRadius: 8,
-    marginRight: 8,
-    justifyContent: "center",
-    backgroundColor: "#FFF",
   },
-  textInput: {
-    paddingHorizontal: 8,
+  inputWrapper: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    justifyContent: "center",
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+  },
+  input: {
     fontSize: 16,
     color: "#000",
-    height: 40,
+    padding: 0,
+    flex: 1,
   },
-  sendIconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  sendButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginLeft: 10,
+    backgroundColor: "#FE5900",
     alignItems: "center",
     justifyContent: "center",
   },

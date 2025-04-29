@@ -2,38 +2,35 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import {
+  StatusBar,
   Linking,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useSelector } from "react-redux";
 import InputFiles from "../../../components/InputFiles";
-import ReturnButton from "../../../components/ReturnButton";
-import globalStyles from "../../../styles/globalStyles";
+import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function DocumentsConstruteur({ navigation }) {
+  const insets = useSafeAreaInsets();
   const client = useSelector((state) => state.client.value);
-
   const [documents, setDocuments] = useState([]);
-
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
 
   useFocusEffect(
     useCallback(() => {
       const projectId = client.projectId;
       fetch(`${prodURL}/upload/documents/${projectId}`)
         .then((res) => res.json())
-        .then((dataFetch) => {
-          setDocuments(dataFetch.documents);
-        })
-        .catch((err) => {
-          console.error("Erreur lors de la récupération des documents", err);
-        });
-    }, [])
+        .then((dataFetch) => setDocuments(dataFetch.documents))
+        .catch((err) => console.error("Erreur récupération docs", err));
+    }, [client.projectId])
   );
 
   const handleDeleteDocument = (id) => {
@@ -44,114 +41,124 @@ export default function DocumentsConstruteur({ navigation }) {
       .then((res) => res.json())
       .then((dataFetch) => {
         if (dataFetch.result) {
-          setDocuments((prevDocuments) =>
-            prevDocuments.filter((doc) => doc._id !== id)
-          );
-        } else {
-          console.error("Erreur lors de la suppression du document");
+          setDocuments((prev) => prev.filter((doc) => doc._id !== id));
         }
       })
-      .catch((err) => {
-        console.error("Erreur lors de la suppression du document", err);
-      });
+      .catch((err) => console.error("Erreur suppression doc", err));
   };
 
   const handleViewDocument = async (uri) => {
     try {
-      const supported = await Linking.canOpenURL(uri);
-      if (supported) {
-        await Linking.openURL(uri);
-      } else {
-        console.error("Impossible d'ouvrir l'URL :", uri);
-      }
+      await Linking.openURL(uri);
     } catch (err) {
-      console.error("Erreur lors de l'ouverture de l'URL :", err);
+      console.error("Impossible d'ouvrir URL:", uri, err);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={globalStyles.header}>
-        <ReturnButton onPress={() => navigation.navigate("Dashboard")} />
-        <Text style={globalStyles.title}>Mes documents</Text>
-      </View>
-      <View style={styles.inputContainer}>
-        <InputFiles />
-      </View>
-      <Text style={styles.documentsTitle}>Documents</Text>
-      <ScrollView>
-        {documents?.length === 0 ? (
-          <Text style={styles.noDocuments}>Aucun document disponible</Text>
-        ) : (
-          documents?.map((document) => (
-            <View key={document._id} style={styles.documentItem}>
-              <TouchableOpacity
-                onPress={() => handleViewDocument(document.uri)}
-                style={styles.documentTitle}
-              >
-                <Text>{document.name}</Text>
-              </TouchableOpacity>
+    <View style={styles.root}>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
+      {/* HEADER */}
+      <LinearGradient
+        colors={["#8E44AD", "#372173"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={[
+          styles.header,
+          { paddingTop: insets.top + 10, paddingBottom: 10 },
+        ]}
+      >
+        <Text style={styles.headerTitle}>Mes documents</Text>
+      </LinearGradient>
 
-              {/* Icone poubelle pour supprimer le document */}
-              <TouchableOpacity
-                onPress={() => handleDeleteDocument(document._id)}
-              >
-                <FontAwesome5 name="trash-alt" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-          ))
-        )}
-      </ScrollView>
-    </SafeAreaView>
+      {/* CONTENT AREA */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          <View style={styles.inputSection}>
+            <InputFiles />
+          </View>
+          <Text style={styles.documentsTitle}>Documents</Text>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            {documents.length === 0 ? (
+              <Text style={styles.noDocuments}>Aucun document disponible</Text>
+            ) : (
+              documents.map((doc) => (
+                <View key={doc._id} style={styles.documentItem}>
+                  <TouchableOpacity
+                    onPress={() => handleViewDocument(doc.uri)}
+                    style={styles.documentTitle}
+                  >
+                    <Text numberOfLines={1}>{doc.name}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleDeleteDocument(doc._id)}
+                  >
+                    <FontAwesome5 name="trash-alt" size={20} color="red" />
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    margin: 20,
-    paddingBottom: 40,
-  },
-  inputContainer: {
-    height: 180,
-    marginTop: 20,
-  },
-  documentsTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginVertical: 20,
-  },
-  documentItem: {
+  root: { flex: 1, backgroundColor: "#372173" },
+  header: {
     width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  headerTitle: {
+    flex: 1,
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  container: { flex: 1 },
+  content: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    overflow: "hidden",
+  },
+  inputSection: { height: 180, marginTop: 20, alignItems: "center" },
+  documentsTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 20,
+    marginLeft: 20,
+  },
+  scrollContent: { padding: 20 },
+  documentItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F7F7F7",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 14,
-    marginBottom: 10,
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#663ED9",
     borderRadius: 8,
-    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 12,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  documentTitle: {
-    fontSize: 14,
-    fontWeight: "500",
-    paddingLeft: 10,
-    maxWidth: 230,
-  },
-  icon: {
-    marginRight: 15,
-  },
-  noDocuments: {
-    textAlign: "center",
-  },
+  documentTitle: { flex: 1, paddingRight: 8, fontSize: 16 },
+  noDocuments: { textAlign: "center", marginTop: 20, color: "#666" },
 });

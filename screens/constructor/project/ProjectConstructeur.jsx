@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList
+  FlatList,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,13 +16,14 @@ import { useSelector } from "react-redux";
 import ClientContainer from "../../../components/ClientContainer";
 import PlusButton from "../../../components/PlusButton";
 import { LinearGradient } from "expo-linear-gradient";
+import { scale, rfs } from "../../../utils/scale";
 
 export default function ProjectConstructeur({ navigation }) {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [clients, setClients] = useState([]);
-const prodURL = process.env.PROD_URL;
+  const prodURL = process.env.PROD_URL;
   const constructeur = useSelector((state) => state.constructeur.value);
 
   useEffect(() => {
@@ -107,118 +108,117 @@ const prodURL = process.env.PROD_URL;
 
   return (
     <LinearGradient
-    colors={["#8E44AD", "#372173"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        locations={[0, 0.1]} // 👈 le foncé commence dès 40% du dégradé
-    style={styles.gradientHeader}
-  >
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.headerContent}>
-        <Text style={styles.headerTitle}>Mes chantiers</Text>
-      </View>
-  
-      <View style={styles.mainContainer}>
-        {errorMsg ? (
-          <Text style={styles.errorText}>{errorMsg}</Text>
-        ) : (
-          <View style={styles.mapWrapper}>
-  <View style={styles.mapContainer}>
-    {loading ? (
-      <ActivityIndicator size="large" color="#663ED9" />
-    ) : (
-      <MapView style={styles.map} region={region}>
-        {location && (
-          <Marker
-            coordinate={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            }}
-            title="Ma position"
-          />
-        )}
-        {clients?.map(
-          (client, index) =>
-            client.client?.constructionLat &&
-            client.client?.constructionLong && (
-              <Marker
-                key={client._id || `marker-${index}`}
-                coordinate={{
-                  latitude: parseFloat(client.client.constructionLat),
-                  longitude: parseFloat(client.client.constructionLong),
-                }}
-                pinColor="purple"
-                onPress={() =>
-                  handleMarkerPress(
-                    client.client.firstname,
-                    client.client.lastname,
-                    parseFloat(client.client.constructionLat),
-                    parseFloat(client.client.constructionLong)
-                  )
-                }
-              />
-            )
-        )}
-      </MapView>
-    )}
-  </View>
-</View>
+      colors={["#8E44AD", "#372173"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      locations={[0, 0.1]} // 👈 le foncé commence dès 40% du dégradé
+      style={styles.gradientHeader}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerTitle}>Mes chantiers</Text>
+        </View>
+
+        <View style={styles.mainContainer}>
+          {errorMsg ? (
+            <Text style={styles.errorText}>{errorMsg}</Text>
+          ) : (
+            <View style={styles.mapWrapper}>
+              <View style={styles.mapContainer}>
+                {loading ? (
+                  <ActivityIndicator size="large" color="#663ED9" />
+                ) : (
+                  <MapView style={styles.map} region={region}>
+                    {location && (
+                      <Marker
+                        coordinate={{
+                          latitude: location.coords.latitude,
+                          longitude: location.coords.longitude,
+                        }}
+                        title="Ma position"
+                      />
+                    )}
+                    {clients?.map(
+                      (client, index) =>
+                        client.client?.constructionLat &&
+                        client.client?.constructionLong && (
+                          <Marker
+                            key={client._id || `marker-${index}`}
+                            coordinate={{
+                              latitude: parseFloat(
+                                client.client.constructionLat
+                              ),
+                              longitude: parseFloat(
+                                client.client.constructionLong
+                              ),
+                            }}
+                            pinColor="purple"
+                            onPress={() =>
+                              handleMarkerPress(
+                                client.client.firstname,
+                                client.client.lastname,
+                                parseFloat(client.client.constructionLat),
+                                parseFloat(client.client.constructionLong)
+                              )
+                            }
+                          />
+                        )
+                    )}
+                  </MapView>
+                )}
+              </View>
+            </View>
           )}
 
-            <View style={styles.clientsHeader}>
-              <Text style={styles.clientsTitle}>Mes clients</Text>
+          <View style={styles.clientsHeader}>
+            <Text style={styles.clientsTitle}>Mes clients</Text>
+            <PlusButton
+              icon="plus"
+              onPress={handlePress}
+              style={{
+                width: scale(35),
+                height: scale(35),
+              }}
+            />
           </View>
-  <FlatList
-  data={clients.filter((c) => c.client !== null)}
-  keyExtractor={(item) => item._id}
-  numColumns={2}
-  columnWrapperStyle={styles.clientRow}
-  contentContainerStyle={styles.clientList}
-  renderItem={({ item, index }) => (
-    <View style={styles.cardWrapper}>
-      <ClientContainer
-        firstname={item.client.firstname}
-        lastname={item.client.lastname}
-        address={item.client.constructionAdress}
-        zip={item.client.constructionZipCode}
-        city={item.client.constructionCity}
-        profilePicture={item.client.profilePicture}
-        style={{ width: 150, height: 180 }}
-        onPress={() =>
-          navigation.navigate("ClientDetails", {
-            data: item,
-          })
-        }
-      />
-    </View>
-  )}
-  
-  ListEmptyComponent={
-    <View style={styles.clientNotFound}>
-      <Text style={styles.clientNotFoundText}>
-        Ajoutez votre premier client !
-      </Text>
-    </View>
-  }
-/>
-<PlusButton
-  icon="plus"
-  onPress={handlePress}
-            style={{
-              top: 260,
-              left: 330,
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-  }}
-/>
-      </View>
-    </SafeAreaView>
-  </LinearGradient>
-  
+
+          <FlatList
+            data={clients.filter((c) => c.client !== null)}
+            keyExtractor={(item) => item._id}
+            numColumns={2}
+            columnWrapperStyle={styles.clientRow}
+            contentContainerStyle={styles.clientList}
+            renderItem={({ item, index }) => (
+              <View style={styles.cardWrapper}>
+                <ClientContainer
+                  firstname={item.client.firstname}
+                  lastname={item.client.lastname}
+                  address={item.client.constructionAdress}
+                  zip={item.client.constructionZipCode}
+                  city={item.client.constructionCity}
+                  profilePicture={item.client.profilePicture}
+                  style={{ width: 150, height: 180 }}
+                  onPress={() =>
+                    navigation.navigate("ClientDetails", {
+                      data: item,
+                    })
+                  }
+                />
+              </View>
+            )}
+            ListEmptyComponent={
+              <View style={styles.clientNotFound}>
+                <Text style={styles.clientNotFoundText}>
+                  Ajoutez votre premier client !
+                </Text>
+              </View>
+            }
+          />
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
-
 
 const styles = StyleSheet.create({
   gradientHeader: {
@@ -263,7 +263,6 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "100%",
-
   },
   errorText: {
     textAlign: "center",
@@ -290,7 +289,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
   },
-  
+
   clientList: {
     paddingHorizontal: 20,
     paddingBottom: 20,

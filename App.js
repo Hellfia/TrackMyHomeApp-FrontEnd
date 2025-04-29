@@ -33,6 +33,7 @@ import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import MessageScreen from "./screens/MessageScreen";
 import ProfilScreen from "./screens/ProfilScreen";
 import ProjectsScreen from "./screens/ProjectScreen";
+import MessageClient from "./screens/client/message/MessageClient";
 import { StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -192,6 +193,11 @@ function RootNavigator() {
           <Stack.Screen
             name="UpdateDetailsClient"
             component={UpdateDetailsClient}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MessageClient"
+            component={MessageClient}
             options={{ headerShown: false }}
           />
         </>

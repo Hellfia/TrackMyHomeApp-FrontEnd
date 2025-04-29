@@ -5,21 +5,28 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
+import { LinearGradient } from "expo-linear-gradient";
+
 import GradientButton from "../../../components/GradientButton";
-import Input from "../../../components/Input";
 import InputProfil from "../../../components/InputProfil";
 import ReturnButton from "../../../components/ReturnButton";
 import updateProfileClientSchema from "../../../schemas/UpdateProfilClientSchema";
-import globalStyles from "../../../styles/globalStyles";
+import { scale, rfs } from "../../../utils/scale";
+
+const HEADER_HEIGHT = scale(110);
+const AVATAR_SIZE = scale(120);
 
 export default function UpdateProfileClient({ route, navigation }) {
   const { data } = route.params;
-
+  const insets = useSafeAreaInsets();
   const client = useSelector((state) => state.client.value);
+  const token = client.token;
+  const prodURL = process.env.PROD_URL;
 
   const [firstname, setFirstname] = useState(data.firstname || "");
   const [lastname, setLastname] = useState(data.lastname || "");
@@ -28,11 +35,6 @@ export default function UpdateProfileClient({ route, navigation }) {
 
   const [errors, setErrors] = useState({});
 
-  const token = client.token;
-
-  const prodURL = process.env.PROD_URL
-
-  // Validation des données
   const validate = () => {
     const { error } = updateProfileClientSchema.validate(
       { firstname, lastname, email, password },
@@ -43,143 +45,195 @@ export default function UpdateProfileClient({ route, navigation }) {
         acc[curr.path[0]] = curr.message;
         return acc;
       }, {});
-      setErrors(errorDetails); // Assignation des erreurs
+      setErrors(errorDetails);
       return false;
     }
-    setErrors({}); // Aucun problème
+    setErrors({});
     return true;
   };
 
   const handleUpdateProfile = () => {
-    // Validation des données avant l'appel API
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) return;
 
     fetch(`${prodURL}/clients/${token}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        password: password,
+        firstname,
+        lastname,
+        email,
+        password,
       }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-          navigation.navigate("Profil");
-      });
+      .then((res) => res.json())
+      .then(() => navigation.navigate("Profil"))
+      .catch(console.error);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={globalStyles.header}>
+    <LinearGradient
+      colors={["#8E44AD", "#372173"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      locations={[0, 0.1]}
+      style={[styles.pageContainer, { paddingTop: insets.top }]}
+    >
+      {/* HEADER */}
+      <View style={styles.header}>
         <ReturnButton onPress={() => navigation.goBack()} />
-        <Text style={globalStyles.title}>Modifier votre Profil</Text>
+        <Text style={styles.headerTitle}>Modifier votre Profil</Text>
       </View>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+
+      {/* AVATAR qui chevauche le header */}
+      <View
+        style={[
+          styles.iconContainer,
+          { top: insets.top + HEADER_HEIGHT - AVATAR_SIZE / 2 },
+        ]}
       >
-        <ScrollView>
-          <View style={styles.inputProfilContainer}>
-            <InputProfil />
-          </View>
-          <View style={styles.inputContainer}>
-            <Input
-              style={styles.inputText}
-              placeholder="Nom"
-              value={firstname}
-              onChangeText={(value) => setFirstname(value)}
-              autoCapitalize="sentences"
-              autoCorrect={false}
-              keyboardType="default"
-            />
-            {errors.firstname && (
-              <Text style={styles.errorText}>{errors.firstname}</Text>
-            )}
+        <InputProfil
+          style={{
+            width: AVATAR_SIZE,
+            height: AVATAR_SIZE,
+            borderRadius: AVATAR_SIZE / 2,
+          }}
+        />
+      </View>
 
-            <Input
-              style={styles.inputText}
-              placeholder="Prénom"
-              value={lastname}
-              onChangeText={(value) => setLastname(value)}
-              autoCapitalize="sentences"
-              autoCorrect={false}
-              keyboardType="default"
-            />
-            {errors.lastname && (
-              <Text style={styles.errorText}>{errors.lastname}</Text>
-            )}
+      {/* CONTENU BLANC ARRONDI */}
+      <View style={styles.contentWrapper}>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView
+            style={styles.content}
+            contentContainerStyle={styles.sectionWrapper}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Inputs */}
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Nom"
+                value={firstname}
+                onChangeText={setFirstname}
+              />
+              {errors.firstname && (
+                <Text style={styles.errorText}>{errors.firstname}</Text>
+              )}
 
-            <Input
-              style={styles.inputText}
-              placeholder="Email"
-              value={email}
-              onChangeText={(value) => setEmail(value)}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-            />
-            {errors.email && (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            )}
+              <TextInput
+                style={styles.inputText}
+                placeholder="Prénom"
+                value={lastname}
+                onChangeText={setLastname}
+              />
+              {errors.lastname && (
+                <Text style={styles.errorText}>{errors.lastname}</Text>
+              )}
 
-            <Input
-              style={styles.inputText}
-              placeholder="Mot de passe"
-              value={password}
-              onChangeText={(value) => setPassword(value)}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={true}
-              keyboardType="default"
+              <TextInput
+                style={styles.inputText}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+              />
+              {errors.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              )}
+
+              <TextInput
+                style={styles.inputText}
+                placeholder="Mot de passe"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              {errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+            </View>
+
+            <GradientButton
+              text="Mettre à jour"
+              onPress={handleUpdateProfile}
+              style={styles.button}
             />
-            {errors.password && (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            )}
-          </View>
-        </ScrollView>
-        <GradientButton
-          onPress={handleUpdateProfile}
-          text="Mettre à jour"
-        ></GradientButton>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     flex: 1,
-    padding: 10,
   },
-  inputProfilContainer: {
-    marginTop: 40,
+  flex: {
+    flex: 1,
+  },
+  header: {
+    alignItems: "center",
+    height: HEADER_HEIGHT,
+    justifyContent: "flex-end",
+    paddingBottom: scale(16),
+  },
+  headerTitle: {
+    position: "absolute",
+    top: scale(16),
+    alignSelf: "center",
+    fontSize: rfs(24),
+    color: "#fff",
+    fontWeight: "bold",
+    zIndex: 3,
+  },
+  iconContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 2,
+  },
+  contentWrapper: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: scale(28),
+    borderTopRightRadius: scale(28),
+    overflow: "hidden",
+  },
+  content: {
+    flex: 1,
+    paddingTop: AVATAR_SIZE / 2 + scale(16),
+    paddingHorizontal: scale(24),
+  },
+  sectionWrapper: {
+    paddingBottom: scale(30),
   },
   inputContainer: {
-    display: "flex",
-    justifyContent: "center",
     alignItems: "center",
-    flex: 1,
-    marginTop: 40,
   },
   inputText: {
     width: "100%",
-    padding: 12,
-    marginBottom: 16,
+    padding: scale(12),
+    marginBottom: scale(10),
     borderWidth: 1,
-    borderRadius: 8,
-    borderColor: "#ddd",
-    fontSize: 16,
+    borderRadius: scale(8),
+    borderColor: "#663ED9",
+    fontSize: rfs(14),
   },
   errorText: {
-    fontSize: 12,
-    color: "red",
-    marginTop: -10,
-    marginBottom: 10,
     width: "100%",
-    marginLeft: 15,
+    fontSize: rfs(12),
+    color: "red",
+    marginTop: -scale(8),
+    marginBottom: scale(12),
+    paddingLeft: scale(12),
+  },
+  button: {
+    marginTop: scale(24),
+    width: "100%",
   },
 });

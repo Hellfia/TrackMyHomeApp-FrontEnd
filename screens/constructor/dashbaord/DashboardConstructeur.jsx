@@ -96,18 +96,6 @@ export default function DashboardConstructeur({ navigation }) {
     }, [constructeur.token])
   );
 
-  // Récupération projets
-  useFocusEffect(
-    useCallback(() => {
-      fetch(
-        `${prodURL}/projects/${constructeur.constructorId}/${constructeur.token}`
-      )
-        .then((r) => r.json())
-        .then((d) => setProjectsCount(d.data?.length || 0))
-        .catch(console.error);
-    }, [constructeur.constructorId])
-  );
-
   // Récupération clients
   useFocusEffect(
     useCallback(() => {
@@ -346,9 +334,7 @@ export default function DashboardConstructeur({ navigation }) {
           </View>
           <View style={styles.taskContainer}>
             {events.length === 0 ? (
-              <Text style={styles.emptyText}>
-                Aucune tâche pour aujourd'hui
-              </Text>
+              <Text style={styles.Notasks}>Aucune tâche pour aujourd'hui</Text>
             ) : (
               events.map((ev, i) => (
                 <TouchableOpacity
@@ -537,8 +523,6 @@ const styles = StyleSheet.create({
     marginBottom: scale(20),
     gap: scale(5),
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
   },
   taskCard: {
     padding: scale(12),
@@ -651,6 +635,12 @@ const styles = StyleSheet.create({
     borderRadius: scale(12),
     backgroundColor: "#fff",
     elevation: scale(2),
+  },
+  NoTask: {
+    fontSize: rfs(16),
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
   emptyText: {
     fontSize: rfs(16),

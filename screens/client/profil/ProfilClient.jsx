@@ -1,40 +1,29 @@
-// ProfilClient.js
-import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, View, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
+import { View, Text, Image, ScrollView, StyleSheet, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import avatar from "../../../assets/avatar.png";
 import GradientButton from "../../../components/GradientButton";
 import PurpleButton from "../../../components/PurpleButton";
 import { logout } from "../../../reducers/client";
-import globalStyles from "../../../styles/globalStyles";
+import { scale, rfs } from "../../../utils/scale";
 
 export default function ProfilClient({ navigation }) {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const prodURL = process.env.PROD_URL;
-  const client = useSelector((state) => state.client.value);
+  const client = useSelector((s) => s.client.value);
 
-  // 1️⃣ Initialisation comme objet, pas tableau
   const [infoClient, setInfoClient] = useState({});
-
-  const handleEditProfile = () => {
-    navigation.navigate("UpdateProfileClient", {
-      data: infoClient,
-    });
-  };
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
 
   useFocusEffect(
     useCallback(() => {
-      const token = client.token;
-      fetch(`${prodURL}/clients/${token}`)
+      fetch(`${prodURL}/clients/${client.token}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("dataClient:", data);
           if (data.client) {
             setInfoClient(data.client);
           } else {
@@ -48,90 +37,136 @@ export default function ProfilClient({ navigation }) {
     }, [client.token])
   );
 
-  // 2️⃣ Optional chaining + fallback
   const profileImage =
     infoClient.profilePicture?.length > 0
       ? { uri: infoClient.profilePicture }
       : avatar;
 
   return (
-    <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
-      <Text style={globalStyles.title}>Mon Profil</Text>
-
-      <View style={styles.iconContainer}>
-        <Image
-          source={profileImage}
-          style={styles.image}
-          accessibilityLabel="Photo de profil"
-        />
+    <LinearGradient
+      colors={["#8E44AD", "#372173"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      locations={[0, 0.1]}
+      style={[styles.pageContainer, { paddingTop: insets.top }]}
+    >
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Mon Profil</Text>
       </View>
 
-      <View style={styles.infosContainer}>
-        <View style={styles.infoContainer}>
-          <Text>{infoClient.firstname ?? ""}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text>{infoClient.lastname ?? ""}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text>{infoClient.email ?? ""}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text>*******</Text>
-        </View>
+      {/* Content */}
+      <View style={styles.contentWrapper}>
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.sectionWrapper}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.iconContainer}>
+            <Image
+              source={profileImage}
+              style={styles.image}
+              accessibilityLabel="Photo de profil"
+            />
+          </View>
+
+          <View style={styles.infosContainer}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{infoClient.firstname ?? ""}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{infoClient.lastname ?? ""}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>{infoClient.email ?? ""}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>*******</Text>
+            </View>
+          </View>
+
+          <GradientButton
+            text="Modifier mon profil"
+            onPress={() =>
+              navigation.navigate("UpdateProfileClient", { data: infoClient })
+            }
+          />
+          <PurpleButton
+            text="Se déconnecter"
+            icon="door-open"
+            backgroundColor="#372173"
+            onPress={() => dispatch(logout())}
+            style={{ marginTop: scale(12) }}
+          />
+        </ScrollView>
       </View>
-
-      <GradientButton
-        text="Modifier mon profil"
-        onPress={handleEditProfile}
-        style={styles.button}
-      />
-
-      <PurpleButton
-        onPress={handleLogout}
-        text="Se déconnecter"
-        backgroundColor="#DB0000"
-        icon="door-open"
-        style={styles.button}
-      />
-    </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     flex: 1,
-    padding: 20,
+  },
+  header: {
+    alignItems: "center",
+    paddingVertical: scale(50),
+  },
+  headerTitle: {
+    position: "absolute",
+    top: scale(10),
+    alignSelf: "center",
+    fontSize: rfs(24),
+    color: "#fff",
+    fontWeight: "bold",
+    zIndex: 3,
+  },
+  contentWrapper: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: scale(28),
+    borderTopRightRadius: scale(28),
+    paddingTop: scale(20),
+    paddingBottom: scale(30),
+    overflow: "visible",
+  },
+  sectionWrapper: {
+    paddingHorizontal: scale(24),
   },
   iconContainer: {
     alignItems: "center",
-    marginVertical: 20,
+    marginTop: -scale(70),
+    marginBottom: scale(20),
+    zIndex: 2,
   },
   image: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: scale(120),
+    height: scale(120),
+    borderRadius: scale(70),
     borderWidth: 2,
     borderColor: "#663ED9",
   },
   infosContainer: {
-    marginBottom: 24,
+    marginBottom: scale(10),
   },
-  infoContainer: {
+  infoRow: {
     width: "100%",
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#663ED9",
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    // omet le fontSize ici, Text hérite de ses propres styles
+    borderRadius: scale(8),
+    padding: scale(12),
+    marginBottom: scale(12),
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: scale(4),
+    elevation: scale(2),
   },
-  button: {
-    marginTop: 12,
+  infoText: {
+    fontSize: rfs(14),
+    color: "#333",
   },
 });

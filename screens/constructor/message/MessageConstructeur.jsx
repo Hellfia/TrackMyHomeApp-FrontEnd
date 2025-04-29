@@ -1,370 +1,291 @@
 import PropTypes from "prop-types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback, memo } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   FlatList,
-  StyleSheet,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
   Keyboard,
-  Alert,
+  SafeAreaView,
+  StyleSheet,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
-import { LinearGradient } from "expo-linear-gradient";
 import ReturnButton from "../../../components/ReturnButton";
 
-const { width } = Dimensions.get("window");
 const HEADER_HEIGHT = 56;
 const INPUT_HEIGHT = 50;
-const HORIZONTAL_PADDING = 24;
+const H_PADDING = 24;
+
+const MessageBubble = memo(({ text, date, isMe }) => (
+  <View style={[styles.bubble, isMe ? styles.bubbleMe : styles.bubbleOther]}>
+    <Text
+      style={[
+        styles.bubbleText,
+        isMe ? styles.bubbleTextMe : styles.bubbleTextOther,
+      ]}
+    >
+      {" "}
+      {text}{" "}
+    </Text>
+    <Text
+      style={[
+        styles.bubbleTime,
+        isMe ? styles.bubbleTimeMe : styles.bubbleTimeOther,
+      ]}
+    >
+      {" "}
+      {date.slice(0, 5)}{" "}
+    </Text>
+  </View>
+));
 
 export default function MessageConstructeur({ navigation, route }) {
   const insets = useSafeAreaInsets();
-  // Add defensive checks for route and route.params
   const projectId = route?.params?.projectId;
   const clientName = route?.params?.clientName || "Client";
-  const constructeur = useSelector((state) => state.constructeur.value);
+  const constructeurName = useSelector(
+    (state) => state.constructeur.value.constructorName
+  );
   const prodURL = process.env.PROD_URL;
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const socket = useRef();
-  const flatListRef = useRef();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const socketRef = useRef(null);
+  const flatListRef = useRef(null);
 
-  // Check if projectId exists early and redirect if needed
+  // Track keyboard height
   useEffect(() => {
-    if (!projectId) {
-      // Use a timeout to avoid navigation during render
-      setTimeout(() => {
-        navigation.replace("ClientRoomsScreen");
-      }, 0);
-      return;
-    }
+    const show = Keyboard.addListener("keyboardDidShow", (e) =>
+      setKeyboardHeight(e.endCoordinates.height)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardHeight(0)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
   }, []);
 
-  // Socket initialization - only if projectId exists
   useEffect(() => {
-    if (!projectId) return;
-    
-    try {
-      socket.current = io(prodURL);
-      socket.current.emit("joinProject", projectId);
-      socket.current.on("newMessage", (msg) => setMessages((prev) => [...prev, msg]));
-      
-      return () => {
-        if (socket.current) {
-          socket.current.disconnect();
-        }
-      };
-    } catch (e) {
-      console.error("Socket connection error:", e);
-    }
-  }, [projectId]);
+    if (!projectId) navigation.replace("ClientRoomsScreen");
+  }, [projectId, navigation]);
 
-  // Load history - only if projectId exists
   useEffect(() => {
     if (!projectId) return;
-    
+    const sock = io(prodURL);
+    socketRef.current = sock;
+    sock.emit("joinProject", projectId);
+    sock.on("newMessage", (msg) => setMessages((prev) => [msg, ...prev]));
+    return () => sock.disconnect();
+  }, [projectId, prodURL]);
+
+  useEffect(() => {
+    if (!projectId) return;
     (async () => {
       try {
         const res = await fetch(`${prodURL}/messages/${projectId}`);
-        const json = await res.json();
-        if (json.success) {
-          const formatted = json.messages.map((m) => ({
-            text: m.content,
-            from: m.sender,
-            date: new Date(m.date).toLocaleTimeString(),
-          }));
-          setMessages(formatted);
-          setTimeout(() => {
-            if (flatListRef.current) {
-              flatListRef.current.scrollToEnd({ animated: false });
-            }
-          }, 100);
+        const { success, messages: msgs } = await res.json();
+        if (success) {
+          setMessages(
+            msgs
+              .map((m) => ({
+                text: m.content,
+                from: m.sender,
+                date: new Date(m.date).toLocaleTimeString(),
+              }))
+              .reverse()
+          );
         }
       } catch (e) {
-        console.error("Error fetching messages:", e);
+        console.error(e);
       }
     })();
-  }, [projectId]);
+  }, [projectId, prodURL]);
 
-  // Auto-scroll on new messages or keyboard
   useEffect(() => {
-    if (messages.length && flatListRef.current) {
-      setTimeout(() => {
-        flatListRef.current.scrollToEnd({ animated: true });
-      }, 100);
+    if (flatListRef.current && messages.length) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: true });
     }
-    
-    const show = Keyboard.addListener("keyboardDidShow", () => {
-      setTimeout(() => {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToEnd({ animated: true });
-        }
-      }, 100);
-    });
-    
-    return () => show.remove();
   }, [messages]);
 
-  const handleSend = async () => {
+  const renderItem = useCallback(
+    ({ item }) => {
+      const isMe = item.from === constructeurName;
+      return <MessageBubble text={item.text} date={item.date} isMe={isMe} />;
+    },
+    [constructeurName]
+  );
+
+  const handleSend = useCallback(async () => {
     const text = input.trim();
-    if (!text || !projectId || !socket.current) return;
-    
-    const msg = { 
-      text, 
-      from: constructeur?.constructorName || "Utilisateur", 
-      date: new Date().toLocaleTimeString(), 
-      projectId 
+    if (!text) return;
+    const msg = {
+      text,
+      from: constructeurName,
+      date: new Date().toLocaleTimeString(),
+      projectId,
     };
-    
+    socketRef.current.emit("sendMessage", msg);
+    setInput("");
+    Keyboard.dismiss();
     try {
-      socket.current.emit("sendMessage", msg);
-      setMessages((prev) => [...prev, msg]);
-      setInput("");
-      
       await fetch(`${prodURL}/messages/${projectId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sender: msg.from, content: msg.text, date: msg.date }),
+        body: JSON.stringify({
+          sender: msg.from,
+          content: msg.text,
+          date: msg.date,
+        }),
       });
     } catch (e) {
-      console.error("Error sending message:", e);
+      console.error(e);
     }
-  };
-
-  const renderMessage = ({ item }) => {
-    const isMe = item.from === constructeur?.constructorName;
-    return (
-      <View style={[styles.bubble, isMe ? styles.bubbleMe : styles.bubbleOther]}>  
-        <Text style={[styles.bubbleText, isMe ? styles.bubbleTextMe : styles.bubbleTextOther]}>{item.text}</Text>
-        <Text style={[styles.bubbleTime, isMe ? styles.bubbleTimeMe : styles.bubbleTimeOther]}>
-          {item.date.slice(0,5)}
-        </Text>
-      </View>
-    );
-  };
-
-  // If no projectId, render a minimal loading state
-  if (!projectId) {
-    return (
-      <LinearGradient
-        colors={["#8E44AD", "#372173"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.container, styles.centerContent]}
-      >
-        <Text style={styles.loadingText}>Chargement...</Text>
-      </LinearGradient>
-    );
-  }
+  }, [input, constructeurName, projectId, prodURL]);
 
   return (
     <View style={styles.container}>
+      {/* HEADER */}
       <LinearGradient
-       colors={["#8E44AD", "#372173"]}
-       start={{ x: 0, y: 0 }}
-       end={{ x: 0, y: 1 }}
-       locations={[0, 0.3]}
+        colors={["#8E44AD", "#372173"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={styles.headerGradient}
       >
-        <View style={[styles.safeTopArea, { height: insets.top }]} />
-                
-        <View style={styles.header}>
-          <View style={styles.headerInner}>
-            <ReturnButton onPress={() => navigation.goBack()} top={-6} left={0} />
-            <View style={styles.headerCenter}>
-              <Ionicons name="person" size={24} color="#FFF" />
-              <Text style={styles.headerText}>{clientName}</Text>
-            </View>
+        <SafeAreaView style={styles.safeTop} />
+        <View style={styles.headerBar}>
+          <ReturnButton onPress={() => navigation.goBack()} top={-6} left={0} />
+          <View style={styles.headerTitleWrap}>
+            <Ionicons name="person" size={24} color="#FFF" />
+            <Text style={styles.headerTitle}>{clientName}</Text>
           </View>
         </View>
       </LinearGradient>
 
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}
-      >
-        {/* CHAT */}
-        <View style={styles.content}>  
-          <FlatList
-            ref={flatListRef}
-            data={messages}
-            renderItem={renderMessage}
-            keyExtractor={(_, i) => i.toString()}
-            contentContainerStyle={styles.messagesList}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-           
-          />
-        </View>
+      {/* CHAT LIST */}
+      <View style={styles.content}>
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          inverted
+          keyExtractor={(_, i) => i.toString()}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          initialNumToRender={20}
+          windowSize={5}
+          removeClippedSubviews
+          contentContainerStyle={{ padding: H_PADDING, paddingBottom: 0 }}
+        />
+      </View>
 
-        {/* FOOTER INPUT */}
-        <LinearGradient
-          colors={["#8E44AD", "#372173"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          locations={[0, 0.4]}
-          style={styles.footerGradient}
-        >
-          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 10) }]}>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="Écris un message..."
-                placeholderTextColor="#BA8ECD"
-                value={input}
-                onChangeText={setInput}
-                multiline
-                textAlignVertical="center"
-              />
-            </View>
-            <TouchableOpacity 
-              style={styles.sendButton} 
-              onPress={handleSend}
-              disabled={!input.trim()}
-            >
-              <Ionicons name="send" size={20} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
-      </KeyboardAvoidingView>
+      {/* FOOTER INPUT */}
+      <LinearGradient
+        colors={["#8E44AD", "#372173"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={[styles.footerGradient, { bottom: keyboardHeight }]}
+      >
+        <View style={[styles.footer, { paddingBottom: insets.bottom || 8 }]}>
+          <TextInput
+            style={styles.input}
+            placeholder="Écris un message..."
+            placeholderTextColor="#BA8ECD"
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={handleSend}
+            returnKeyType="send"
+          />
+          <TouchableOpacity
+            style={styles.sendBtn}
+            onPress={handleSend}
+            disabled={!input.trim()}
+          >
+            <Ionicons name="send" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
     </View>
   );
 }
 
 MessageConstructeur.propTypes = {
   navigation: PropTypes.object.isRequired,
-  route: PropTypes.object, // Made optional to avoid crashes
+  route: PropTypes.object,
 };
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: "#372173" },
-  container: {
+  container: { flex: 1, backgroundColor: "#372173" },
+  headerGradient: { width: "100%" },
+  safeTop: { backgroundColor: "transparent" },
+  headerBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: H_PADDING,
+    paddingVertical: 8,
+  },
+  headerTitleWrap: {
     flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 40,
   },
-  headerGradient: {
-    width: '100%',
-  },
-  footerGradient: {
-    width: '100%',
-  },
-  centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: '#fff',
+  headerTitle: {
+    color: "#fff",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
+    marginLeft: 8,
   },
-  safeTopArea: {
-    backgroundColor: 'transparent',
-  },
-  header: {
-    paddingTop: 8,
-    paddingBottom: 12,
-    minHeight: HEADER_HEIGHT,
-  },
-  headerInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: HORIZONTAL_PADDING,
-  },
-  headerCenter: { 
-    flex: 1, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    marginLeft: -20, // Compense la largeur du bouton de retour pour un vrai centrage
-  },
-  headerText: { 
-    color: '#fff', 
-    fontSize: 18, 
-    fontWeight: '600', 
-    marginLeft: 8 
-  },
+
   content: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
-  messagesList: {
-    paddingHorizontal: HORIZONTAL_PADDING,
-    paddingVertical: 16,
-  },
-  bubble: { 
-    marginVertical: 6, 
-    padding: 10, 
-    borderRadius: 12, 
-    maxWidth: '75%' 
-  },
-  bubbleMe: { 
-    alignSelf: 'flex-end', 
-    backgroundColor: '#6F41B6' 
-  },
-  bubbleOther: { 
-    alignSelf: 'flex-start', 
-    backgroundColor: '#DACFF5' 
-  },
-  bubbleText: { 
-    fontSize: 16 
-  },
-  bubbleTextMe: { 
-    color: '#fff' 
-  },
-  bubbleTextOther: { 
-    color: '#000' 
-  },
-  bubbleTime: { 
-    fontSize: 12, 
-    marginTop: 4, 
-    textAlign: 'right'
-  },
-  bubbleTimeMe: {
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  bubbleTimeOther: {
-    color: '#666',
-  },
+
+  bubble: { marginVertical: 6, padding: 12, borderRadius: 12, maxWidth: "80%" },
+  bubbleMe: { alignSelf: "flex-end", backgroundColor: "#6F41B6" },
+  bubbleOther: { alignSelf: "flex-start", backgroundColor: "#DACFF5" },
+  bubbleText: { fontSize: 16 },
+  bubbleTextMe: { color: "#fff" },
+  bubbleTextOther: { color: "#000" },
+  bubbleTime: { fontSize: 12, marginTop: 4, textAlign: "right" },
+  bubbleTimeMe: { color: "rgba(255,255,255,0.7)" },
+  bubbleTimeOther: { color: "#666" },
+
+  footerGradient: { position: "absolute", left: 0, right: 0 },
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: HORIZONTAL_PADDING,
-    paddingTop: 13,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: H_PADDING,
+    paddingVertical: 8,
   },
-  inputWrapper: {
+  input: {
     flex: 1,
-    backgroundColor: '#fff',
+    height: INPUT_HEIGHT,
+    backgroundColor: "#fff",
     borderRadius: 20,
-    height: INPUT_HEIGHT - 8,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    fontSize: 16,
   },
-  input: { 
-    fontSize: 16, 
-    color: '#000', 
-    padding: 0, 
-    flex: 1, 
-  },
-  sendButton: {
-    marginLeft: 12,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FE5900',
-    justifyContent: 'center',
-    alignItems: 'center',
+  sendBtn: {
+    width: INPUT_HEIGHT,
+    height: INPUT_HEIGHT,
+    borderRadius: INPUT_HEIGHT / 2,
+    backgroundColor: "#FE5900",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 8,
   },
 });

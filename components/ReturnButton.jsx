@@ -4,8 +4,10 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const ReturnButton = ({ onPress, top = 4, left = 0 }) => {
   return (
-    <TouchableOpacity onPress={onPress}
-      style={[styles.container, { top, left }]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.container, { top, left }]}
+    >
       <View style={styles.circle}>
         <FontAwesome5 name="chevron-left" size={20} color="#fff" />
       </View>
