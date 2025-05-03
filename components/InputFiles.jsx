@@ -12,16 +12,16 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 
-export default function InputFile() {
+export default function InputFile({ onUploadSuccess }) {
   const constructeur = useSelector((state) => state.constructeur.value);
   const client = useSelector((state) => state.client.value);
 
   const projectId =
     constructeur.projectId === null ? client.projectId : constructeur.projectId;
 
-  const devUrl = process.env.DEV_URL;
+  const prodURL = process.env.PROD_URL;
 
-  // Demande la permission pour accéder à la galerie (au moment du choix de l'image)
+  // Demande la permission pour accéder à la galerie
   const requestMediaLibraryPermissions = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -32,7 +32,7 @@ export default function InputFile() {
     return true;
   };
 
-  // Fonction pour sélectionner une image depuis la galerie
+  // Sélection et upload d'une image
   const pickImage = async () => {
     const hasPermission = await requestMediaLibraryPermissions();
     if (!hasPermission) return;
@@ -42,36 +42,36 @@ export default function InputFile() {
       allowsEditing: true,
       quality: 0.3,
     });
-    if (result.canceled) {
-      return;
-    }
+    if (result.canceled) return;
+
     const formData = new FormData();
     formData.append("file", {
       uri: result.assets[0].uri,
       name: result.assets[0].fileName,
       type: result.assets[0].mimeType,
     });
-    fetch(`https://track-my-home-backend.vercel.app/upload/${projectId}`, {
+
+    fetch(`${prodURL}/upload/${projectId}`, {
       method: "POST",
       body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("image", data.documents);
+          // Appel du callback pour mettre à jour la liste immédiatement
+          onUploadSuccess && onUploadSuccess(data.document || data.documents);
         }
-      });
+      })
+      .catch((err) => console.error("Erreur upload image", err));
   };
 
-  // Fonction pour sélectionner un fichier (PDF, etc.) via DocumentPicker
+  // Sélection et upload d'un fichier
   const pickFile = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: "*/*", // vous pouvez restreindre, ex: 'application/pdf'
+      type: "*/*",
       copyToCacheDirectory: true,
     });
-    if (result.canceled) {
-      return;
-    }
+    if (result.canceled) return;
 
     const formData = new FormData();
     formData.append("file", {
@@ -79,18 +79,22 @@ export default function InputFile() {
       name: result.assets[0].name,
       type: result.assets[0].mimeType,
     });
-    fetch(`https://track-my-home-backend.vercel.app/upload/${projectId}`, {
+
+    fetch(`${prodURL}/upload/${projectId}`, {
       method: "POST",
       body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("document", data.documents);
+          // Appel du callback pour mettre à jour la liste immédiatement
+          onUploadSuccess && onUploadSuccess(data.document || data.documents);
         }
-      });
+      })
+      .catch((err) => console.error("Erreur upload document", err));
   };
-  // Ouvre un ActionSheet (iOS) ou un simple Alert (Android) pour choisir le type de fichier
+
+  // Ouvre les options selon la plateforme
   const openActionSheet = () => {
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
@@ -99,15 +103,11 @@ export default function InputFile() {
           cancelButtonIndex: 0,
         },
         (buttonIndex) => {
-          if (buttonIndex === 1) {
-            pickImage();
-          } else if (buttonIndex === 2) {
-            pickFile();
-          }
+          if (buttonIndex === 1) pickImage();
+          else if (buttonIndex === 2) pickFile();
         }
       );
     } else {
-      // Sur Android, on peut utiliser un Alert ou une bibliothèque tierce
       Alert.alert(
         "Choisir une option",
         "",
@@ -123,7 +123,6 @@ export default function InputFile() {
 
   return (
     <View style={styles.container}>
-      {/* Zone cliquable avec style pointillé */}
       <TouchableOpacity
         style={styles.uploadContainer}
         onPress={openActionSheet}
@@ -170,7 +169,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#888",
   },
-  // Preview
   preview: {
     marginTop: 20,
     alignItems: "center",

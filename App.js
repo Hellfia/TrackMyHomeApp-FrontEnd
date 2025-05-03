@@ -1,63 +1,92 @@
-import { FontAwesome5 } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import React from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { FontAwesome5 } from "@expo/vector-icons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute,
+} from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { Provider, useSelector } from "react-redux";
 import { persistReducer, persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { StatusBar } from "react-native";
+
+// reducers
 import client from "./reducers/client";
 import constructeur from "./reducers/constructeur";
 
-// Import des écrans
-import DashboardScreen from "./screens//DashboardScreen";
+// écrans
+import DashboardScreen from "./screens/DashboardScreen";
+import ProjectsScreen from "./screens/ProjectScreen";
+import ClientRoomsScreen from "./screens/constructor/message/ClientRoomsScreen";
+import MessageClient from "./screens/client/message/MessageClient";
+import MessageConstructeur from "./screens/constructor/message/MessageConstructeur";
+import Artisans from "./screens/constructor/artisans/Artisans";
 import DocumentsClient from "./screens/client/documents/DocumentsClient";
 import UpdateProfileClient from "./screens/client/profil/UpdateProfileClient";
 import UpdateDetailsClient from "./screens/client/project/UpdateDetailsClient";
-import ConnexionScreen from "./screens/ConnexionScreen";
-import Artisans from "./screens/constructor//artisans/Artisans";
-import CreatCraftsman from "./screens/constructor/artisans/CreatCraftsman";
-import UpdateCraftsman from "./screens/constructor/artisans/UpdateCraftsman";
-import CreatAccount from "./screens/constructor/CreatAccount";
-import ClientRoomsScreen from "./screens/constructor/message/ClientRoomsScreen";
-import MessageConstructeur from "./screens/constructor/message/MessageConstructeur";
 import UpdateProfileConstructeur from "./screens/constructor/profil/UpdateProfileConstructeur";
 import AddProject from "./screens/constructor/project/AddProject";
 import ClientDetails from "./screens/constructor/project/ClientDetails";
 import DocumentsConstruteur from "./screens/constructor/project/documents/DocumentsConstruteur";
 import UpdateDetails from "./screens/constructor/project/UpdateDetails";
-import MessageScreen from "./screens/MessageScreen";
+import CreatCraftsman from "./screens/constructor/artisans/CreatCraftsman";
+import UpdateCraftsman from "./screens/constructor/artisans/UpdateCraftsman";
+import ConnexionScreen from "./screens/ConnexionScreen";
+import CreatAccount from "./screens/constructor/CreatAccount";
 import ProfilScreen from "./screens/ProfilScreen";
-import ProjectsScreen from "./screens/ProjectScreen";
-import MessageClient from "./screens/client/message/MessageClient";
-import { StatusBar } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const RootStack = createNativeStackNavigator();
+const ChatStack = createNativeStackNavigator();
 
-const reducers = combineReducers({ client, constructeur });
-const persistConfig = { key: "TrackMyHome2", storage: AsyncStorage };
-
-const store = configureStore({
-  reducer: persistReducer(persistConfig, reducers),
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }),
-});
-
-const persistor = persistStore(store);
-// AsyncStorage.clear().then();
-// persistor.purge().then();
-
-function MainTabs() {
-  const constructeurToken = useSelector(
+// Stack dédié au chat (client OU constructeur)
+function MessageStackNavigator() {
+  const isConstructeur = !!useSelector(
     (state) => state.constructeur.value.token
   );
-  const isConstructeur = !!constructeurToken;
+
+  return (
+    <ChatStack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName={isConstructeur ? "Rooms" : "MessageClient"}
+    >
+      {isConstructeur && (
+        <ChatStack.Screen name="Rooms" component={ClientRoomsScreen} />
+      )}
+      <ChatStack.Screen name="MessageClient" component={MessageClient} />
+      <ChatStack.Screen
+        name="MessageConstructeur"
+        component={MessageConstructeur}
+      />
+    </ChatStack.Navigator>
+  );
+}
+
+// Tabs principales
+function MainTabs() {
+  const isConstructeur = !!useSelector(
+    (state) => state.constructeur.value.token
+  );
+
+  const defaultTabBarStyle = {
+    position: "absolute",
+    height: 80,
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    borderTopWidth: 0,
+    elevation: 8,
+    shadowColor: "#673ED9",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    paddingHorizontal: 10,
+  };
 
   return (
     <Tab.Navigator
@@ -90,135 +119,97 @@ function MainTabs() {
         tabBarActiveTintColor: "#FE5900",
         tabBarInactiveTintColor: "#663ED9",
         headerShown: false,
-
-        // 💅 Custom TabBar Style
-        tabBarStyle: {
-          position: "absolute",
-          height: 80,
-          backgroundColor: "#fff",
-          borderRadius: 24,
-          borderTopWidth: 0,
-          elevation: 8, // Android shadow
-          shadowColor: "#673ED9",
-          shadowOffset: { width: 0, height: 5 },
-          shadowOpacity: 0.35,
-          shadowRadius: 10,
-          paddingHorizontal: 10,
-        },
+        tabBarStyle: defaultTabBarStyle,
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Projet" component={ProjectsScreen} />
-      <Tab.Screen name="Message" component={MessageScreen} />
+
+      <Tab.Screen
+        name="Message"
+        component={MessageStackNavigator}
+        options={({ route }) => {
+          let focused = getFocusedRouteNameFromRoute(route);
+          if (!focused) {
+            focused = isConstructeur ? "Rooms" : "MessageClient";
+          }
+          if (
+            focused === "MessageClient" ||
+            focused === "MessageConstructeur"
+          ) {
+            return { tabBarStyle: { display: "none" } };
+          }
+          return { tabBarStyle: defaultTabBarStyle };
+        }}
+      />
+
       {isConstructeur ? (
         <Tab.Screen name="Artisans" component={Artisans} />
       ) : (
         <Tab.Screen name="Documents" component={DocumentsClient} />
       )}
+
       <Tab.Screen name="Profil" component={ProfilScreen} />
     </Tab.Navigator>
   );
 }
 
+// Navigator racine (auth vs app)
 function RootNavigator() {
   const constructeurToken = useSelector(
     (state) => state.constructeur.value.token
   );
   const clientToken = useSelector((state) => state.client.value.token);
   const isAuthenticated = constructeurToken || clientToken;
+
   return (
-    <Stack.Navigator>
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (
         <>
-          <Stack.Screen
-            name="MainTabs"
-            component={MainTabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="MessageConstructeur"
-            component={MessageConstructeur}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ClientRoomsScreen"
-            component={ClientRoomsScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Intervenants"
-            component={Artisans}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="AddProject"
-            component={AddProject}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
+          <RootStack.Screen name="MainTabs" component={MainTabs} />
+          <RootStack.Screen name="AddProject" component={AddProject} />
+          <RootStack.Screen
             name="UpdateProfileConstructeur"
             component={UpdateProfileConstructeur}
-            options={{ headerShown: false }}
           />
-          <Stack.Screen
+          <RootStack.Screen
             name="UpdateCraftsman"
             component={UpdateCraftsman}
-            options={{ headerShown: false }}
           />
-          <Stack.Screen
+          <RootStack.Screen
             name="UpdateProfileClient"
             component={UpdateProfileClient}
-            options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="CreateCraftsman"
-            component={CreatCraftsman}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ClientDetails"
-            component={ClientDetails}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="UpdateDetails"
-            component={UpdateDetails}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Documents"
-            component={DocumentsConstruteur}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
+          <RootStack.Screen name="CreateCraftsman" component={CreatCraftsman} />
+          <RootStack.Screen name="ClientDetails" component={ClientDetails} />
+          <RootStack.Screen name="UpdateDetails" component={UpdateDetails} />
+          <RootStack.Screen name="Documents" component={DocumentsConstruteur} />
+          <RootStack.Screen
             name="UpdateDetailsClient"
             component={UpdateDetailsClient}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="MessageClient"
-            component={MessageClient}
-            options={{ headerShown: false }}
           />
         </>
       ) : (
         <>
-          <Stack.Screen
-            name="Connexion"
-            component={ConnexionScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ProAccCreation"
-            component={CreatAccount}
-            options={{ headerShown: false }}
-          />
+          <RootStack.Screen name="Connexion" component={ConnexionScreen} />
+          <RootStack.Screen name="ProAccCreation" component={CreatAccount} />
         </>
       )}
-    </Stack.Navigator>
+    </RootStack.Navigator>
   );
 }
 
+// Configuration Redux Persist + Store
+const reducers = combineReducers({ client, constructeur });
+const persistConfig = { key: "TrackMyHome2", storage: AsyncStorage };
+const store = configureStore({
+  reducer: persistReducer(persistConfig, reducers),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
+});
+const persistor = persistStore(store);
+
+// Point d'entrée de l'app
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

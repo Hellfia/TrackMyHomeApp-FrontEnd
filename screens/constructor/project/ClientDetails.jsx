@@ -9,135 +9,126 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch } from "react-redux";
 import maison from "../../../assets/maison-test.jpg";
 import PurpleButton from "../../../components/PurpleButton";
 import ReturnButton from "../../../components/ReturnButton";
 import StepItem from "../../../components/StepItem";
 import { addDocument } from "../../../reducers/constructeur";
-import globalStyles from "../../../styles/globalStyles";
+// import globalStyles if still needed for other screens
 
 export default function ClientDetails({ route, navigation }) {
   const dispatch = useDispatch();
   const { data } = route.params;
+  const insets = useSafeAreaInsets();
 
   const projectId = data._id;
-
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Trouver la dernière étape validée dans steps qui a le statut validée
   const lastValidatedStep = data.steps
+    .slice()
     .reverse()
     .find((step) => step.status === "validée");
 
-  const handlePress = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const prodURL = process.env.PROD_URL
-
-  const handleDelete = () => {
-    fetch(`${prodURL}/projects/${data._id}`, {
-      method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          navigation.navigate("Projet");
-        } else {
-          console.error("Erreur lors de la suppression :", data.error);
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur réseau ou serveur :", error);
-      });
-  };
-
-  const handleDocument = () => {
-    navigation.navigate("Documents", {
-      data: data,
-    });
-    dispatch(addDocument(projectId));
-  };
-
-  // Si on a une étape validée , on prend l'URI de la derniere, sinon on prend le logo par défaut
-  const image =
+  const imageSrc =
     lastValidatedStep && lastValidatedStep.uri
       ? { uri: lastValidatedStep.uri }
       : maison;
 
+  const handlePress = () => setIsModalVisible(true);
+  const handleCloseModal = () => setIsModalVisible(false);
+
+  const prodURL = process.env.PROD_URL;
+  const handleDelete = () => {
+    fetch(`${prodURL}/projects/${projectId}`, { method: "DELETE" })
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.result) navigation.navigate("Projet");
+        else console.error("Erreur lors de la suppression :", resData.error);
+      })
+      .catch((err) => console.error("Erreur réseau ou serveur :", err));
+  };
+
+  const handleDocument = () => {
+    navigation.navigate("Documents", { data });
+    dispatch(addDocument(projectId));
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-      <View style={globalStyles.header}>
+    <LinearGradient
+      colors={["#8E44AD", "#372173"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      locations={[0, 0.1]}
+      style={[styles.container, { paddingTop: insets.top }]}
+    >
+      <View style={styles.header}>
         <ReturnButton onPress={() => navigation.goBack()} />
-        <Text style={globalStyles.title}>{data.client.firstname}</Text>
+        <Text style={styles.headerTitle}>
+          {data.client.firstname} {data.client.lastname}
+        </Text>
         <FontAwesome5
           name="trash-alt"
-          size="25"
+          size={25}
           color="#FF0000"
           style={styles.icon}
           onPress={handlePress}
         />
       </View>
 
-      <View style={styles.imageContainer}>
-        <Image
-          source={image}
-          style={styles.image}
-          resizeMode="contain"
-          accessibilityLabel="Photo du projet de construction"
-        />
-      </View>
-      <PurpleButton text="Documents" icon="folder" onPress={handleDocument} />
-      <Text style={styles.stepText}>Les étapes de construction</Text>
-      <ScrollView>
-        <View style={styles.subContainer}>
-          {data.steps
-            .reverse() //Inverse le tableau
-            .map((step, index) => {
-              let iconName = "";
-              let iconColor = "";
-
-              // Déterminer l'icône et la couleur en fonction du statut
-              if (step.status === "À venir") {
-                iconName = "ban";
-                iconColor = "#FF0000";
-              } else if (step.status === "Terminé") {
-                iconName = "check";
-                iconColor = "#28DB52";
-              } else if (step.status === "En cours") {
-                iconName = "spinner";
-                iconColor = "#FFA500";
-              }
-
-              return (
-                <StepItem
-                  key={index}
-                  name={step.name}
-                  iconName={iconName}
-                  iconColor={iconColor}
-                  iconOnPress="pencil-alt"
-                  onPress={() =>
-                    navigation.navigate("UpdateDetails", {
-                      data: data,
-                      step: step,
-                    })
-                  }
-                />
-              );
-            })}
+      <View style={styles.content}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={imageSrc}
+            style={styles.image}
+            resizeMode="contain"
+            accessibilityLabel="Photo du projet de construction"
+          />
         </View>
-      </ScrollView>
 
-      {/* Modale */}
+        <PurpleButton text="Documents" icon="folder" onPress={handleDocument} />
+
+        <Text style={styles.stepText}>Les étapes de construction</Text>
+        <ScrollView>
+          <View style={styles.subContainer}>
+            {data.steps
+              .slice()
+              .reverse()
+              .map((step, idx) => {
+                let iconName = "";
+                let iconColor = "";
+                if (step.status === "À venir") {
+                  iconName = "ban";
+                  iconColor = "#FF0000";
+                } else if (step.status === "Terminé") {
+                  iconName = "check";
+                  iconColor = "#28DB52";
+                } else if (step.status === "En cours") {
+                  iconName = "spinner";
+                  iconColor = "#FFA500";
+                }
+                return (
+                  <StepItem
+                    key={idx}
+                    name={step.name}
+                    iconName={iconName}
+                    iconColor={iconColor}
+                    iconOnPress="pencil-alt"
+                    onPress={() =>
+                      navigation.navigate("UpdateDetails", { data, step })
+                    }
+                  />
+                );
+              })}
+          </View>
+        </ScrollView>
+      </View>
+
       <Modal
         visible={isModalVisible}
-        transparent={true}
+        transparent
         animationType="fade"
         onRequestClose={handleCloseModal}
       >
@@ -147,7 +138,7 @@ export default function ClientDetails({ route, navigation }) {
               Êtes-vous sûr de supprimer ce chantier ?
             </Text>
             <PurpleButton
-              onPress={() => handleDelete()}
+              onPress={handleDelete}
               text="Oui, supprimer"
               backgroundColor="#DB0000"
             />
@@ -155,22 +146,38 @@ export default function ClientDetails({ route, navigation }) {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
+  },
+  header: {
+    flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    justifyContent: "center",
+    paddingBottom: 50,
+  },
+  headerTitle: {
+    position: "absolute",
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
   },
   icon: {
     position: "absolute",
     top: 15,
-    right: 8,
+    right: 16,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingTop: 20,
+    paddingHorizontal: 20,
   },
   imageContainer: {
     justifyContent: "center",
@@ -188,7 +195,6 @@ const styles = StyleSheet.create({
   },
   subContainer: {
     marginVertical: 20,
-    display: "flex",
     alignItems: "flex-start",
   },
   stepText: {

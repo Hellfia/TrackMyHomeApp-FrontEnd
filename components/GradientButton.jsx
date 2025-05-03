@@ -7,9 +7,9 @@ const GradientButton = ({ text, onPress, style }) => {
     <TouchableOpacity style={[styles.buttonContainer, style]} onPress={onPress}>
       <View style={styles.shadowContainer}>
         <LinearGradient
-          colors={["#fb9b6b", "#fa9167", "#f98864", "#f87d62", "#f67360"]}
-          start={{ x: 0, y: 1 }}
-          end={{ x: 1, y: 0 }}
+          colors={["#fb9b6b", "#f87d62", "#f67360"]}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={styles.button}
         >
           <Text style={styles.buttonText}>{text}</Text>

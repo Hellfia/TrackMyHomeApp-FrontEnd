@@ -23,16 +23,34 @@ export default function DocumentsConstruteur({ navigation }) {
   const [documents, setDocuments] = useState([]);
   const prodURL = process.env.PROD_URL;
 
+  // Fetch documents for the project
+  const fetchDocuments = () => {
+    const projectId = client.projectId;
+    fetch(`${prodURL}/upload/documents/${projectId}`)
+      .then((res) => res.json())
+      .then((dataFetch) => setDocuments(dataFetch.documents))
+      .catch((err) => console.error("Erreur récupération docs", err));
+  };
+
+  // Load documents when screen gains focus
   useFocusEffect(
     useCallback(() => {
-      const projectId = client.projectId;
-      fetch(`${prodURL}/upload/documents/${projectId}`)
-        .then((res) => res.json())
-        .then((dataFetch) => setDocuments(dataFetch.documents))
-        .catch((err) => console.error("Erreur récupération docs", err));
+      fetchDocuments();
     }, [client.projectId])
   );
 
+  // Handler to add newly uploaded document(s) to state
+  const handleDocumentAdded = (newDocs) => {
+    if (Array.isArray(newDocs)) {
+      // si on reçoit un tableau complet de documents
+      setDocuments(newDocs);
+    } else {
+      // cas d'un seul document
+      setDocuments((prev) => [newDocs, ...prev]);
+    }
+  };
+
+  // Delete document
   const handleDeleteDocument = (id) => {
     const projectId = client.projectId;
     fetch(`${prodURL}/upload/documents/${projectId}/${id}`, {
@@ -47,6 +65,7 @@ export default function DocumentsConstruteur({ navigation }) {
       .catch((err) => console.error("Erreur suppression doc", err));
   };
 
+  // View document
   const handleViewDocument = async (uri) => {
     try {
       await Linking.openURL(uri);
@@ -82,7 +101,8 @@ export default function DocumentsConstruteur({ navigation }) {
       >
         <View style={styles.content}>
           <View style={styles.inputSection}>
-            <InputFiles />
+            {/* Pass callback to update list on successful upload */}
+            <InputFiles onUploadSuccess={handleDocumentAdded} />
           </View>
           <Text style={styles.documentsTitle}>Documents</Text>
           <ScrollView contentContainerStyle={styles.scrollContent}>

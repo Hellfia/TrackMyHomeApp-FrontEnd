@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
+  Animated,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -7,10 +9,15 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { useSelector } from "react-redux";
 import GradientButton from "../../../components/GradientButton";
-import Input from "../../../components/Input";
 import PurpleButton from "../../../components/PurpleButton";
+import Input from "../../../components/Input";
 import ReturnButton from "../../../components/ReturnButton";
 import updateCraftsman from "../../../schemas/UpdateCraftsmanSchema";
 import globalStyles from "../../../styles/globalStyles";
@@ -33,9 +40,30 @@ export default function UpdateCraftsman({ route, navigation }) {
   const [phoneNumber, setPhoneNumber] = useState(craftsman.phoneNumber || "");
   const [errors, setErrors] = useState({});
 
-  console.log(craftsmanName);
-
   const prodURL = process.env.PROD_URL;
+  const insets = useSafeAreaInsets();
+  const buttonTranslateY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", () => {
+      Animated.timing(buttonTranslateY, {
+        toValue: -40,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      Animated.timing(buttonTranslateY, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const handleUpdateProfile = () => {
     const { error } = updateCraftsman.validate({
@@ -55,22 +83,20 @@ export default function UpdateCraftsman({ route, navigation }) {
       return;
     }
 
-    fetch(`${prodURL}/craftsmen/${craftsman.craftsmanName}`, {
+    fetch(`${prodURL}/craftsmen/${craftsmanName}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        craftsmanName: craftsmanName,
-        craftsmanAddress: craftsmanAddress,
-        craftsmanZip: craftsmanZip,
-        craftsmanCity: craftsmanCity,
-        phoneNumber: phoneNumber,
+        craftsmanName,
+        craftsmanAddress,
+        craftsmanZip,
+        craftsmanCity,
+        phoneNumber,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.result) {
-          navigation.goBack();
-        }
+        if (data.result) navigation.goBack();
       });
   };
 
@@ -78,146 +104,144 @@ export default function UpdateCraftsman({ route, navigation }) {
     try {
       const response = await fetch(`${prodURL}/craftsmen/${craftsmanName}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
-
       const result = await response.json();
-
-      if (response.ok && result.result) {
-        console.log("L'artisan a été supprimé avec succès !");
-        navigation.goBack();
-      } else {
-        console.log(
-          result.error || "Une erreur s'est produite lors de la suppression."
-        );
-      }
+      if (response.ok && result.result) navigation.goBack();
+      else console.log(result.error);
     } catch (error) {
-      console.error("Erreur lors de la suppression de l'artisan :", error);
+      console.error(error);
       alert("Une erreur s'est produite. Veuillez réessayer plus tard.");
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={globalStyles.header}>
-        <ReturnButton onPress={() => navigation.goBack()} />
-        <Text style={globalStyles.title}>Modifier votre artisan</Text>
-      </View>
+    <LinearGradient
+      colors={["#8E44AD", "#753A9C", "#372173"]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1 }} edges={["bottom", "left", "right"]}>
+        <View style={[globalStyles.header, { marginTop: insets.top + 10 }]}>
+          <ReturnButton onPress={() => navigation.goBack()} />
+          <Text style={styles.title}>Modifier votre artisan</Text>
+        </View>
 
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView>
-          <View style={styles.inputContainer}>
-            <Input
-              style={styles.inputText}
-              placeholder="Nom de l'artisan"
-              value={craftsmanName}
-              onChangeText={(value) => setCraftsmanName(value)}
-              autoCapitalize="sentences"
-              autoCorrect={false}
-              keyboardType="default"
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.form}>
+              <Input
+                placeholder="Nom de l'artisan"
+                value={craftsmanName}
+                onChangeText={setCraftsmanName}
+                autoCapitalize="sentences"
+                autoCorrect={false}
+              />
+              {errors.craftsmanName && (
+                <Text style={styles.errorText}>{errors.craftsmanName}</Text>
+              )}
+
+              <Input
+                placeholder="Adresse de l'artisan"
+                value={craftsmanAddress}
+                onChangeText={setCraftsmanAddress}
+                autoCapitalize="sentences"
+                autoCorrect={false}
+              />
+              {errors.craftsmanAddress && (
+                <Text style={styles.errorText}>{errors.craftsmanAddress}</Text>
+              )}
+
+              <Input
+                placeholder="Code postal"
+                value={craftsmanZip}
+                onChangeText={setCraftsmanZip}
+                keyboardType="phone-pad"
+                autoCorrect={false}
+              />
+              {errors.craftsmanZip && (
+                <Text style={styles.errorText}>{errors.craftsmanZip}</Text>
+              )}
+
+              <Input
+                placeholder="Ville"
+                value={craftsmanCity}
+                onChangeText={setCraftsmanCity}
+                autoCapitalize="sentences"
+                autoCorrect={false}
+              />
+              {errors.craftsmanCity && (
+                <Text style={styles.errorText}>{errors.craftsmanCity}</Text>
+              )}
+
+              <Input
+                placeholder="Téléphone"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
+                autoCorrect={false}
+              />
+              {errors.phoneNumber && (
+                <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+              )}
+            </View>
+          </ScrollView>
+
+          <Animated.View
+            style={[
+              styles.buttonWrapper,
+              { transform: [{ translateY: buttonTranslateY }] },
+            ]}
+          >
+            <GradientButton
+              text="Mettre à jour"
+              onPress={handleUpdateProfile}
             />
-            {errors.craftsmanName && (
-              <Text style={styles.errorText}>{errors.craftsmanName}</Text>
-            )}
-
-            <Input
-              style={styles.inputText}
-              placeholder="Adresse de l'artisan"
-              value={craftsmanAddress}
-              onChangeText={(value) => setCraftsmanAddress(value)}
-              autoCapitalize="sentences"
-              autoCorrect={false}
-              keyboardType="default"
+            <PurpleButton
+              icon="trash-alt"
+              text="Supprimer l'artisan"
+              backgroundColor="#FE5900"
+              onPress={handlePressDelete}
             />
-            {errors.craftsmanAddress && (
-              <Text style={styles.errorText}>{errors.craftsmanAddress}</Text>
-            )}
-
-            <Input
-              style={styles.inputText}
-              placeholder="Code postal de l'artisan"
-              value={craftsmanZip}
-              onChangeText={(value) => setCraftsmanZip(value)}
-              autoCorrect={false}
-              keyboardType="phone-pad"
-            />
-            {errors.craftsmanZip && (
-              <Text style={styles.errorText}>{errors.craftsmanZip}</Text>
-            )}
-
-            <Input
-              style={styles.inputText}
-              placeholder="Ville de l'artisan"
-              value={craftsmanCity}
-              onChangeText={(value) => setCraftsmanCity(value)}
-              autoCapitalize="sentences"
-              autoCorrect={false}
-              keyboardType="default"
-            />
-            {errors.craftsmanCity && (
-              <Text style={styles.errorText}>{errors.craftsmanCity}</Text>
-            )}
-
-            <Input
-              style={styles.inputText}
-              placeholder="Téléphone de l'artisan"
-              value={phoneNumber}
-              onChangeText={(value) => setPhoneNumber(value)}
-              keyboardType="phone-pad"
-              autoCorrect={false}
-            />
-            {errors.phoneNumber && (
-              <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-            )}
-          </View>
-        </ScrollView>
-
-        <GradientButton onPress={handleUpdateProfile} text="Mettre à jour" />
-        <PurpleButton
-          icon="trash-alt"
-          text="Supprimer l'artisan"
-          backgroundColor="#FE5900"
-          onPress={handlePressDelete}
-        />
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
+  scrollContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 50,
+    flexGrow: 1,
   },
-  inputLogoContainer: {
-    marginVertical: 20,
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
   },
-  inputContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  inputText: {
+  form: {
     width: "100%",
-    padding: 12,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: "#ddd",
-    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 70,
   },
   errorText: {
-    color: "red",
+    color: "#FF6B6B",
     fontSize: 12,
-    marginTop: -10,
     marginBottom: 10,
-    marginLeft: 15,
-    width: "100%",
+    marginLeft: 10,
+  },
+  buttonWrapper: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });

@@ -17,6 +17,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
@@ -32,7 +33,7 @@ const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
     setTempDate(date);
   }, [date]);
 
-  if (!visible) return null;
+  if (!visible || Platform.OS === "android") return null; // ❌ rien pour Android ici
 
   return (
     <View style={styles.modalOverlay}>
@@ -40,8 +41,12 @@ const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
         <DateTimePicker
           value={tempDate}
           mode="datetime"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={(e, d) => d && setTempDate(d)}
+          display="spinner"
+          onChange={(event, selectedDate) => {
+            if (selectedDate) {
+              setTempDate(selectedDate);
+            }
+          }}
           style={{ width: "100%", marginBottom: scale(16) }}
         />
         <GradientButton
@@ -59,6 +64,8 @@ const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
     </View>
   );
 };
+
+
 
 export default function DashboardConstructeur({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -81,10 +88,22 @@ export default function DashboardConstructeur({ navigation }) {
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
+  // Lance l'appel téléphonique
   const callClient = (phone) =>
     phone && phone !== "Non renseigné"
       ? Linking.openURL(`tel:${phone}`)
       : alert("Numéro non renseigné");
+
+  // Ouvre Google Maps en mode itinéraire voiture vers la destination
+  const openNavigation = (latitude, longitude) => {
+    if (!latitude || !longitude) {
+      return alert("Coordonnées du chantier non disponibles");
+    }
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+    Linking.openURL(url).catch((err) =>
+      console.error("Impossible d’ouvrir Google Maps", err)
+    );
+  };
 
   // Récupération artisans
   useFocusEffect(
@@ -96,7 +115,7 @@ export default function DashboardConstructeur({ navigation }) {
     }, [constructeur.token])
   );
 
-  // Récupération clients
+  // Récupération clients, on stocke aussi lat/lng
   useFocusEffect(
     useCallback(() => {
       fetch(
@@ -112,6 +131,8 @@ export default function DashboardConstructeur({ navigation }) {
                 firstname: item.client.firstname,
                 lastname: item.client.lastname,
                 phoneNumber: item.client.phoneNumber || "Non renseigné",
+                latitude: parseFloat(item.client.constructionLat),
+                longitude: parseFloat(item.client.constructionLong),
               }))
             );
           } else setClientsData([]);
@@ -147,7 +168,6 @@ export default function DashboardConstructeur({ navigation }) {
       59,
       59
     );
-    // one call for all calendars
     const allIds = calendars.map((c) => c.id);
     const allEvents = await Calendar.getEventsAsync(
       allIds,
@@ -285,18 +305,53 @@ export default function DashboardConstructeur({ navigation }) {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <DateTimeModal
-                visible={showStartPicker}
-                date={newEventStart}
-                onClose={() => setShowStartPicker(false)}
-                onConfirm={setNewEventStart}
-              />
-              <DateTimeModal
-                visible={showEndPicker}
-                date={newEventEnd}
-                onClose={() => setShowEndPicker(false)}
-                onConfirm={setNewEventEnd}
-              />
+             {/* Picker pour date de début */}
+             {Platform.OS === 'ios' ? (
+               <DateTimeModal
+                 visible={showStartPicker}
+                 date={newEventStart}
+                 onClose={() => setShowStartPicker(false)}
+                 onConfirm={setNewEventStart}
+               />
+             ) : (
+               showStartPicker && (
+                 <DateTimePicker
+                   value={newEventStart}
+                   mode="datetime"
+                   display="default"
+                   onChange={(event, selectedDate) => {
+                     setShowStartPicker(false);
+                     if (selectedDate) {
+                       setNewEventStart(selectedDate);
+                     }
+                   }}
+                 />
+               )
+             )}
+
+             {/* Picker pour date de fin */}
+             {Platform.OS === 'ios' ? (
+               <DateTimeModal
+                 visible={showEndPicker}
+                 date={newEventEnd}
+                 onClose={() => setShowEndPicker(false)}
+                 onConfirm={setNewEventEnd}
+               />
+             ) : (
+               showEndPicker && (
+                 <DateTimePicker
+                   value={newEventEnd}
+                   mode="datetime"
+                   display="default"
+                   onChange={(event, selectedDate) => {
+                     setShowEndPicker(false);
+                     if (selectedDate) {
+                       setNewEventEnd(selectedDate);
+                     }
+                   }}
+                 />
+               )
+             )}
               <GradientButton
                 text="Ajouter"
                 onPress={createCalendarEvent}
@@ -334,7 +389,7 @@ export default function DashboardConstructeur({ navigation }) {
           </View>
           <View style={styles.taskContainer}>
             {events.length === 0 ? (
-              <Text style={styles.Notasks}>Aucune tâche pour aujourd'hui</Text>
+              <Text style={styles.NoTask}>Aucune tâche pour aujourd'hui</Text>
             ) : (
               events.map((ev, i) => (
                 <TouchableOpacity
@@ -406,11 +461,7 @@ export default function DashboardConstructeur({ navigation }) {
               </View>
             ) : (
               clientsData.map((c) => (
-                <TouchableOpacity
-                  key={c.id}
-                  style={styles.clientCard}
-                  onPress={() => callClient(c.phoneNumber)}
-                >
+                <View key={c.id} style={styles.clientCard}>
                   <Image
                     source={c.logo ? { uri: c.logo } : avatar}
                     style={styles.clientAvatar}
@@ -419,21 +470,27 @@ export default function DashboardConstructeur({ navigation }) {
                     {c.firstname} {c.lastname}
                   </Text>
                   <View style={styles.iconRow}>
-                    <View style={styles.phoneIcon}>
-                      <FontAwesome5
-                        name="phone-alt"
-                        size={scale(16)}
-                        color="#f67360"
-                      />
-                    </View>
-                    <View style={styles.pinIcon}>
-                      <Image
-                        source={require("../../../assets/mappin.png")}
-                        style={{ width: scale(25), height: scale(25) }}
-                      />
-                    </View>
+                    <TouchableOpacity onPress={() => callClient(c.phoneNumber)}>
+                      <View style={styles.phoneIcon}>
+                        <FontAwesome5
+                          name="phone-alt"
+                          size={scale(16)}
+                          color="#f67360"
+                        />
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => openNavigation(c.latitude, c.longitude)}
+                    >
+                      <View style={styles.pinIcon}>
+                        <Image
+                          source={require("../../../assets/mappin.png")}
+                          style={{ width: scale(25), height: scale(25) }}
+                        />
+                      </View>
+                    </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
+                </View>
               ))
             )}
           </ScrollView>

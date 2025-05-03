@@ -21,6 +21,7 @@ import InputPicture from "../../../components/InputPicture";
 import ReturnButton from "../../../components/ReturnButton";
 import globalStyles from "../../../styles/globalStyles";
 import updateDetails from "../../../schemas/UpdateDetails";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function UpdateDetails({ route, navigation }) {
   const { data, step } = route.params;
@@ -68,7 +69,7 @@ export default function UpdateDetails({ route, navigation }) {
     }
   };
 
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
 
   // Fonction de validation du formulaire avec Joi
   const validateForm = () => {
@@ -126,113 +127,123 @@ export default function UpdateDetails({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-      <View style={globalStyles.header}>
-        <ReturnButton onPress={() => navigation.goBack()} />
-        <Text style={globalStyles.title}>{data.client.firstname}</Text>
-      </View>
-      <Text style={styles.nameStepText}>{step.name}</Text>
-      <KeyboardAvoidingView
-        style={styles.keyboardContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={20}
-      >
-        <ScrollView ref={scrollViewRef}>
-          <InputPicture step={step} clientIdProps={clientIdProps} />
+    <LinearGradient
+      colors={["#8E44AD", "#753A9C", "#372173"]}
+      style={styles.gradientContainer}
+    >
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+        <View style={globalStyles.header}>
+          <ReturnButton onPress={() => navigation.goBack()} />
+          <Text style={globalStyles.title}>
+            {data.client.firstname} {data.client.lastname}
+          </Text>
+        </View>
+        <Text style={styles.nameStepText}>{step.name}</Text>
+        <KeyboardAvoidingView
+          style={styles.keyboardContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={20}
+        >
+          <ScrollView ref={scrollViewRef}>
+            <InputPicture step={step} clientIdProps={clientIdProps} />
 
-          <View style={styles.selectContainer}>
-            <View style={styles.statusContainer}>
-              <Text style={styles.label}>Status :</Text>
-              <Text style={styles.status}>{status}</Text>
+            <View style={styles.selectContainer}>
+              <View style={styles.statusContainer}>
+                <Text style={styles.label}>Status :</Text>
+                <Text style={styles.status}>{status}</Text>
+              </View>
+              <FontAwesome5
+                name="pencil-alt"
+                size={22}
+                color="#fff"
+                style={styles.icon}
+                onPress={() => setModalVisible(true)}
+              />
             </View>
-            <FontAwesome5
-              name="pencil-alt"
-              size={22}
-              color="#663ED9"
-              style={styles.icon}
-              onPress={() => setModalVisible(true)}
-            />
-          </View>
-          <Modal
-            visible={isModalVisible}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <FlatList
-                  data={options}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={styles.option}
-                      onPress={() => handleSelect(item)}
-                    >
-                      <Text style={styles.optionText}>{item}</Text>
-                    </TouchableOpacity>
-                  )}
+            <Modal
+              visible={isModalVisible}
+              transparent={true}
+              animationType="fade"
+              onRequestClose={() => setModalVisible(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <FlatList
+                    data={options}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.option}
+                        onPress={() => handleSelect(item)}
+                      >
+                        <Text style={styles.optionText}>{item}</Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                </View>
+              </View>
+            </Modal>
+
+            {/* Affichage de l'erreur pour le statut */}
+            {errors.status && (
+              <Text style={styles.errorText}>{errors.status}</Text>
+            )}
+
+            <View style={styles.datePickerContainer}>
+              <Text style={styles.label}>Date de début :</Text>
+              <View style={styles.datePickerWrapper}>
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={onChangeDate}
+                  style={styles.datePicker}
                 />
               </View>
             </View>
-          </Modal>
 
-          {/* Affichage de l'erreur pour le statut */}
-          {errors.status && (
-            <Text style={styles.errorText}>{errors.status}</Text>
-          )}
+            {/* Affichage de l'erreur pour la date de début */}
+            {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
 
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.label}>Date de début :</Text>
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={onChangeDate}
-            />
-          </View>
+            <View style={styles.datePickerContainer}>
+              <Text style={styles.label}>Date de fin prévu :</Text>
+              <DateTimePicker
+                value={dateEnd}
+                mode="date"
+                display="default"
+                onChange={onChangeDateEnd}
+              />
+            </View>
 
-          {/* Affichage de l'erreur pour la date de début */}
-          {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
+            {/* Affichage de l'erreur pour la date de fin */}
+            {errors.dateEnd && (
+              <Text style={styles.errorText}>{errors.dateEnd}</Text>
+            )}
 
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.label}>Date de fin prévu :</Text>
-            <DateTimePicker
-              value={dateEnd}
-              mode="date"
-              display="default"
-              onChange={onChangeDateEnd}
-            />
-          </View>
+            <View style={styles.textareaContainer}>
+              <Text style={styles.label}>Commentaires :</Text>
+              <TextInput
+                style={styles.textarea}
+                placeholder="Ajoutez un commentaire ici..."
+                multiline={true}
+                numberOfLines={4}
+                value={content}
+                keyboardType="default"
+                onChangeText={setContent}
+                autoCapitalize="sentences"
+              />
+            </View>
 
-          {/* Affichage de l'erreur pour la date de fin */}
-          {errors.dateEnd && (
-            <Text style={styles.errorText}>{errors.dateEnd}</Text>
-          )}
+            {/* Affichage de l'erreur pour le commentaire */}
+            {errors.content && (
+              <Text style={styles.errorText}>{errors.content}</Text>
+            )}
 
-          <View style={styles.textareaContainer}>
-            <Text style={styles.label}>Commentaires :</Text>
-            <TextInput
-              style={styles.textarea}
-              placeholder="Ajoutez un commentaire ici..."
-              multiline={true}
-              numberOfLines={4}
-              value={content}
-              keyboardType="default"
-              onChangeText={setContent}
-              autoCapitalize="sentences"
-            />
-          </View>
-
-          {/* Affichage de l'erreur pour le commentaire */}
-          {errors.content && (
-            <Text style={styles.errorText}>{errors.content}</Text>
-          )}
-
-          <GradientButton text="Valider" onPress={handlePress} />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            <GradientButton text="Valider" onPress={handlePress} />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
@@ -243,11 +254,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: 20,
   },
+  gradientContainer: {
+    flex: 1,
+  },
   nameStepText: {
     margin: 20,
     fontSize: 18,
     fontWeight: "600",
-    color: "#362173",
+    color: "#fff",
   },
   selectContainer: {
     width: "100%",
@@ -269,6 +283,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 10,
   },
+  datePickerWrapper: {
+    borderRadius: 8,
+    overflow: "hidden", // important pour arrondir proprement
+  },
   textareaContainer: {
     marginVertical: 20,
     width: "100%",
@@ -278,7 +296,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: "#663ED9",
+    borderColor: "#fff",
     borderRadius: 8,
     backgroundColor: "#fff",
     padding: 12,
@@ -287,9 +305,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#362173",
+    color: "#fff",
   },
   status: {
+    color: "#FF6600",
     fontSize: 16,
     marginLeft: 15,
   },

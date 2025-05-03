@@ -29,7 +29,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.hellfia.TrackMyHomeApp"
@@ -42,9 +42,7 @@
         "projectId": "95c47ffa-51d5-4526-a81b-7ae89fdbbb62"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/95c47ffa-51d5-4526-a81b-7ae89fdbbb62"
     }

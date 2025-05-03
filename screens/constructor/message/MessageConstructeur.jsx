@@ -1,114 +1,99 @@
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import PropTypes from "prop-types";
-import React, { useEffect, useRef, useState, useCallback, memo } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   FlatList,
+  KeyboardAvoidingView,
   Keyboard,
-  SafeAreaView,
-  StyleSheet,
   Platform,
+  StyleSheet,
+  StatusBar,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
 import ReturnButton from "../../../components/ReturnButton";
 
-const HEADER_HEIGHT = 56;
-const INPUT_HEIGHT = 50;
-const H_PADDING = 24;
-
-const MessageBubble = memo(({ text, date, isMe }) => (
-  <View style={[styles.bubble, isMe ? styles.bubbleMe : styles.bubbleOther]}>
+const MessageBubble = memo(({ message, isOwn }) => (
+  <View style={[styles.bubble, isOwn ? styles.bubbleRight : styles.bubbleLeft]}>
     <Text
-      style={[
-        styles.bubbleText,
-        isMe ? styles.bubbleTextMe : styles.bubbleTextOther,
-      ]}
+      style={[styles.bubbleText, isOwn ? styles.textRight : styles.textLeft]}
     >
-      {" "}
-      {text}{" "}
+      {message.text}
     </Text>
     <Text
-      style={[
-        styles.bubbleTime,
-        isMe ? styles.bubbleTimeMe : styles.bubbleTimeOther,
-      ]}
+      style={[styles.bubbleTime, isOwn ? styles.timeRight : styles.timeLeft]}
     >
-      {" "}
-      {date.slice(0, 5)}{" "}
+      {new Date(message.date).toLocaleTimeString()}
     </Text>
   </View>
 ));
 
+MessageBubble.propTypes = {
+  message: PropTypes.object.isRequired,
+  isOwn: PropTypes.bool.isRequired,
+};
+
 export default function MessageConstructeur({ navigation, route }) {
-  const insets = useSafeAreaInsets();
-  const projectId = route?.params?.projectId;
-  const clientName = route?.params?.clientName || "Client";
-  const constructeurName = useSelector(
+  const projectId = route.params.projectId;
+  const clientName = route.params.clientName || "Messagerie";
+  const currentUser = useSelector(
     (state) => state.constructeur.value.constructorName
   );
   const prodURL = process.env.PROD_URL;
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const socketRef = useRef(null);
+
   const flatListRef = useRef(null);
+  const socketRef = useRef(null);
 
-  // Track keyboard height
   useEffect(() => {
-    const show = Keyboard.addListener("keyboardDidShow", (e) =>
-      setKeyboardHeight(e.endCoordinates.height)
-    );
-    const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardHeight(0)
-    );
+    if (!projectId) return;
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch(`${prodURL}/messages/${projectId}`);
+        const json = await res.json();
+        if (active && json.success) {
+          const hist = json.messages.map((m) => ({
+            text: m.content,
+            date: m.date,
+            sender: m.sender,
+            id: m._id || m.id,
+          }));
+          setMessages(hist.reverse());
+        }
+      } catch (e) {
+        console.error("Erreur fetch messages:", e);
+      }
+    })();
     return () => {
-      show.remove();
-      hide.remove();
+      active = false;
     };
-  }, []);
-
-  useEffect(() => {
-    if (!projectId) navigation.replace("ClientRoomsScreen");
-  }, [projectId, navigation]);
+  }, [projectId]);
 
   useEffect(() => {
     if (!projectId) return;
     const sock = io(prodURL);
     socketRef.current = sock;
     sock.emit("joinProject", projectId);
-    sock.on("newMessage", (msg) => setMessages((prev) => [msg, ...prev]));
-    return () => sock.disconnect();
-  }, [projectId, prodURL]);
-
-  useEffect(() => {
-    if (!projectId) return;
-    (async () => {
-      try {
-        const res = await fetch(`${prodURL}/messages/${projectId}`);
-        const { success, messages: msgs } = await res.json();
-        if (success) {
-          setMessages(
-            msgs
-              .map((m) => ({
-                text: m.content,
-                from: m.sender,
-                date: new Date(m.date).toLocaleTimeString(),
-              }))
-              .reverse()
-          );
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, [projectId, prodURL]);
+    sock.on("newMessage", (msg) => {
+      const incoming = {
+        text: msg.text,
+        date: msg.date,
+        sender: msg.from,
+        id: msg.id || Date.now().toString(),
+      };
+      setMessages((prev) => [incoming, ...prev]);
+    });
+    return () => {
+      sock.disconnect();
+    };
+  }, [projectId]);
 
   useEffect(() => {
     if (flatListRef.current && messages.length) {
@@ -117,25 +102,29 @@ export default function MessageConstructeur({ navigation, route }) {
   }, [messages]);
 
   const renderItem = useCallback(
-    ({ item }) => {
-      const isMe = item.from === constructeurName;
-      return <MessageBubble text={item.text} date={item.date} isMe={isMe} />;
-    },
-    [constructeurName]
+    ({ item }) => (
+      <MessageBubble message={item} isOwn={item.sender === currentUser} />
+    ),
+    [currentUser]
   );
 
-  const handleSend = useCallback(async () => {
+  const keyExtractor = useCallback((item) => item.id.toString(), []);
+
+  const sendMessage = useCallback(async () => {
     const text = input.trim();
     if (!text) return;
+
     const msg = {
       text,
-      from: constructeurName,
-      date: new Date().toLocaleTimeString(),
+      from: currentUser,
+      date: new Date().toISOString(),
       projectId,
     };
+
     socketRef.current.emit("sendMessage", msg);
     setInput("");
     Keyboard.dismiss();
+
     try {
       await fetch(`${prodURL}/messages/${projectId}`, {
         method: "POST",
@@ -147,145 +136,126 @@ export default function MessageConstructeur({ navigation, route }) {
         }),
       });
     } catch (e) {
-      console.error(e);
+      console.error("Erreur POST message:", e);
     }
-  }, [input, constructeurName, projectId, prodURL]);
+  }, [input, currentUser, projectId, prodURL]);
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <LinearGradient
         colors={["#8E44AD", "#372173"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={styles.headerGradient}
+        locations={[0, 0.3]}
+        style={styles.header}
       >
-        <SafeAreaView style={styles.safeTop} />
-        <View style={styles.headerBar}>
-          <ReturnButton onPress={() => navigation.goBack()} top={-6} left={0} />
-          <View style={styles.headerTitleWrap}>
-            <Ionicons name="person" size={24} color="#FFF" />
-            <Text style={styles.headerTitle}>{clientName}</Text>
-          </View>
-        </View>
+        <ReturnButton onPress={() => navigation.goBack()} top={40} />
+        <Text style={styles.headerTitle}>{clientName}</Text>
       </LinearGradient>
 
-      {/* CHAT LIST */}
-      <View style={styles.content}>
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          inverted
-          keyExtractor={(_, i) => i.toString()}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          initialNumToRender={20}
-          windowSize={5}
-          removeClippedSubviews
-          contentContainerStyle={{ padding: H_PADDING, paddingBottom: 0 }}
-        />
-      </View>
-
-      {/* FOOTER INPUT */}
-      <LinearGradient
-        colors={["#8E44AD", "#372173"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={[styles.footerGradient, { bottom: keyboardHeight }]}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={[styles.footer, { paddingBottom: insets.bottom || 8 }]}>
-          <TextInput
-            style={styles.input}
-            placeholder="Écris un message..."
-            placeholderTextColor="#BA8ECD"
-            value={input}
-            onChangeText={setInput}
-            onSubmitEditing={handleSend}
-            returnKeyType="send"
+        <View style={styles.contentContainer}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            inverted
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            contentContainerStyle={styles.listContent}
+            keyboardShouldPersistTaps="handled"
           />
-          <TouchableOpacity
-            style={styles.sendBtn}
-            onPress={handleSend}
-            disabled={!input.trim()}
+          <LinearGradient
+            colors={["#8E44AD", "#372173"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            locations={[0, 0.4]}
+            style={styles.footer}
           >
-            <Ionicons name="send" size={20} color="#fff" />
-          </TouchableOpacity>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                value={input}
+                onChangeText={setInput}
+                placeholder="Écris un message..."
+                placeholderTextColor="#DDD"
+                multiline
+              />
+            </View>
+            <TouchableOpacity
+              onPress={sendMessage}
+              style={styles.sendBtn}
+              disabled={!input.trim()}
+            >
+              <Text style={styles.sendText}>Envoyer</Text>
+            </TouchableOpacity>
+          </LinearGradient>
         </View>
-      </LinearGradient>
+      </KeyboardAvoidingView>
     </View>
   );
 }
 
 MessageConstructeur.propTypes = {
-  navigation: PropTypes.object.isRequired,
-  route: PropTypes.object,
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      projectId: PropTypes.string.isRequired,
+      clientName: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#372173" },
-  headerGradient: { width: "100%" },
-  safeTop: { backgroundColor: "transparent" },
-  headerBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: H_PADDING,
-    paddingVertical: 8,
-  },
-  headerTitleWrap: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 40,
-  },
-  headerTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 8,
-  },
+const RADIUS = 28;
 
-  content: {
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#FFF" },
+  header: {
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 60,
+    paddingHorizontal: 16,
+    paddingVertical: 35,
+    alignItems: "center",
+  },
+  headerTitle: { color: "#FFF", fontSize: 18, fontWeight: "bold" },
+  flex: { flex: 1 },
+  contentContainer: {
     flex: 1,
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    backgroundColor: "#FFF",
+    marginTop: -RADIUS,
+    borderTopLeftRadius: RADIUS,
+    borderTopRightRadius: RADIUS,
     overflow: "hidden",
   },
-
-  bubble: { marginVertical: 6, padding: 12, borderRadius: 12, maxWidth: "80%" },
-  bubbleMe: { alignSelf: "flex-end", backgroundColor: "#6F41B6" },
-  bubbleOther: { alignSelf: "flex-start", backgroundColor: "#DACFF5" },
+  listContent: { paddingHorizontal: 16, paddingBottom: 0 },
+  bubble: { marginVertical: 4, padding: 10, borderRadius: 16, maxWidth: "80%" },
+  bubbleLeft: { alignSelf: "flex-start", backgroundColor: "#DACFF5" },
+  bubbleRight: { alignSelf: "flex-end", backgroundColor: "#6F41B6" },
   bubbleText: { fontSize: 16 },
-  bubbleTextMe: { color: "#fff" },
-  bubbleTextOther: { color: "#000" },
+  textLeft: { color: "#000" },
+  textRight: { color: "#FFF" },
   bubbleTime: { fontSize: 12, marginTop: 4, textAlign: "right" },
-  bubbleTimeMe: { color: "rgba(255,255,255,0.7)" },
-  bubbleTimeOther: { color: "#666" },
-
-  footerGradient: { position: "absolute", left: 0, right: 0 },
+  timeLeft: { color: "#000" },
+  timeRight: { color: "#FFF" },
   footer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: H_PADDING,
-    paddingVertical: 8,
-  },
-  input: {
-    flex: 1,
-    height: INPUT_HEIGHT,
-    backgroundColor: "#fff",
-    borderRadius: 20,
     paddingHorizontal: 16,
-    fontSize: 16,
+    paddingVertical: 20,
   },
-  sendBtn: {
-    width: INPUT_HEIGHT,
-    height: INPUT_HEIGHT,
-    borderRadius: INPUT_HEIGHT / 2,
-    backgroundColor: "#FE5900",
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: 8,
+  inputContainer: {
+    flex: 1,
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
   },
+  input: { fontSize: 16, maxHeight: 100 },
+  sendBtn: { marginLeft: 8, padding: 10 },
+  sendText: { color: "#FFF", fontWeight: "600" },
 });
