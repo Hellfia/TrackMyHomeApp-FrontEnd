@@ -32,7 +32,8 @@
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.hellfia.TrackMyHomeApp"
+      "package": "com.hellfia.TrackMyHomeApp",
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"

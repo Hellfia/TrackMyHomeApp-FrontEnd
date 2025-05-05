@@ -33,7 +33,7 @@ const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
     setTempDate(date);
   }, [date]);
 
-  if (!visible || Platform.OS === "android") return null; // ❌ rien pour Android ici
+  if (!visible) return null; // Simplifié : ne rend rien si pas visible
 
   return (
     <View style={styles.modalOverlay}>
@@ -41,31 +41,41 @@ const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
         <DateTimePicker
           value={tempDate}
           mode="datetime"
-          display="spinner"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
           onChange={(event, selectedDate) => {
             if (selectedDate) {
               setTempDate(selectedDate);
             }
+            // Fermeture automatique sur Android
+            if (Platform.OS === "android") {
+              onConfirm(selectedDate || tempDate);
+              onClose();
+            }
           }}
           style={{ width: "100%", marginBottom: scale(16) }}
         />
-        <GradientButton
-          text="Valider"
-          onPress={() => {
-            onConfirm(tempDate);
-            onClose();
-          }}
-          style={{ width: "100%" }}
-        />
-        <TouchableOpacity onPress={onClose} style={{ marginTop: scale(12) }}>
-          <Text style={styles.cancelText}>Annuler</Text>
-        </TouchableOpacity>
+        {Platform.OS === "ios" && (
+          <>
+            <GradientButton
+              text="Valider"
+              onPress={() => {
+                onConfirm(tempDate);
+                onClose();
+              }}
+              style={{ width: "100%" }}
+            />
+            <TouchableOpacity
+              onPress={onClose}
+              style={{ marginTop: scale(12) }}
+            >
+              <Text style={styles.cancelText}>Annuler</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );
 };
-
-
 
 export default function DashboardConstructeur({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -305,53 +315,53 @@ export default function DashboardConstructeur({ navigation }) {
                   </Text>
                 </TouchableOpacity>
               </View>
-             {/* Picker pour date de début */}
-             {Platform.OS === 'ios' ? (
-               <DateTimeModal
-                 visible={showStartPicker}
-                 date={newEventStart}
-                 onClose={() => setShowStartPicker(false)}
-                 onConfirm={setNewEventStart}
-               />
-             ) : (
-               showStartPicker && (
-                 <DateTimePicker
-                   value={newEventStart}
-                   mode="datetime"
-                   display="default"
-                   onChange={(event, selectedDate) => {
-                     setShowStartPicker(false);
-                     if (selectedDate) {
-                       setNewEventStart(selectedDate);
-                     }
-                   }}
-                 />
-               )
-             )}
+              {/* Picker pour date de début */}
+              {Platform.OS === "ios" ? (
+                <DateTimeModal
+                  visible={showStartPicker}
+                  date={newEventStart}
+                  onClose={() => setShowStartPicker(false)}
+                  onConfirm={setNewEventStart}
+                />
+              ) : (
+                showStartPicker && (
+                  <DateTimePicker
+                    value={newEventStart}
+                    mode="datetime"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setShowStartPicker(false);
+                      if (selectedDate) {
+                        setNewEventStart(selectedDate);
+                      }
+                    }}
+                  />
+                )
+              )}
 
-             {/* Picker pour date de fin */}
-             {Platform.OS === 'ios' ? (
-               <DateTimeModal
-                 visible={showEndPicker}
-                 date={newEventEnd}
-                 onClose={() => setShowEndPicker(false)}
-                 onConfirm={setNewEventEnd}
-               />
-             ) : (
-               showEndPicker && (
-                 <DateTimePicker
-                   value={newEventEnd}
-                   mode="datetime"
-                   display="default"
-                   onChange={(event, selectedDate) => {
-                     setShowEndPicker(false);
-                     if (selectedDate) {
-                       setNewEventEnd(selectedDate);
-                     }
-                   }}
-                 />
-               )
-             )}
+              {/* Picker pour date de fin */}
+              {Platform.OS === "ios" ? (
+                <DateTimeModal
+                  visible={showEndPicker}
+                  date={newEventEnd}
+                  onClose={() => setShowEndPicker(false)}
+                  onConfirm={setNewEventEnd}
+                />
+              ) : (
+                showEndPicker && (
+                  <DateTimePicker
+                    value={newEventEnd}
+                    mode="datetime"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setShowEndPicker(false);
+                      if (selectedDate) {
+                        setNewEventEnd(selectedDate);
+                      }
+                    }}
+                  />
+                )
+              )}
               <GradientButton
                 text="Ajouter"
                 onPress={createCalendarEvent}

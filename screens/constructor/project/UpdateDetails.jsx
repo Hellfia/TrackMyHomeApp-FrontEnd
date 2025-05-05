@@ -58,16 +58,30 @@ export default function UpdateDetails({ route, navigation }) {
   };
 
   const onChangeDate = (event, selectedDate) => {
+    // On Android, le mode "default" ferme automatiquement le picker après sélection
+    // Alors que sur iOS nous devons gérer cela manuellement
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
     if (selectedDate) {
       setDate(selectedDate);
     }
   };
 
   const onChangeDateEnd = (event, selectedDate) => {
+    // On Android, le mode "default" ferme automatiquement le picker après sélection
+    // Alors que sur iOS nous devons gérer cela manuellement
+    if (Platform.OS === 'android') {
+      setShowEndDatePicker(false);
+    }
     if (selectedDate) {
       setDateEnd(selectedDate);
     }
   };
+
+  // Ajout de ces états pour contrôler l'affichage des pickers
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   const prodURL = process.env.PROD_URL;
 
@@ -192,13 +206,24 @@ export default function UpdateDetails({ route, navigation }) {
             <View style={styles.datePickerContainer}>
               <Text style={styles.label}>Date de début :</Text>
               <View style={styles.datePickerWrapper}>
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  onChange={onChangeDate}
-                  style={styles.datePicker}
-                />
+                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                  <Text style={styles.dateValue}>
+                    {date.toLocaleDateString('fr-FR', {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric"
+                    })}
+                  </Text>
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? "spinner" : "default"}
+                    onChange={onChangeDate}
+                    style={styles.datePicker}
+                  />
+                )}
               </View>
             </View>
 
@@ -207,12 +232,25 @@ export default function UpdateDetails({ route, navigation }) {
 
             <View style={styles.datePickerContainer}>
               <Text style={styles.label}>Date de fin prévu :</Text>
-              <DateTimePicker
-                value={dateEnd}
-                mode="date"
-                display="default"
-                onChange={onChangeDateEnd}
-              />
+              <View style={styles.datePickerWrapper}>
+                <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
+                  <Text style={styles.dateValue}>
+                    {dateEnd.toLocaleDateString('fr-FR', {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric"
+                    })}
+                  </Text>
+                </TouchableOpacity>
+                {showEndDatePicker && (
+                  <DateTimePicker
+                    value={dateEnd}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? "spinner" : "default"}
+                    onChange={onChangeDateEnd}
+                  />
+                )}
+              </View>
             </View>
 
             {/* Affichage de l'erreur pour la date de fin */}
