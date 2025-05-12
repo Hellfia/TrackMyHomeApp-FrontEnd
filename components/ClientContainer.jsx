@@ -1,12 +1,7 @@
-import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
-import avatar from '../assets/avatar.png';
-import { wp, hp, rfs } from '../utils/scale';
+import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import avatar from "../assets/avatar.png";
+import { wp, hp, rfs } from "../utils/scale";
 
 export default function ClientContainer({
   firstname,
@@ -16,7 +11,7 @@ export default function ClientContainer({
   city,
   profilePicture,
   onPress,
-  variant = 'orange',
+  variant = "orange",
 }) {
   const profileImage = profilePicture ? { uri: profilePicture } : avatar;
 
@@ -25,7 +20,7 @@ export default function ClientContainer({
       onPress={onPress}
       style={[
         styles.card,
-        variant === 'violet' ? styles.violetShadow : styles.orangeShadow,
+        variant === "violet" ? styles.violetShadow : styles.orangeShadow,
       ]}
     >
       <Image
@@ -49,45 +44,46 @@ export default function ClientContainer({
 
 const styles = StyleSheet.create({
   card: {
-    width: wp(45),         // 45% de la largeur de l'écran
+    width: wp(45), // 45% de la largeur de l'écran
     aspectRatio: 170 / 160,
-    backgroundColor: '#fff',
-    borderRadius: wp(4),   // 4% de la largeur
-    padding: wp(3),        // 3% de la largeur
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    borderRadius: wp(4), // 4% de la largeur
+    padding: wp(3), // 3% de la largeur
+    alignItems: "center",
     elevation: 4,
   },
   avatar: {
-    width: wp(20),         // 20% de la largeur de l'écran
-    aspectRatio: 1,        // image carrée
-    borderRadius: wp(10),  // cercle complet
-    marginBottom: hp(1),   // 1% de la hauteur de l'écran
+    width: wp(20), // 20% de la largeur de l'écran
+    height: wp(20), // Définir explicitement la hauteur pour correspondre à la largeur
+    borderRadius: wp(10), // cercle complet (width/2)
+    marginBottom: hp(1), // 1% de la hauteur de l'écran
+    resizeMode: "contain", // S'assurer que l'image s'adapte aux dimensions
   },
   name: {
-    fontWeight: '700',
-    fontSize: rfs(13),     // taille responsive
-    color: '#673ED9',
-    textAlign: 'center',
+    fontWeight: "700",
+    fontSize: rfs(13), // taille responsive
+    color: "#673ED9",
+    textAlign: "center",
     marginBottom: hp(0.5), // 0.5% de la hauteur
   },
   address: {
-    fontSize: rfs(11),     // taille responsive
-    color: '#444',
-    textAlign: 'center',
+    fontSize: rfs(11), // taille responsive
+    color: "#444",
+    textAlign: "center",
   },
   city: {
-    fontSize: rfs(11),     // taille responsive
-    color: '#444',
-    textAlign: 'center',
+    fontSize: rfs(11), // taille responsive
+    color: "#444",
+    textAlign: "center",
   },
   orangeShadow: {
-    shadowColor: '#FF5900',
+    shadowColor: "#FF5900",
     shadowOffset: { width: wp(0.5), height: hp(0.5) },
     shadowOpacity: 0.15,
-    shadowRadius: wp(1),    // 1% de la largeur
+    shadowRadius: wp(1), // 1% de la largeur
   },
   violetShadow: {
-    shadowColor: '#673ED9',
+    shadowColor: "#673ED9",
     shadowOffset: { width: wp(0.5), height: hp(0.5) },
     shadowOpacity: 0.15,
     shadowRadius: wp(1),

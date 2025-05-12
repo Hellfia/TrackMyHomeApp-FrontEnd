@@ -1,6 +1,6 @@
 // DashboardConstructeur.js
 import { FontAwesome5 } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Calendar from "expo-calendar";
 import { LinearGradient } from "expo-linear-gradient";
@@ -25,6 +25,7 @@ import avatar from "../../../assets/avatar.png";
 import GradientButton from "../../../components/GradientButton";
 import PlusButton from "../../../components/PlusButton";
 import { hp, rfs, scale } from "../../../utils/scale";
+import PropTypes from "prop-types";
 
 const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
   const [tempDate, setTempDate] = useState(date);
@@ -33,48 +34,30 @@ const DateTimeModal = ({ visible, onClose, date, onConfirm }) => {
     setTempDate(date);
   }, [date]);
 
-  if (!visible) return null; // Simplifié : ne rend rien si pas visible
+  if (!visible) return null; // Simplified: render nothing if not visible
 
   return (
     <View style={styles.modalOverlay}>
-      <View style={styles.modalContent}>
-        <DateTimePicker
-          value={tempDate}
-          mode="datetime"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={(event, selectedDate) => {
-            if (selectedDate) {
-              setTempDate(selectedDate);
-            }
-            // Fermeture automatique sur Android
-            if (Platform.OS === "android") {
-              onConfirm(selectedDate || tempDate);
-              onClose();
-            }
-          }}
-          style={{ width: "100%", marginBottom: scale(16) }}
-        />
-        {Platform.OS === "ios" && (
-          <>
-            <GradientButton
-              text="Valider"
-              onPress={() => {
-                onConfirm(tempDate);
-                onClose();
-              }}
-              style={{ width: "100%" }}
-            />
-            <TouchableOpacity
-              onPress={onClose}
-              style={{ marginTop: scale(12) }}
-            >
-              <Text style={styles.cancelText}>Annuler</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+      <DateTimePickerModal
+        isVisible={visible} // Prevent double modal opening
+        date={tempDate}
+        mode="datetime"
+        onConfirm={(selectedDate) => {
+          onConfirm(selectedDate);
+          onClose();
+        }}
+        onCancel={onClose}
+        themeVariant="light" // Use light theme to ensure text visibility
+      />
     </View>
   );
+};
+
+DateTimeModal.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  date: PropTypes.instanceOf(Date).isRequired,
+  onConfirm: PropTypes.func.isRequired,
 };
 
 export default function DashboardConstructeur({ navigation }) {
@@ -85,7 +68,6 @@ export default function DashboardConstructeur({ navigation }) {
   const [events, setEvents] = useState([]);
   const [clientsData, setClientsData] = useState([]);
   const [craftsmenData, setCraftsmenData] = useState([]);
-  const [projectsCount, setProjectsCount] = useState(0);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState("");
@@ -128,70 +110,90 @@ export default function DashboardConstructeur({ navigation }) {
   // Récupération clients, on stocke aussi lat/lng
   useFocusEffect(
     useCallback(() => {
-      fetch(
-        `${prodURL}/projects/clients/${constructeur.constructorId}/${constructeur.token}`
-      )
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.result) {
-            setClientsData(
-              d.data.map((item, i) => ({
-                id: i,
-                logo: item.client.profilePicture,
-                firstname: item.client.firstname,
-                lastname: item.client.lastname,
-                phoneNumber: item.client.phoneNumber || "Non renseigné",
-                latitude: parseFloat(item.client.constructionLat),
-                longitude: parseFloat(item.client.constructionLong),
-              }))
+      if (clientsData.length === 0) {
+        fetch(
+          `${prodURL}/projects/clients/${constructeur.constructorId}/${constructeur.token}`
+        )
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.result) {
+              setClientsData(
+                d.data.map((item, i) => ({
+                  id: i,
+                  logo: item.client.profilePicture,
+                  firstname: item.client.firstname,
+                  lastname: item.client.lastname,
+                  phoneNumber: item.client.phoneNumber || "Non renseigné",
+                  latitude: parseFloat(item.client.constructionLat),
+                  longitude: parseFloat(item.client.constructionLong),
+                }))
+              );
+            } else setClientsData([]);
+          })
+          .catch((error) => {
+            console.error(
+              "Erreur lors de la récupération des clients :",
+              error
             );
-          } else setClientsData([]);
-        })
-        .catch(console.error);
-    }, [constructeur.constructorId])
+            alert("Impossible de récupérer les clients.");
+          });
+      }
+    }, [clientsData.length])
   );
+
+  // Centralized permission check function
+  const checkCalendarPermissions = async () => {
+    const { status } = await Calendar.requestCalendarPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission calendrier non accordée");
+      return false;
+    }
+    return true;
+  };
 
   // Fetch tasks today from ALL calendars
   const fetchEventsForToday = async () => {
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status !== "granted") {
-      console.warn("Permission calendrier non accordée");
-      return;
+    if (!(await checkCalendarPermissions())) return;
+
+    try {
+      const calendars = await Calendar.getCalendarsAsync(
+        Calendar.EntityTypes.EVENT
+      );
+      const now = new Date();
+      const startOfDay = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        0,
+        0,
+        0
+      );
+      const endOfDay = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        23,
+        59,
+        59
+      );
+      const allIds = calendars.map((c) => c.id);
+      const allEvents = await Calendar.getEventsAsync(
+        allIds,
+        startOfDay,
+        endOfDay
+      );
+      const upcoming = allEvents
+        .filter((e) => new Date(e.startDate) > now)
+        .sort(
+          (a, b) =>
+            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        )
+        .slice(0, 3);
+      setEvents(upcoming);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des événements :", error);
+      alert("Impossible de récupérer les événements.");
     }
-    const calendars = await Calendar.getCalendarsAsync(
-      Calendar.EntityTypes.EVENT
-    );
-    const now = new Date();
-    const startOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      0,
-      0,
-      0
-    );
-    const endOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      23,
-      59,
-      59
-    );
-    const allIds = calendars.map((c) => c.id);
-    const allEvents = await Calendar.getEventsAsync(
-      allIds,
-      startOfDay,
-      endOfDay
-    );
-    const upcoming = allEvents
-      .filter((e) => new Date(e.startDate) > now)
-      .sort(
-        (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-      )
-      .slice(0, 3);
-    setEvents(upcoming);
   };
 
   // run on focus
@@ -203,18 +205,16 @@ export default function DashboardConstructeur({ navigation }) {
 
   // create event and re-fetch
   const createCalendarEvent = async () => {
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status !== "granted") {
-      alert("Permission refusée");
-      return;
-    }
-    const cals = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-    const editable = cals.find((c) => c.allowsModifications);
-    if (!editable) {
-      alert("Aucun calendrier modifiable trouvé.");
-      return;
-    }
+    if (!(await checkCalendarPermissions())) return;
+
     try {
+      const cals = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+      const editable = cals.find((c) => c.allowsModifications);
+      if (!editable) {
+        alert("Aucun calendrier modifiable trouvé.");
+        return;
+      }
+
       await Calendar.createEventAsync(editable.id, {
         title: newEventTitle || "Nouvelle tâche",
         startDate: newEventStart,
@@ -230,7 +230,7 @@ export default function DashboardConstructeur({ navigation }) {
       setNewEventLocation("");
       alert("Événement ajouté !");
     } catch (err) {
-      console.error(err);
+      console.error("Erreur lors de la création de l'événement :", err);
       alert("Erreur lors de la création de l'événement.");
     }
   };
@@ -325,16 +325,15 @@ export default function DashboardConstructeur({ navigation }) {
                 />
               ) : (
                 showStartPicker && (
-                  <DateTimePicker
-                    value={newEventStart}
+                  <DateTimePickerModal
+                    isVisible={showStartPicker}
+                    date={newEventStart}
                     mode="datetime"
-                    display="default"
-                    onChange={(event, selectedDate) => {
+                    onConfirm={(selectedDate) => {
                       setShowStartPicker(false);
-                      if (selectedDate) {
-                        setNewEventStart(selectedDate);
-                      }
+                      setNewEventStart(selectedDate);
                     }}
+                    onCancel={() => setShowStartPicker(false)}
                   />
                 )
               )}
@@ -349,16 +348,15 @@ export default function DashboardConstructeur({ navigation }) {
                 />
               ) : (
                 showEndPicker && (
-                  <DateTimePicker
-                    value={newEventEnd}
+                  <DateTimePickerModal
+                    isVisible={showEndPicker}
+                    date={newEventEnd}
                     mode="datetime"
-                    display="default"
-                    onChange={(event, selectedDate) => {
+                    onConfirm={(selectedDate) => {
                       setShowEndPicker(false);
-                      if (selectedDate) {
-                        setNewEventEnd(selectedDate);
-                      }
+                      setNewEventEnd(selectedDate);
                     }}
+                    onCancel={() => setShowEndPicker(false)}
                   />
                 )
               )}
@@ -401,9 +399,10 @@ export default function DashboardConstructeur({ navigation }) {
             {events.length === 0 ? (
               <Text style={styles.NoTask}>Aucune tâche pour aujourd'hui</Text>
             ) : (
-              events.map((ev, i) => (
+              // Fixed alternating colors for events
+              events.map((ev, index) => (
                 <TouchableOpacity
-                  key={i}
+                  key={ev.id} // Use a unique identifier instead of index
                   onPress={() => {
                     const d = new Date(ev.startDate);
                     if (Platform.OS === "ios") {
@@ -427,7 +426,7 @@ export default function DashboardConstructeur({ navigation }) {
                 >
                   <LinearGradient
                     colors={
-                      i % 2 === 0
+                      index % 2 === 0
                         ? ["#C49DD4", "#8E44AD", "#372173"]
                         : ["#F8D5C0", "#fb9b6b", "#f67360"]
                     }
@@ -517,9 +516,9 @@ export default function DashboardConstructeur({ navigation }) {
                 <Text style={styles.emptyText}>Aucun artisan</Text>
               </View>
             ) : (
-              craftsmenData.map((c, i) => (
+              craftsmenData.map((c) => (
                 <TouchableOpacity
-                  key={c._id || i}
+                  key={c._id || c.phoneNumber}
                   style={styles.artisanCard}
                   onPress={() => callClient(c.phoneNumber)}
                 >
@@ -550,6 +549,10 @@ export default function DashboardConstructeur({ navigation }) {
     </LinearGradient>
   );
 }
+
+DashboardConstructeur.propTypes = {
+  navigation: PropTypes.object.isRequired,
+};
 
 const styles = StyleSheet.create({
   pageContainer: { flex: 1 },
@@ -758,7 +761,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: scale(12),
   },
-  dateLabel: {
+  dateLabelPrimary: {
     fontSize: rfs(14),
     color: "#8E44AD",
     fontWeight: "600",

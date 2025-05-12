@@ -28,7 +28,7 @@ export default function CreatAccount({ navigation }) {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
 
-  const prodURL = process.env.PROD_URL
+  const prodURL = process.env.PROD_URL;
 
   // Function to validate form data
   const validate = () => {
@@ -102,7 +102,7 @@ export default function CreatAccount({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require("../../assets/logo.webp")}
+        source={require("../../assets/logo.png")}
         style={styles.logo}
         accessibilityLabel="Logo de TrackMyHome"
       />

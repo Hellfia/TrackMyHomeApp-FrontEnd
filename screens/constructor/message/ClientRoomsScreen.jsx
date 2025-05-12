@@ -59,12 +59,11 @@ export default function ClientRoomsScreen() {
               const msgs = project.messages || [];
               const lastMsg = msgs[msgs.length - 1] || {};
               // on parse la date du dernier message
-              const date =
-                lastMsg.createdAt
-                  ? new Date(lastMsg.createdAt)
-                  : lastMsg.date
-                  ? new Date(lastMsg.date)
-                  : null;
+              const date = lastMsg.createdAt
+                ? new Date(lastMsg.createdAt)
+                : lastMsg.date
+                ? new Date(lastMsg.date)
+                : null;
               return {
                 roomId: project._id,
                 client: {
@@ -179,7 +178,6 @@ const styles = StyleSheet.create({
     marginHorizontal: HORIZONTAL_PADDING,
     alignItems: "center",
     paddingBottom: 12,
-    marginTop: -50,
   },
   headerTitle: {
     fontSize: 20,

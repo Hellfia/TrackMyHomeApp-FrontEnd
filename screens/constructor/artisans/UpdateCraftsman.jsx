@@ -80,10 +80,12 @@ export default function UpdateCraftsman({ route, navigation }) {
         return acc;
       }, {});
       setErrors(errorDetails);
+      console.log("Validation errors:", errorDetails); // Log validation errors
       return;
     }
+    const slug = encodeURIComponent(route.params.craftsman.craftsmanName);
 
-    fetch(`${prodURL}/craftsmen/${craftsmanName}`, {
+    fetch(`${prodURL}/craftsmen/${slug}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -94,9 +96,24 @@ export default function UpdateCraftsman({ route, navigation }) {
         phoneNumber,
       }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
-        if (data.result) navigation.goBack();
+        console.log("Server response:", data); // Log server response
+        if (data.result) {
+          navigation.goBack();
+        } else {
+          console.error("Update failed:", data);
+          alert("La mise à jour a échoué. Veuillez réessayer.");
+        }
+      })
+      .catch((error) => {
+        console.error("Fetch error:", error);
+        alert("Une erreur s'est produite. Veuillez réessayer plus tard.");
       });
   };
 

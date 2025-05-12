@@ -23,7 +23,7 @@ const CraftsmanContainer = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const profileImage = craftsmanLogo ? { uri: craftsmanLogo } : avatar;
-
+  const prodURL = process.env.PROD_URL;
   const handlePress = () => {
     setIsModalVisible(true);
   };
@@ -48,12 +48,9 @@ const CraftsmanContainer = ({
   const devUrl = process.env.DEV_URL;
 
   const handleDelete = () => {
-    fetch(
-      `https://track-my-home-backend.vercel.app/craftsmen/${craftsmanName}`,
-      {
-        method: "DELETE",
-      }
-    )
+    fetch(`${prodURL}/craftsmen/${craftsmanName}`, {
+      method: "DELETE",
+    })
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {

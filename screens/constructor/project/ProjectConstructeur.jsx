@@ -9,6 +9,7 @@ import {
   Text,
   View,
   FlatList,
+  Platform, // Ajout de l'import Platform
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -128,7 +129,11 @@ export default function ProjectConstructeur({ navigation }) {
                 {loading ? (
                   <ActivityIndicator size="large" color="#663ED9" />
                 ) : (
-                  <MapView style={styles.map} region={region}>
+                  <MapView
+                    style={styles.map}
+                    region={region}
+                    mapType="standard"
+                  >
                     {location && (
                       <Marker
                         coordinate={{

@@ -14,7 +14,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { StatusBar } from "react-native";
+import { StatusBar, ActivityIndicator, View, Text } from "react-native";
 
 // reducers
 import client from "./reducers/client";
@@ -38,6 +38,7 @@ import UpdateDetails from "./screens/constructor/project/UpdateDetails";
 import CreatCraftsman from "./screens/constructor/artisans/CreatCraftsman";
 import UpdateCraftsman from "./screens/constructor/artisans/UpdateCraftsman";
 import ConnexionScreen from "./screens/ConnexionScreen";
+import ProjectConstructeur from "./screens/constructor/project/ProjectConstructeur";
 import CreatAccount from "./screens/constructor/CreatAccount";
 import ProfilScreen from "./screens/ProfilScreen";
 
@@ -167,6 +168,7 @@ function RootNavigator() {
       {isAuthenticated ? (
         <>
           <RootStack.Screen name="MainTabs" component={MainTabs} />
+
           <RootStack.Screen name="AddProject" component={AddProject} />
           <RootStack.Screen
             name="UpdateProfileConstructeur"
@@ -199,14 +201,36 @@ function RootNavigator() {
   );
 }
 
+// Écran de chargement simple
+const LoadingScreen = () => (
+  <View
+    style={{
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#fff",
+    }}
+  >
+    <ActivityIndicator size="large" color="#663ED9" />
+    <Text style={{ marginTop: 15, color: "#663ED9" }}>Chargement...</Text>
+  </View>
+);
+
 // Configuration Redux Persist + Store
 const reducers = combineReducers({ client, constructeur });
-const persistConfig = { key: "TrackMyHome2", storage: AsyncStorage };
+const persistConfig = {
+  key: "TrackMyHome2",
+  storage: AsyncStorage,
+  // Expiration courte pour éviter les problèmes de persistence
+  timeout: 10000,
+};
+
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),
 });
+
 const persistor = persistStore(store);
 
 // Point d'entrée de l'app
@@ -214,7 +238,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
-        <PersistGate persistor={persistor}>
+        <PersistGate loading={<LoadingScreen />} persistor={persistor}>
           <SafeAreaProvider>
             <StatusBar hidden />
             <NavigationContainer>

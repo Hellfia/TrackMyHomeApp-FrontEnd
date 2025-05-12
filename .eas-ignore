@@ -1,0 +1,10 @@
+# Fichiers à ignorer lors du téléchargement vers EAS Build
+node_modules/
+npm-debug.log
+yarn-error.log
+.DS_Store
+
+# Ne PAS ignorer ces fichiers essentiels pour le build
+!android/gradlew
+!android/gradlew.bat
+!android/gradle/wrapper/

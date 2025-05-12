@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 
 export default function InputProfil() {
   const devUrl = process.env.DEV_URL;
-
+  const prodUrl = process.env.PROD_URL;
   const constructeur = useSelector((state) => state.constructeur.value);
   const client = useSelector((state) => state.client.value);
 
@@ -62,7 +62,7 @@ export default function InputProfil() {
       type: selectedImage.type,
     });
 
-    fetch(`https://track-my-home-backend.vercel.app/upload/profil/${token}`, {
+    fetch(`${prodUrl}/upload/profil/${token}`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",

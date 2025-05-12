@@ -10,93 +10,86 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Modal,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function InputPicture({ step, clientIdProps }) {
-  const devUrl = process.env.DEV_URL;
-
-  const [imageUri, setImageUri] = useState(null);
-  const [fileName, setFileName] = useState("");
-
-  // Fonction pour demander les permissions de la galerie
+export default function InputPicture({
+  step = {},
+  clientIdProps,
+  style,
+  onUpload,
+}) {
+  const insets = useSafeAreaInsets();
+  const [imageUri, setImageUri] = useState(step.uri || null);
+  const [fileName, setFileName] = useState(step.uri ? "Image de l'étape" : "");
+  const [showModal, setShowModal] = useState(false);
+  const prodURL = process.env.PROD_URL || "";
   const requestMediaLibraryPermissions = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert("Permission d'accès à la galerie refusée");
+    const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!granted) {
+      Alert.alert("Permission d'accès à la galerie refusée");
       return false;
     }
     return true;
   };
 
-  // Fonction pour choisir une image depuis la galerie
   const pickImage = async () => {
     const hasPermission = await requestMediaLibraryPermissions();
     if (!hasPermission) return;
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.3,
-    });
-
-    if (result.canceled) {
-      return;
-    }
-
-    const selectedImage = result.assets[0];
-    setImageUri(selectedImage.uri); // Mise à jour de l'état avec l'URI
-    setFileName(selectedImage.fileName || "Preview de l'image"); // Ajout du nom du fichier
-
-    // Formulaire pour l'upload
-    const formData = new FormData();
-    formData.append("file", {
-      uri: selectedImage.uri,
-      name: selectedImage.fileName,
-      type: selectedImage.type,
-    });
-
-    fetch(
-      `https://track-my-home-backend.vercel.app/upload/picture/${clientIdProps}/${step._id}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        body: formData,
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          console.log("Image téléchargée avec succès");
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur lors du téléchargement de l'image :", error);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.5,
       });
+      if (result.canceled || !result.assets?.length) return;
+      const selected = result.assets[0];
+      setImageUri(selected.uri);
+      setFileName(selected.fileName || "Image sélectionnée");
+
+      if (step._id) {
+        const formData = new FormData();
+        formData.append("file", {
+          uri: selected.uri,
+          name: selected.fileName,
+          type: selected.type,
+        });
+        fetch(`${prodURL}/upload/picture/${clientIdProps}/${step._id}`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.result) {
+              console.error("Upload failed:", data.error);
+            } else {
+              console.log("Image uploaded successfully:", data.step.uri);
+              // Call the onUpload callback with the remote URL from the server response
+              if (onUpload && data.step?.uri) {
+                onUpload(data.step.uri);
+              }
+            }
+          })
+          .catch((err) => console.error("Error uploading image:", err));
+      }
+    } catch (e) {
+      console.error("Erreur image picker:", e);
+    }
   };
 
-  // Fonction pour ouvrir le sélecteur d'image
   const openActionSheet = () => {
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ["Annuler", "Photothèque"],
-          cancelButtonIndex: 0,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 1) {
-            pickImage();
-          }
-        }
+        { options: ["Annuler", "Photothèque"], cancelButtonIndex: 0 },
+        (index) => index === 1 && pickImage()
       );
     } else {
       Alert.alert(
         "Choisir une option",
-        "",
+        null,
         [
-          { text: "Photothèque", onPress: pickImage },
+          { text: "Photothèque", onPress: () => pickImage() },
           { text: "Annuler", style: "cancel" },
         ],
         { cancelable: true }
@@ -104,109 +97,103 @@ export default function InputPicture({ step, clientIdProps }) {
     }
   };
 
-  // Fonction pour supprimer l'image actuelle
   const removeImage = () => {
-    setImageUri(null); // Réinitialise l'image
-    setFileName(""); // Réinitialise le nom du fichier
+    setImageUri(null);
+    setFileName("");
+    // Also update the parent component
+    if (onUpload) {
+      onUpload("");
+    }
   };
 
-  // Logique pour afficher la preview de l'image si 'imageUri' existe
-  useEffect(() => {
-    if (step.uri) {
-      setImageUri(step.uri);
-      setFileName("Preview de l'image"); // Tu peux ajuster en fonction du nom du fichier
-    }
-  }, [step.uri]); // Cette logique se lance chaque fois que 'step.uri' change
+  if (!step) return null;
 
   return (
-    <View style={styles.container}>
-      {imageUri ? (
-        // Si une image est disponible, on affiche la preview avec l'option pour supprimer
-        <View style={styles.preview}>
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.imagePreview}
-            accessibilityLabel="Preview de la photo"
-          />
-          <View style={styles.infoImage}>
-            <Text style={styles.fileText}>{fileName}</Text>
-            <TouchableOpacity onPress={removeImage}>
-              <FontAwesome5
-                name="trash-alt"
-                size={24}
-                color="red"
-                style={styles.iconTrash}
-              />
+    <View style={styles.wrapper}>
+      <TouchableOpacity
+        onPress={() => (imageUri ? setShowModal(true) : openActionSheet())}
+        activeOpacity={0.7}
+      >
+        <View style={[styles.container, style]}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          ) : (
+            <View style={styles.uploadContainer}>
+              <Text style={styles.plusSign}>+</Text>
+              <Text style={styles.mainText}>Importez une photo</Text>
+              <Text style={styles.subText}>JPEG, HEIC, PNG</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+
+      {imageUri && (
+        <View style={styles.infoImage}>
+          <Text style={styles.fileText}>{fileName}</Text>
+          <TouchableOpacity onPress={removeImage} style={styles.trashButton}>
+            <FontAwesome5 name="trash-alt" size={24} color="red" />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {imageUri && (
+        <Modal
+          visible={showModal}
+          transparent={false}
+          onRequestClose={() => setShowModal(false)}
+        >
+          <View style={styles.imageModalContainer}>
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.fullImage}
+              resizeMode="contain"
+            />
+            <TouchableOpacity
+              style={[styles.closeButton, { top: insets.top + 10 }]}
+              onPress={() => setShowModal(false)}
+            >
+              <FontAwesome5 name="times" size={30} color="#fff" />
             </TouchableOpacity>
           </View>
-        </View>
-      ) : (
-        // Si aucune image n'est disponible, on affiche le bouton pour importer une image
-        <TouchableOpacity
-          style={styles.uploadContainer}
-          onPress={openActionSheet}
-        >
-          <Text style={styles.plusSign}>+</Text>
-          <Text style={styles.mainText}>Importez une photo</Text>
-          <Text style={styles.subText}>Format accepté : JPEG, HEIC, PNG</Text>
-        </TouchableOpacity>
+        </Modal>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: { alignItems: "center", marginVertical: 20 },
   container: {
-    flex: 1,
-    alignItems: "center",
-  },
-  uploadContainer: {
-    width: "100%",
-    height: 150,
-    borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: "#663ED9",
+    width: 340,
+    height: 180,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    paddingHorizontal: 40,
+    overflow: "hidden",
+    backgroundColor: "#f0f0f0",
   },
-  plusSign: {
-    fontSize: 40,
-    color: "#FF6600",
-    marginBottom: 10,
-  },
+  uploadContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  plusSign: { fontSize: 40, color: "#FF6600", marginBottom: 10 },
   mainText: {
     fontSize: 16,
     fontWeight: "600",
     color: "#663ED9",
     marginBottom: 5,
   },
-  subText: {
-    fontSize: 12,
-    color: "#888",
-  },
-  preview: {
-    alignItems: "center",
-  },
-  imagePreview: {
-    width: 300,
-    height: 150,
-    borderRadius: 10,
-    resizeMode: "cover",
-  },
-  fileText: {
-    marginTop: 10,
-    fontSize: 14,
-    color: "#663ED9",
-    textAlign: "center",
-  },
+  subText: { fontSize: 12, color: "#888" },
+  imagePreview: { width: "100%", height: "100%", resizeMode: "cover" },
   infoImage: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
   },
-  iconTrash: {
-    marginLeft: 20,
-    marginTop: 8,
+  fileText: { fontSize: 14, color: "#663ED9" },
+  trashButton: { marginLeft: 20 },
+  imageModalContainer: {
+    flex: 1,
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
   },
+  fullImage: { width: "100%", height: "100%" },
+  closeButton: { position: "absolute", right: 20 },
 });

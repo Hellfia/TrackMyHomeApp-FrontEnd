@@ -14,7 +14,7 @@ import {
 
 export default function InputPicture({ craftsman }) {
   const devUrl = process.env.DEV_URL;
-
+  const prodUrl = process.env.PROD_URL;
   const [imageUri, setImageUri] = useState(null);
   const [fileName, setFileName] = useState("");
 
@@ -56,16 +56,13 @@ export default function InputPicture({ craftsman }) {
       type: selectedImage.type,
     });
 
-    fetch(
-      `https://track-my-home-backend.vercel.app/upload/logo/${craftsman.phoneNumber}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        body: formData,
-      }
-    )
+    fetch(`${prodUrl}/upload/logo/${craftsman.phoneNumber}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: formData,
+    })
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {

@@ -17,20 +17,30 @@ import { useSelector } from "react-redux";
 import io from "socket.io-client";
 import ReturnButton from "../../../components/ReturnButton";
 
-const MessageBubble = memo(({ message, isOwn }) => (
-  <View style={[styles.bubble, isOwn ? styles.bubbleRight : styles.bubbleLeft]}>
-    <Text
-      style={[styles.bubbleText, isOwn ? styles.textRight : styles.textLeft]}
+const MessageBubble = memo(({ message, isOwn }) => {
+  // Format the time to display only hours and minutes
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  return (
+    <View
+      style={[styles.bubble, isOwn ? styles.bubbleRight : styles.bubbleLeft]}
     >
-      {message.text}
-    </Text>
-    <Text
-      style={[styles.bubbleTime, isOwn ? styles.timeRight : styles.timeLeft]}
-    >
-      {new Date(message.date).toLocaleTimeString()}
-    </Text>
-  </View>
-));
+      <Text
+        style={[styles.bubbleText, isOwn ? styles.textRight : styles.textLeft]}
+      >
+        {message.text}
+      </Text>
+      <Text
+        style={[styles.bubbleTime, isOwn ? styles.timeRight : styles.timeLeft]}
+      >
+        {formatTime(message.date)}
+      </Text>
+    </View>
+  );
+});
 
 MessageBubble.propTypes = {
   message: PropTypes.object.isRequired,

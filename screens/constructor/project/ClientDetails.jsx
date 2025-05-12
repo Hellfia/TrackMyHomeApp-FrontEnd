@@ -1,5 +1,5 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Image,
@@ -21,15 +21,29 @@ import { addDocument } from "../../../reducers/constructeur";
 
 export default function ClientDetails({ route, navigation }) {
   const dispatch = useDispatch();
-  const { data } = route.params;
+  const { data: routeData } = route.params; // Renamed to avoid conflict and clarify origin
   const insets = useSafeAreaInsets();
 
-  const projectId = data._id;
+  // Local state to hold the data, updated when route params change
+  const [currentData, setCurrentData] = useState(routeData);
+
+  useEffect(() => {
+    // This effect runs when routeData (from route.params.data) changes,
+    // ensuring currentData is updated, which should trigger a re-render.
+    console.log(
+      "ClientDetails: route.params.data received at",
+      new Date().toLocaleTimeString()
+    );
+    // For more detailed debugging, you can uncomment the line below:
+    // console.log("New data in ClientDetails:", JSON.stringify(routeData, null, 2));
+    setCurrentData(routeData);
+  }, [routeData]); // Depend on routeData (the object reference from route.params.data)
+
+  const projectId = currentData._id;
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const lastValidatedStep = data.steps
+  const lastValidatedStep = currentData.steps
     .slice()
-    .reverse()
     .find((step) => step.status === "validée");
 
   const imageSrc =
@@ -45,14 +59,26 @@ export default function ClientDetails({ route, navigation }) {
     fetch(`${prodURL}/projects/${projectId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((resData) => {
-        if (resData.result) navigation.navigate("Projet");
-        else console.error("Erreur lors de la suppression :", resData.error);
+        // Close the modal first
+        setIsModalVisible(false);
+
+        if (resData.result)
+          navigation.navigate("MainTabs", { screen: "Projet" });
+        else
+          console.error(
+            "Erreur lors de la suppression du projet:",
+            resData.error
+          );
       })
-      .catch((err) => console.error("Erreur réseau ou serveur :", err));
+      .catch((err) => {
+        // Close the modal even on error
+        setIsModalVisible(false);
+        console.error("Erreur réseau ou serveur lors de la suppression:", err);
+      });
   };
 
   const handleDocument = () => {
-    navigation.navigate("Documents", { data });
+    navigation.navigate("Documents", { data: currentData }); // Pass currentData
     dispatch(addDocument(projectId));
   };
 
@@ -65,9 +91,11 @@ export default function ClientDetails({ route, navigation }) {
       style={[styles.container, { paddingTop: insets.top }]}
     >
       <View style={styles.header}>
-        <ReturnButton onPress={() => navigation.goBack()} />
+        <ReturnButton
+          onPress={() => navigation.navigate("MainTabs", { screen: "Projet" })}
+        />
         <Text style={styles.headerTitle}>
-          {data.client.firstname} {data.client.lastname}
+          {currentData.client.firstname} {currentData.client.lastname}
         </Text>
         <FontAwesome5
           name="trash-alt"
@@ -93,10 +121,10 @@ export default function ClientDetails({ route, navigation }) {
         <Text style={styles.stepText}>Les étapes de construction</Text>
         <ScrollView>
           <View style={styles.subContainer}>
-            {data.steps
+            {currentData.steps
               .slice()
-              .reverse()
-              .map((step, idx) => {
+
+              .map((step) => {
                 let iconName = "";
                 let iconColor = "";
                 if (step.status === "À venir") {
@@ -111,13 +139,17 @@ export default function ClientDetails({ route, navigation }) {
                 }
                 return (
                   <StepItem
-                    key={idx}
+                    key={step._id} // Use unique step ID as key
                     name={step.name}
                     iconName={iconName}
                     iconColor={iconColor}
                     iconOnPress="pencil-alt"
-                    onPress={() =>
-                      navigation.navigate("UpdateDetails", { data, step })
+                    onPress={
+                      () =>
+                        navigation.navigate("UpdateDetails", {
+                          data: currentData,
+                          step,
+                        }) // Pass currentData
                     }
                   />
                 );
